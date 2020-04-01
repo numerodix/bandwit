@@ -1,12 +1,15 @@
 #include <assert.h>
-#include <stdio.h>
+
 #include <array>
+#include <chrono>
 #include <iostream>
 #include <memory>
 #include <regex>
 #include <stdexcept>
 #include <string>
 #include <string_view>
+
+#include "ip_cmd_sampler.h"
 
 
 class ProgramRunner {
@@ -124,13 +127,21 @@ private:
 };
 
 
-int main() {
-    ProgramRunner runner;
-    StatsParser parser;
+Sample IpCommandSampler::get_sample(const std::string& iface_name) const {
+    ProgramRunner runner{};
+    StatsParser parser{};
 
-    auto output = runner.run("ip -s addr");
-    auto pair = parser.parse(output, "wlp4s0");
+    auto tp = std::chrono::system_clock::now();
+    std::time_t ts = std::chrono::system_clock::to_time_t(tp);
 
-    std::cout << "RX: " << pair.first << "\n";
-    std::cout << "TX: " << pair.second << "\n";
+    auto output = runner.run("ip -statistics addr");
+    auto pair = parser.parse(output, iface_name);
+
+    Sample sample{
+        .rx = pair.first,
+        .tx = pair.second,
+        .ts = ts,
+    };
+
+    return sample;
 }
