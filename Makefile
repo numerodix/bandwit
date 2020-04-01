@@ -8,7 +8,11 @@ bin/ip_cmd_sampler.o: src/ip_cmd_sampler.cpp src/ip_cmd_sampler.h include/*
 	@mkdir -p bin
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-bin/main: src/main.cpp bin/ip_cmd_sampler.o
+bin/sysfs_sampler.o: src/sysfs_sampler.cpp src/sysfs_sampler.h include/*
+	@mkdir -p bin
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+bin/main: src/main.cpp bin/ip_cmd_sampler.o bin/sysfs_sampler.o
 	@mkdir -p bin
 	$(CC) $(CFLAGS) -o $@ $^
 

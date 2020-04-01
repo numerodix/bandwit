@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <regex>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -134,7 +135,11 @@ Sample IpCommandSampler::get_sample(const std::string& iface_name) const {
     auto tp = std::chrono::system_clock::now();
     std::time_t ts = std::chrono::system_clock::to_time_t(tp);
 
-    auto output = runner.run("ip -statistics addr");
+    std::stringstream ss;
+    ss << "ip -statistics link show dev " << iface_name;
+    std::string args = ss.str();
+
+    auto output = runner.run(args);
     auto pair = parser.parse(output, iface_name);
 
     Sample sample{
