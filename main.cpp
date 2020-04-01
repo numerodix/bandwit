@@ -1,0 +1,136 @@
+#include <assert.h>
+#include <stdio.h>
+#include <array>
+#include <iostream>
+#include <memory>
+#include <regex>
+#include <stdexcept>
+#include <string>
+#include <string_view>
+
+
+class ProgramRunner {
+public:
+    std::string run(const std::string& args) const {
+        std::array<char, 1024> buffer;
+        std::string result;
+
+        FILE *fl = popen(args.c_str(), "r");
+        if (!fl) {
+            throw std::runtime_error("popen() failed");
+        }
+
+        while (fgets(buffer.data(), buffer.size(), fl) != nullptr) {
+            result += buffer.data();
+        }
+
+        int status_code = pclose(fl);
+        if (status_code) {
+            throw std::runtime_error("program return non-zero status code");
+        }
+
+        return result;
+    }
+};
+
+
+class StatsParser {
+public:
+    std::vector<std::string_view> splitlines(const std::string& output) {
+        std::vector<std::string_view> lines;
+        std::size_t cursor = 0;
+
+        while (std::size_t pos = output.find("\n", cursor)) {
+            if (pos == std::string::npos) {
+                break;
+            }
+
+            std::string_view line(&output[cursor], pos - cursor);
+            lines.push_back(line);
+            cursor = pos + 1;
+        }
+
+        return lines;
+    }
+
+    uint64_t parse_nbytes(const std::string& line) {
+        std::smatch mres;
+        bool matches = std::regex_search(line, mres, pat_bytes);
+        assert(matches == true);
+
+        std::string bytes_s = mres[1];
+        return std::stoul(bytes_s);
+    }
+
+    std::pair<uint64_t, uint64_t> parse(const std::string& output, const std::string& iface_name) {
+        auto lines = splitlines(output);
+
+        std::string cur_iface{};
+
+        bool next_line_is_rx{false};
+        bool next_line_is_tx{false};
+
+        uint64_t rx{0};
+        uint64_t tx{0};
+
+        for (const std::string_view& line_view: lines) {
+            std::string line(line_view);
+
+            // Did we match RX: on the previous line?
+            if (next_line_is_rx) {
+                rx = parse_nbytes(line);
+                next_line_is_rx = false;
+            }
+
+            // Did we match TX: on the previous line?
+            if (next_line_is_tx) {
+                tx = parse_nbytes(line);
+                next_line_is_tx = false;
+            }
+
+            // match iface name
+            std::smatch mres_iface;
+            bool matches = std::regex_search(line, mres_iface, pat_iface);
+            if (matches) {
+                cur_iface = mres_iface[2];
+            }
+
+            // match RX: line
+            matches = std::regex_search(line, pat_rx);
+            if (matches) {
+                next_line_is_rx = true;
+            }
+
+            // match TX: line
+            matches = std::regex_search(line, pat_tx);
+            if (matches) {
+                next_line_is_tx = true;
+            }
+
+            // We've found the right iface and we've parsed rx and tx!
+            if ((cur_iface == iface_name) && (rx && tx)) {
+                return std::make_pair(rx, tx);
+            }
+        }
+
+        throw std::runtime_error("failed to find the right iface / parse output");
+    }
+
+private:
+    std::regex pat_iface{R"(^([0-9]+): ([A-Za-z0-9]+):)"};
+    std::regex pat_rx{R"(^    RX)"};
+    std::regex pat_tx{R"(^    TX)"};
+    std::regex pat_bytes{R"(^    ([0-9]+))"};
+};
+
+
+int main() {
+    ProgramRunner runner;
+    StatsParser parser;
+
+    auto output = runner.run("ip -s addr");
+    auto pair = parser.parse(output, "wlp4s0");
+
+    std::cout << "RX: " << pair.first << "\n";
+    std::cout << "TX: " << pair.second << "\n";
+}
