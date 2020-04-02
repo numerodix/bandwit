@@ -10,10 +10,9 @@
 
 #include "ip_cmd_sampler.h"
 
-
 class ProgramRunner {
-public:
-    std::string run(const std::string& args) const {
+  public:
+    std::string run(const std::string &args) const {
         std::array<char, 1024> buffer{};
         std::string result;
 
@@ -35,10 +34,9 @@ public:
     }
 };
 
-
 class StatsParser {
-public:
-    std::vector<std::string_view> splitlines(const std::string& output) {
+  public:
+    std::vector<std::string_view> splitlines(const std::string &output) {
         std::vector<std::string_view> lines;
         std::size_t cursor = 0;
 
@@ -55,7 +53,7 @@ public:
         return lines;
     }
 
-    uint64_t parse_nbytes(const std::string& line) {
+    uint64_t parse_nbytes(const std::string &line) {
         std::smatch mres{};
         bool matches = std::regex_search(line, mres, pat_bytes_);
         if (!matches) {
@@ -66,7 +64,8 @@ public:
         return std::stoul(bytes_s);
     }
 
-    std::pair<uint64_t, uint64_t> parse(const std::string& output, const std::string& iface_name) {
+    std::pair<uint64_t, uint64_t> parse(const std::string &output,
+                                        const std::string &iface_name) {
         auto lines = splitlines(output);
 
         std::string cur_iface{};
@@ -77,7 +76,7 @@ public:
         uint64_t rx{0};
         uint64_t tx{0};
 
-        for (const std::string_view& line_view: lines) {
+        for (const std::string_view &line_view : lines) {
             std::string line(line_view);
 
             // Did we match RX: on the previous line?
@@ -120,18 +119,18 @@ public:
             }
         }
 
-        throw std::runtime_error("failed to find the right iface / parse output");
+        throw std::runtime_error(
+            "failed to find the right iface / parse output");
     }
 
-private:
+  private:
     std::regex pat_iface_{R"(^([0-9]+): ([A-Za-z0-9]+):)"};
     std::regex pat_rx_{R"(^    RX)"};
     std::regex pat_tx_{R"(^    TX)"};
     std::regex pat_bytes_{R"(^    ([0-9]+))"};
 };
 
-
-Sample IpCommandSampler::get_sample(const std::string& iface_name) const {
+Sample IpCommandSampler::get_sample(const std::string &iface_name) const {
     ProgramRunner runner{};
     StatsParser parser{};
 
