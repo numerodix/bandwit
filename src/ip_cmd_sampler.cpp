@@ -1,5 +1,4 @@
 #include <array>
-#include <cassert>
 #include <chrono>
 #include <iostream>
 #include <memory>
@@ -59,7 +58,9 @@ public:
     uint64_t parse_nbytes(const std::string& line) {
         std::smatch mres{};
         bool matches = std::regex_search(line, mres, pat_bytes_);
-        assert(matches == true);
+        if (!matches) {
+            throw std::runtime_error("regex pat_bytes_ failed to match line");
+        }
 
         std::string bytes_s = mres[1];
         return std::stoul(bytes_s);
