@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SAMPLE_H
+#define SAMPLE_H
+
 
 #include <cstdint>
 #include <ctime>
@@ -10,3 +12,6 @@ struct Sample {
 
     std::time_t ts;
 };
+
+
+#endif // SAMPLE_H

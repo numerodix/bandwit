@@ -1,3 +1,4 @@
 .vscode/
 core
 bin/*
+build/

@@ -28,7 +28,7 @@ public:
     }
 
     std::string create_filepath(const std::string& iface_name, const Quantity& qtty) const {
-        std::stringstream ss;
+        std::stringstream ss{};
         std::string filename = quantity_filenames_.at(qtty);
         ss << "/sys/class/net/" << iface_name << "/statistics/" << filename;
         return ss.str();
@@ -57,9 +57,9 @@ Sample SysFsSampler::get_sample(const std::string& iface_name) const {
     uint64_t tx = sysfs_parser.read(iface_name, SysFsParser::Quantity::TX_BYTES);
 
     Sample sample{
-        .rx = rx,
-        .tx = tx,
-        .ts = ts,
+        rx,
+        tx,
+        ts,
     };
 
     return sample;

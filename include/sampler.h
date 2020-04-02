@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SAMPLER_H
+#define SAMPLER_H
+
 
 #include <string>
 
@@ -8,11 +10,17 @@
 class Sampler {
 
 public:
-    virtual ~Sampler() {}
+    // we don't actually want this: "abstract classes should not have a ctor",
+    // but without it deleting the copy/move ctors below breaks the ctors in the
+    // derived classes :(
+    Sampler() = default;
+
+    // this is a base so the dtor should be virtual
+    virtual ~Sampler() = default;
 
     // disable copy/move constructors
-    // Sampler(const Sampler&) = delete;
-    // Sampler(Sampler&&) = delete;
+    Sampler(const Sampler&) = delete;
+    Sampler(Sampler&&) = delete;
 
     // disable assignment
     Sampler& operator=(const Sampler&) = delete;
@@ -20,3 +28,6 @@ public:
 
     virtual Sample get_sample(const std::string& iface_name) const = 0;
 };
+
+
+#endif // SAMPLER_H

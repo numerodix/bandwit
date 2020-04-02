@@ -1,5 +1,3 @@
-#include <assert.h>
-
 #include <array>
 #include <chrono>
 #include <iostream>
@@ -16,11 +14,11 @@
 class ProgramRunner {
 public:
     std::string run(const std::string& args) const {
-        std::array<char, 1024> buffer;
+        std::array<char, 1024> buffer{};
         std::string result;
 
         FILE *fl = popen(args.c_str(), "r");
-        if (!fl) {
+        if (fl == nullptr) {
             throw std::runtime_error("popen() failed");
         }
 
@@ -29,7 +27,7 @@ public:
         }
 
         int status_code = pclose(fl);
-        if (status_code) {
+        if (status_code != 0) {
             throw std::runtime_error("program return non-zero status code");
         }
 
@@ -44,7 +42,7 @@ public:
         std::vector<std::string_view> lines;
         std::size_t cursor = 0;
 
-        while (std::size_t pos = output.find("\n", cursor)) {
+        while (std::size_t pos = output.find('\n', cursor)) {
             if (pos == std::string::npos) {
                 break;
             }
@@ -58,9 +56,11 @@ public:
     }
 
     uint64_t parse_nbytes(const std::string& line) {
-        std::smatch mres;
+        std::smatch mres{};
         bool matches = std::regex_search(line, mres, pat_bytes_);
-        assert(matches == true);
+        if (!matches) {
+            throw std::runtime_error("regex pat_bytes_ failed to match line");
+        }
 
         std::string bytes_s = mres[1];
         return std::stoul(bytes_s);
@@ -97,22 +97,25 @@ public:
             bool matches = std::regex_search(line, mres_iface, pat_iface_);
             if (matches) {
                 cur_iface = mres_iface[2];
+                continue;
             }
 
             // match RX: line
             matches = std::regex_search(line, pat_rx_);
             if (matches) {
                 next_line_is_rx = true;
+                continue;
             }
 
             // match TX: line
             matches = std::regex_search(line, pat_tx_);
             if (matches) {
                 next_line_is_tx = true;
+                continue;
             }
 
             // We've found the right iface and we've parsed rx and tx!
-            if ((cur_iface == iface_name) && (rx && tx)) {
+            if ((cur_iface == iface_name) && (rx > 0 && tx > 0)) {
                 return std::make_pair(rx, tx);
             }
         }
@@ -135,7 +138,7 @@ Sample IpCommandSampler::get_sample(const std::string& iface_name) const {
     auto tp = std::chrono::system_clock::now();
     std::time_t ts = std::chrono::system_clock::to_time_t(tp);
 
-    std::stringstream ss;
+    std::stringstream ss{};
     ss << "ip -statistics link show dev " << iface_name;
     std::string args = ss.str();
 
@@ -143,9 +146,9 @@ Sample IpCommandSampler::get_sample(const std::string& iface_name) const {
     auto pair = parser.parse(output, iface_name);
 
     Sample sample{
-        .rx = pair.first,
-        .tx = pair.second,
-        .ts = ts,
+        pair.first,
+        pair.second,
+        ts,
     };
 
     return sample;
