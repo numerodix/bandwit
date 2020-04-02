@@ -6,7 +6,7 @@
 class IpCommandSampler : public Sampler {
 
 public:
-    explicit IpCommandSampler() {}
+    IpCommandSampler() {}
     ~IpCommandSampler() {}
 
     Sample get_sample(const std::string& iface_name) const override;
