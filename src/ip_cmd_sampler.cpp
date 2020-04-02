@@ -97,18 +97,21 @@ public:
             bool matches = std::regex_search(line, mres_iface, pat_iface_);
             if (matches) {
                 cur_iface = mres_iface[2];
+                continue;
             }
 
             // match RX: line
             matches = std::regex_search(line, pat_rx_);
             if (matches) {
                 next_line_is_rx = true;
+                continue;
             }
 
             // match TX: line
             matches = std::regex_search(line, pat_tx_);
             if (matches) {
                 next_line_is_tx = true;
+                continue;
             }
 
             // We've found the right iface and we've parsed rx and tx!
