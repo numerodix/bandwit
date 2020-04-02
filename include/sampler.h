@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SAMPLER_H
+#define SAMPLER_H
+
 
 #include <string>
 
@@ -20,3 +22,6 @@ public:
 
     virtual Sample get_sample(const std::string& iface_name) const = 0;
 };
+
+
+#endif // SAMPLER_H

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef IP_CMD_SAMPLER_H
+#define IP_CMD_SAMPLER_H
+
 
 #include "sampler.h"
 
@@ -11,3 +13,6 @@ public:
 
     Sample get_sample(const std::string& iface_name) const override;
 };
+
+
+#endif // IP_CMD_SAMPLER_H
