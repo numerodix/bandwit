@@ -59,7 +59,7 @@ public:
 
     uint64_t parse_nbytes(const std::string& line) {
         std::smatch mres;
-        bool matches = std::regex_search(line, mres, pat_bytes);
+        bool matches = std::regex_search(line, mres, pat_bytes_);
         assert(matches == true);
 
         std::string bytes_s = mres[1];
@@ -94,19 +94,19 @@ public:
 
             // match iface name
             std::smatch mres_iface;
-            bool matches = std::regex_search(line, mres_iface, pat_iface);
+            bool matches = std::regex_search(line, mres_iface, pat_iface_);
             if (matches) {
                 cur_iface = mres_iface[2];
             }
 
             // match RX: line
-            matches = std::regex_search(line, pat_rx);
+            matches = std::regex_search(line, pat_rx_);
             if (matches) {
                 next_line_is_rx = true;
             }
 
             // match TX: line
-            matches = std::regex_search(line, pat_tx);
+            matches = std::regex_search(line, pat_tx_);
             if (matches) {
                 next_line_is_tx = true;
             }
@@ -121,10 +121,10 @@ public:
     }
 
 private:
-    std::regex pat_iface{R"(^([0-9]+): ([A-Za-z0-9]+):)"};
-    std::regex pat_rx{R"(^    RX)"};
-    std::regex pat_tx{R"(^    TX)"};
-    std::regex pat_bytes{R"(^    ([0-9]+))"};
+    std::regex pat_iface_{R"(^([0-9]+): ([A-Za-z0-9]+):)"};
+    std::regex pat_rx_{R"(^    RX)"};
+    std::regex pat_tx_{R"(^    TX)"};
+    std::regex pat_bytes_{R"(^    ([0-9]+))"};
 };
 
 
