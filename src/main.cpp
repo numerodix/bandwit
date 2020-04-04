@@ -5,6 +5,7 @@
 #include <thread>
 
 #include "sampling/ip_cmd_sampler.h"
+#include "sampling/procfs_sampler.h"
 #include "sampling/sysfs_sampler.h"
 
 using namespace bmon;
@@ -49,14 +50,23 @@ int main(int argc, char *argv[]) {
     std::cout << "TX: " << sample1.tx << "\n";
     std::cout << "ts: " << sample1.ts << "\n";
 
-    std::unique_ptr<sampling::Sampler> sys_sampler{
-        new sampling::SysFsSampler()};
-    sampling::Sample sample2 = sys_sampler->get_sample(iface_name);
+    std::unique_ptr<sampling::Sampler> proc_sampler{
+        new sampling::ProcFsSampler()};
+    sampling::Sample sample2 = proc_sampler->get_sample(iface_name);
 
-    std::cout << "\nsysfs command sampler (" << iface_name << "):\n";
+    std::cout << "\nprocfs command sampler (" << iface_name << "):\n";
     std::cout << "RX: " << sample2.rx << "\n";
     std::cout << "TX: " << sample2.tx << "\n";
     std::cout << "ts: " << sample2.ts << "\n";
+
+    std::unique_ptr<sampling::Sampler> sys_sampler{
+        new sampling::SysFsSampler()};
+    sampling::Sample sample3 = sys_sampler->get_sample(iface_name);
+
+    std::cout << "\nsysfs command sampler (" << iface_name << "):\n";
+    std::cout << "RX: " << sample3.rx << "\n";
+    std::cout << "TX: " << sample3.tx << "\n";
+    std::cout << "ts: " << sample3.ts << "\n";
 
     std::cout << "\nrun_forever(" << iface_name << "):\n";
     collect(sys_sampler, iface_name);
