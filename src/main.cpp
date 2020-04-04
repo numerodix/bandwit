@@ -37,23 +37,27 @@ void collect(const std::unique_ptr<sampling::Sampler> &sampler,
     }
 }
 
-int main() {
-    std::unique_ptr<sampling::Sampler> ip_sampler{new sampling::IpCommandSampler()};
-    sampling::Sample sample1 = ip_sampler->get_sample("wlp4s0");
+int main(int argc, char *argv[]) {
+    std::string iface_name{argv[1]};
 
-    std::cout << "ip command sampler:\n";
+    std::unique_ptr<sampling::Sampler> ip_sampler{
+        new sampling::IpCommandSampler()};
+    sampling::Sample sample1 = ip_sampler->get_sample(iface_name);
+
+    std::cout << "ip command sampler (" << iface_name << "):\n";
     std::cout << "RX: " << sample1.rx << "\n";
     std::cout << "TX: " << sample1.tx << "\n";
     std::cout << "ts: " << sample1.ts << "\n";
 
-    std::unique_ptr<sampling::Sampler> sys_sampler{new sampling::SysFsSampler()};
-    sampling::Sample sample2 = sys_sampler->get_sample("wlp4s0");
+    std::unique_ptr<sampling::Sampler> sys_sampler{
+        new sampling::SysFsSampler()};
+    sampling::Sample sample2 = sys_sampler->get_sample(iface_name);
 
-    std::cout << "\nsysfs command sampler:\n";
+    std::cout << "\nsysfs command sampler (" << iface_name << "):\n";
     std::cout << "RX: " << sample2.rx << "\n";
     std::cout << "TX: " << sample2.tx << "\n";
     std::cout << "ts: " << sample2.ts << "\n";
 
-    std::cout << "\nrun_forever():\n";
-    collect(sys_sampler, "wlp4s0");
+    std::cout << "\nrun_forever(" << iface_name << "):\n";
+    collect(sys_sampler, iface_name);
 }

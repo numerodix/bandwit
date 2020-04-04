@@ -5,4 +5,4 @@ set -eux
 mkdir -p build
 cd build
 CXX=clang++ cmake .. && make VERBOSE=1
-./bmon
+./bmon wlp4s0
