@@ -15,17 +15,17 @@ namespace sampling {
 
 class ProgramRunner {
   public:
-    std::string run(const std::string &args) const {
-        std::array<char, 1024> buffer{};
-        std::string result;
-
+    std::vector<std::string> run(const std::string &args) const {
         FILE *fl = popen(args.c_str(), "r");
         if (fl == nullptr) {
             throw std::runtime_error("popen() failed");
         }
 
+        std::array<char, 1024> buffer{};
+        std::vector<std::string> lines{};
+
         while (fgets(buffer.data(), buffer.size(), fl) != nullptr) {
-            result += buffer.data();
+            lines.push_back(buffer.data());
         }
 
         int status_code = pclose(fl);
@@ -33,29 +33,12 @@ class ProgramRunner {
             throw std::runtime_error("program return non-zero status code");
         }
 
-        return result;
+        return lines;
     }
 };
 
 class StatsParser {
   public:
-    std::vector<std::string_view> splitlines(const std::string &output) {
-        std::vector<std::string_view> lines;
-        std::size_t cursor = 0;
-
-        while (std::size_t pos = output.find('\n', cursor)) {
-            if (pos == std::string::npos) {
-                break;
-            }
-
-            std::string_view line(&output[cursor], pos - cursor);
-            lines.push_back(line);
-            cursor = pos + 1;
-        }
-
-        return lines;
-    }
-
     uint64_t parse_nbytes(const std::string &line) {
         std::smatch mres{};
         bool matches = std::regex_search(line, mres, pat_bytes_);
@@ -67,10 +50,8 @@ class StatsParser {
         return std::stoul(bytes_s);
     }
 
-    std::pair<uint64_t, uint64_t> parse(const std::string &output,
+    std::pair<uint64_t, uint64_t> parse(const std::vector<std::string> &lines,
                                         const std::string &iface_name) {
-        auto lines = splitlines(output);
-
         std::string cur_iface{};
 
         bool next_line_is_rx{false};
