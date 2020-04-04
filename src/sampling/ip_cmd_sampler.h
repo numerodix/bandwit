@@ -12,13 +12,8 @@ class IpCommandSampler : public Sampler {
     IpCommandSampler() = default;
     ~IpCommandSampler() override = default;
 
-    // disable copy/move constructors
-    IpCommandSampler(const IpCommandSampler &) = delete;
-    IpCommandSampler(IpCommandSampler &&) = delete;
-
-    // disable assignment
-    IpCommandSampler &operator=(const IpCommandSampler &) = delete;
-    IpCommandSampler &operator=(IpCommandSampler &&) = delete;
+    CLASS_DISABLE_COPIES(IpCommandSampler)
+    CLASS_DISABLE_MOVES(IpCommandSampler)
 
     Sample get_sample(const std::string &iface_name) const override;
 };

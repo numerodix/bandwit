@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "macros.h"
 #include "sample.h"
 
 namespace bmon {
@@ -19,13 +20,8 @@ class Sampler {
     // this is a base so the dtor should be virtual
     virtual ~Sampler() = default;
 
-    // disable copy/move constructors
-    Sampler(const Sampler &) = delete;
-    Sampler(Sampler &&) = delete;
-
-    // disable assignment
-    Sampler &operator=(const Sampler &) = delete;
-    Sampler &operator=(Sampler &&) = delete;
+    CLASS_DISABLE_COPIES(Sampler)
+    CLASS_DISABLE_MOVES(Sampler)
 
     virtual Sample get_sample(const std::string &iface_name) const = 0;
 };

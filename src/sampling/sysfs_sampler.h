@@ -12,13 +12,8 @@ class SysFsSampler : public Sampler {
     SysFsSampler() = default;
     ~SysFsSampler() override = default;
 
-    // disable copy/move constructors
-    SysFsSampler(const SysFsSampler &) = delete;
-    SysFsSampler(SysFsSampler &&) = delete;
-
-    // disable assignment
-    SysFsSampler &operator=(const SysFsSampler &) = delete;
-    SysFsSampler &operator=(SysFsSampler &&) = delete;
+    CLASS_DISABLE_COPIES(SysFsSampler)
+    CLASS_DISABLE_MOVES(SysFsSampler)
 
     Sample get_sample(const std::string &iface_name) const override;
 };
