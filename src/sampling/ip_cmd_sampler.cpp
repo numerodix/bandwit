@@ -25,7 +25,7 @@ class ProgramRunner {
         std::vector<std::string> lines{};
 
         while (fgets(buffer.data(), buffer.size(), fl) != nullptr) {
-            lines.push_back(buffer.data());
+            lines.emplace_back(buffer.data());
         }
 
         int status_code = pclose(fl);
@@ -60,9 +60,7 @@ class StatsParser {
         int64_t rx{-1};
         int64_t tx{-1};
 
-        for (const std::string_view &line_view : lines) {
-            std::string line(line_view);
-
+        for (const std::string &line : lines) {
             // Did we match RX: on the previous line?
             if (next_line_is_rx) {
                 rx = parse_nbytes(line);
@@ -99,8 +97,8 @@ class StatsParser {
 
             // We've found the right iface and we've parsed rx and tx!
             if ((cur_iface == iface_name) && (rx >= 0 && tx >= 0)) {
-                uint64_t urx = static_cast<uint64_t>(rx);
-                uint64_t utx = static_cast<uint64_t>(tx);
+                auto urx = static_cast<uint64_t>(rx);
+                auto utx = static_cast<uint64_t>(tx);
                 return std::make_pair(urx, utx);
             }
         }
