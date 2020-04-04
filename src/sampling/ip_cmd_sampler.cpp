@@ -10,6 +10,9 @@
 
 #include "ip_cmd_sampler.h"
 
+namespace bmon {
+namespace sampling {
+
 class ProgramRunner {
   public:
     std::string run(const std::string &args) const {
@@ -152,3 +155,6 @@ Sample IpCommandSampler::get_sample(const std::string &iface_name) const {
 
     return sample;
 }
+
+} // namespace sampling
+} // namespace bmon

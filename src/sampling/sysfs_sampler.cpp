@@ -6,6 +6,9 @@
 
 #include "sysfs_sampler.h"
 
+namespace bmon {
+namespace sampling {
+
 class SysFsParser {
 
   public:
@@ -63,3 +66,6 @@ Sample SysFsSampler::get_sample(const std::string &iface_name) const {
 
     return sample;
 }
+
+} // namespace sampling
+} // namespace bmon

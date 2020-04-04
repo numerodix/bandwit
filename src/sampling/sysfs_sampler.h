@@ -3,6 +3,9 @@
 
 #include "sampling/sampler.h"
 
+namespace bmon {
+namespace sampling {
+
 class SysFsSampler : public Sampler {
 
   public:
@@ -19,5 +22,8 @@ class SysFsSampler : public Sampler {
 
     Sample get_sample(const std::string &iface_name) const override;
 };
+
+} // namespace sampling
+} // namespace bmon
 
 #endif // SYSFS_SAMPLER_H

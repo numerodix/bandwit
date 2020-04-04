@@ -5,6 +5,9 @@
 
 #include "sample.h"
 
+namespace bmon {
+namespace sampling {
+
 class Sampler {
 
   public:
@@ -26,5 +29,8 @@ class Sampler {
 
     virtual Sample get_sample(const std::string &iface_name) const = 0;
 };
+
+} // namespace sampling
+} // namespace bmon
 
 #endif // SAMPLER_H

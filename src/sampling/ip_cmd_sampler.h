@@ -3,6 +3,9 @@
 
 #include "sampling/sampler.h"
 
+namespace bmon {
+namespace sampling {
+
 class IpCommandSampler : public Sampler {
 
   public:
@@ -19,5 +22,8 @@ class IpCommandSampler : public Sampler {
 
     Sample get_sample(const std::string &iface_name) const override;
 };
+
+} // namespace sampling
+} // namespace bmon
 
 #endif // IP_CMD_SAMPLER_H
