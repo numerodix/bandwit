@@ -1,7 +1,7 @@
 #ifndef SYSFS_SAMPLER_H
 #define SYSFS_SAMPLER_H
 
-#include "sampler.h"
+#include "sampling/sampler.h"
 
 class SysFsSampler : public Sampler {
 

@@ -1,7 +1,7 @@
 #ifndef IP_CMD_SAMPLER_H
 #define IP_CMD_SAMPLER_H
 
-#include "sampler.h"
+#include "sampling/sampler.h"
 
 class IpCommandSampler : public Sampler {
 
