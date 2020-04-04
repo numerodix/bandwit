@@ -7,9 +7,7 @@ project(bmon CXX)
 add_compile_options(-Wall -Wextra -Wpedantic -Wnon-virtual-dtor -Wold-style-cast)
 
 # run clang-tidy during compilation
-set(CMAKE_CXX_CLANG_TIDY clang-tidy;
-    -header-filter=.;
-    -checks=*,-cert-env33-c,-fuchsia-*,-llvm-header-guard,-misc-macro-parentheses;)
+include(cmake/static_analyzers.cmake)
 
 # set include dirs
 include_directories(include)

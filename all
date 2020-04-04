@@ -1,8 +1,0 @@
-#!/bin/sh
-
-set -eux
-
-mkdir -p build
-cd build
-CXX=clang++ cmake .. && make VERBOSE=1
-./bmon wlp4s0
