@@ -76,8 +76,8 @@ class StatsParser {
         bool next_line_is_rx{false};
         bool next_line_is_tx{false};
 
-        uint64_t rx{0};
-        uint64_t tx{0};
+        int64_t rx{-1};
+        int64_t tx{-1};
 
         for (const std::string_view &line_view : lines) {
             std::string line(line_view);
@@ -117,8 +117,10 @@ class StatsParser {
             }
 
             // We've found the right iface and we've parsed rx and tx!
-            if ((cur_iface == iface_name) && (rx > 0 && tx > 0)) {
-                return std::make_pair(rx, tx);
+            if ((cur_iface == iface_name) && (rx >= 0 && tx >= 0)) {
+                uint64_t urx = static_cast<uint64_t>(rx);
+                uint64_t utx = static_cast<uint64_t>(tx);
+                return std::make_pair(urx, utx);
             }
         }
 

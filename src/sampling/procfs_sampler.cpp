@@ -54,7 +54,7 @@ class ProcFsParser {
   private:
     std::string filepath_{"/proc/net/dev"};
     std::regex pat_line_{
-        R"(^([A-Za-z0-9]+):\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+))"};
+        R"(^\s*([A-Za-z0-9]+):\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+)\s+([0-9]+))"};
 };
 
 Sample ProcFsSampler::get_sample(const std::string &iface_name) const {

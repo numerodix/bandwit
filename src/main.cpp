@@ -39,6 +39,11 @@ void collect(const std::unique_ptr<sampling::Sampler> &sampler,
 }
 
 int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        std::cout << "Must pass <iface_name>\n";
+        exit(EXIT_FAILURE);
+    }
+
     std::string iface_name{argv[1]};
 
     std::unique_ptr<sampling::Sampler> ip_sampler{
