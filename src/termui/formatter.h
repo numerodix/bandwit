@@ -9,7 +9,8 @@ namespace termui {
 
 class Formatter {
   public:
-    std::string format_num_byte_rate(uint64_t num, std::string time_unit);
+    std::string format_num_byte_rate(uint64_t num,
+                                     const std::string &time_unit);
 };
 
 } // namespace termui
