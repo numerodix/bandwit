@@ -7,6 +7,7 @@
 #include "sampling/ip_cmd_sampler.h"
 #include "sampling/procfs_sampler.h"
 #include "sampling/sysfs_sampler.h"
+#include "termui/display.h"
 
 using namespace bmon;
 
@@ -38,7 +39,7 @@ void collect(const std::unique_ptr<sampling::Sampler> &sampler,
     }
 }
 
-int main(int argc, char *argv[]) {
+int main_z(int argc, char *argv[]) {
     if (argc < 2) {
         std::cout << "Must pass <iface_name>\n";
         exit(EXIT_FAILURE);
@@ -75,4 +76,9 @@ int main(int argc, char *argv[]) {
 
     std::cout << "\nrun_forever(" << iface_name << "):\n";
     collect(sys_sampler, iface_name);
+}
+
+int main() {
+    termui::Display disp{5};
+    disp.initialize();
 }
