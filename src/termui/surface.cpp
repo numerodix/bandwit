@@ -6,7 +6,7 @@
 namespace bmon {
 namespace termui {
 
-void Surface::draw() {
+void Surface::redraw() {
     Point end = get_lower_rhs();
 
     set_cursor_to(origin_);
@@ -15,8 +15,8 @@ void Surface::draw() {
 }
 
 void Surface::set_cursor_to(Point loc) {
-    int x = static_cast<int>(loc.x);
-    int y = static_cast<int>(loc.y);
+    auto x = static_cast<int>(loc.x);
+    auto y = static_cast<int>(loc.y);
     fprintf(stdout, "\033[%d;%dH", y, x);
     fflush(stdout);
 }

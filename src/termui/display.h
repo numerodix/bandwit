@@ -6,6 +6,7 @@
 
 #include <termios.h>
 
+#include "macros.h"
 #include "surface.h"
 #include "termui/point.h"
 
@@ -16,6 +17,9 @@ class Display {
   public:
     explicit Display(uint16_t num_lines) : num_lines_{num_lines} {}
     ~Display();
+
+    CLASS_DISABLE_COPIES(Display)
+    CLASS_DISABLE_MOVES(Display)
 
     void initialize();
 

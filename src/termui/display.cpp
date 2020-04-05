@@ -30,8 +30,8 @@ void Display::recreate_surface() {
         origin.y = max_y;
     }
 
-    surface_ = std::unique_ptr<Surface>(new Surface(origin, cols_, num_lines_));
-    surface_->draw();
+    surface_ = std::make_unique<Surface>(origin, cols_, num_lines_);
+    surface_->redraw();
 
     while (true) {
     }
