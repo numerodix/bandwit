@@ -8,6 +8,7 @@
 
 #include "macros.h"
 #include "surface.h"
+#include "termui/dimensions.h"
 #include "termui/point.h"
 
 namespace bmon {
@@ -22,6 +23,11 @@ class Display {
     CLASS_DISABLE_MOVES(Display)
 
     void initialize();
+    Dimensions get_dimensions();
+
+    void clear_screen();
+    void put_char(Point loc, char ch);
+    void redraw();
 
   private:
     // terminal mode routines

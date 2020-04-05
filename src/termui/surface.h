@@ -13,7 +13,11 @@ class Surface {
     explicit Surface(Point origin, uint16_t width, uint16_t height)
         : origin_{origin}, width_{width}, height_{height} {}
 
+    void clear_screen();
+    void put_char(Point loc, char ch);
     void redraw();
+
+    Point get_origin();
 
   private:
     void set_cursor_to(Point loc);

@@ -19,6 +19,24 @@ void Display::initialize() {
     recreate_surface();
 }
 
+Dimensions Display::get_dimensions() {
+    Dimensions dim{cols_, num_lines_};
+    return dim;
+}
+
+void Display::clear_screen() { surface_->clear_screen(); }
+
+void Display::put_char(Point loc, char ch) {
+    Point origin = surface_->get_origin();
+
+    loc.x += origin.x;
+    loc.y += origin.y;
+
+    surface_->put_char(loc, ch);
+}
+
+void Display::redraw() { surface_->redraw(); }
+
 void Display::recreate_surface() {
     detect_terminal_size();
 
@@ -31,10 +49,8 @@ void Display::recreate_surface() {
     }
 
     surface_ = std::make_unique<Surface>(origin, cols_, num_lines_);
+    surface_->clear_screen();
     surface_->redraw();
-
-    while (true) {
-    }
 }
 
 void Display::enter_cbreak_mode() {

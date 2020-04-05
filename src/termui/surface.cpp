@@ -6,13 +6,24 @@
 namespace bmon {
 namespace termui {
 
+void Surface::clear_screen() {
+    set_cursor_to(origin_);
+    clear_screen(' ', ' ');
+}
+
+void Surface::put_char(Point loc, char ch) {
+    auto x = static_cast<int>(loc.x);
+    auto y = static_cast<int>(loc.y);
+    fprintf(stdout, "\033[%d;%dH", y, x);
+    fputc(ch, stdout);
+}
+
 void Surface::redraw() {
     Point end = get_lower_rhs();
-
-    set_cursor_to(origin_);
-    clear_screen('-', '#');
     set_cursor_to(end);
 }
+
+Point Surface::get_origin() { return origin_; }
 
 void Surface::set_cursor_to(Point loc) {
     auto x = static_cast<int>(loc.x);
