@@ -97,8 +97,8 @@ class StatsParser {
 
             // We've found the right iface and we've parsed rx and tx!
             if ((cur_iface == iface_name) && (rx >= 0 && tx >= 0)) {
-                auto urx = static_cast<uint64_t>(rx);
-                auto utx = static_cast<uint64_t>(tx);
+                auto urx = U64(rx);
+                auto utx = U64(tx);
                 return std::make_pair(urx, utx);
             }
         }

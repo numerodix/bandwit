@@ -15,17 +15,14 @@ void BarChart::draw_bars_from_right(std::vector<uint64_t> values) {
     auto [min, max] = std::minmax_element(values.begin(), values.end());
     uint64_t min_value = *min;
     uint64_t max_value = *max;
-    uint64_t sum =
-        std::accumulate(values.begin(), values.end(), static_cast<uint64_t>(0));
-    auto avg_value = static_cast<uint64_t>(static_cast<double>(sum) /
-                                           static_cast<double>(values.size()));
+    uint64_t sum = std::accumulate(values.begin(), values.end(), U64(0));
+    auto avg_value = U64(F64(sum) / F64(values.size()));
     uint64_t last_value = values.at(values.size() - 1);
 
     std::vector<uint16_t> scaled{};
     for (auto it = values.rbegin(); it != values.rend(); ++it) {
-        double perc = static_cast<double>(*it) / static_cast<double>(max_value);
-        auto magnitude =
-            static_cast<uint16_t>(perc * static_cast<double>(dim.height));
+        double perc = F64(*it) / F64(max_value);
+        auto magnitude = U64(perc * F64(dim.height));
         scaled.push_back(magnitude);
     }
 
@@ -65,7 +62,7 @@ void BarChart::draw_legend(uint64_t avg, uint64_t min, uint64_t max,
         std::string legend = ss.str();
 
         for (size_t i = 0; i < legend.size(); ++i) {
-            uint16_t x = static_cast<uint16_t>(i) + static_cast<uint16_t>(1);
+            uint16_t x = U16(i) + U16(1);
             Point pt{x, row};
             display_->put_char(pt, legend[i]);
         }

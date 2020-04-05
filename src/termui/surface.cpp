@@ -1,6 +1,7 @@
 #include <sstream>
 #include <stdexcept>
 
+#include "macros.h"
 #include "surface.h"
 
 namespace bmon {
@@ -12,8 +13,8 @@ void Surface::clear_screen() {
 }
 
 void Surface::put_char(Point loc, char ch) {
-    auto x = static_cast<int>(loc.x);
-    auto y = static_cast<int>(loc.y);
+    auto x = INT(loc.x);
+    auto y = INT(loc.y);
     fprintf(stdout, "\033[%d;%dH", y, x);
     fputc(ch, stdout);
 }
@@ -26,8 +27,8 @@ void Surface::redraw() {
 Point Surface::get_origin() { return origin_; }
 
 void Surface::set_cursor_to(Point loc) {
-    auto x = static_cast<int>(loc.x);
-    auto y = static_cast<int>(loc.y);
+    auto x = INT(loc.x);
+    auto y = INT(loc.y);
     fprintf(stdout, "\033[%d;%dH", y, x);
     fflush(stdout);
 }

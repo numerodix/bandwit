@@ -111,8 +111,8 @@ Point Display::detect_terminal_cursor() {
 
     Point pt{
         // should be okay unless the terminal returns crazy out of range values?
-        static_cast<uint16_t>(x),
-        static_cast<uint16_t>(y),
+        U16(x),
+        U16(y),
     };
     return pt;
 }

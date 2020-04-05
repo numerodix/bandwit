@@ -12,3 +12,10 @@
 #define CLASS_DISABLE_MOVES(name)                                              \
     CLASS_DISABLE_MOVE_CONSTRUCTOR(name)                                       \
     CLASS_DISABLE_MOVE_ASSIGNMENT(name)
+
+
+#define F64(num) static_cast<double>(num)
+
+#define INT(num) static_cast<int>(num)
+#define U16(num) static_cast<uint16_t>(num)
+#define U64(num) static_cast<uint64_t>(num)
