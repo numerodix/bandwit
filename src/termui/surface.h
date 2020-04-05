@@ -16,8 +16,10 @@ class Surface {
     void draw();
 
   private:
-    void reset_cursor_to_origin();
-    void clear_screen(const char fill_char);
+    void set_cursor_to(Point loc);
+    void clear_screen(const char fill_char, const char border_char);
+
+    Point get_lower_rhs();
 
     Point origin_{};
 

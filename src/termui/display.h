@@ -28,6 +28,7 @@ class Display {
     void recreate_surface();
     void detect_terminal_size();
     Point detect_terminal_cursor();
+    uint16_t allocate_lines_for_surface(Point origin);
 
     uint16_t num_lines_{0};
     uint16_t cols_{0};

@@ -21,18 +21,20 @@ void Display::initialize() {
 
 void Display::recreate_surface() {
     detect_terminal_size();
+
     Point origin = detect_terminal_cursor();
 
-    uint16_t max_y = rows_ - num_lines_;
+    uint16_t max_y = allocate_lines_for_surface(origin);
+
     if (origin.y > max_y) {
         origin.y = max_y;
     }
 
-    auto width = cols_;
-    auto height = num_lines_;
-
-    surface_ = std::unique_ptr<Surface>(new Surface(origin, width, height));
+    surface_ = std::unique_ptr<Surface>(new Surface(origin, cols_, num_lines_));
     surface_->draw();
+
+    while (true) {
+    }
 }
 
 void Display::enter_cbreak_mode() {
@@ -48,6 +50,7 @@ void Display::enter_cbreak_mode() {
     // save original termios so we can restore it later
     stdin_orig_termios_ = tm;
 
+    // tm.c_lflag &= ~(ECHO | ICANON | ISIG | IEXTEN);
     tm.c_lflag &= ~(ECHO | ICANON);
     // tm.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
     // tm.c_cflag &= ~(CSIZE | PARENB);
@@ -96,6 +99,22 @@ Point Display::detect_terminal_cursor() {
         static_cast<uint16_t>(y),
     };
     return pt;
+}
+
+uint16_t Display::allocate_lines_for_surface(Point origin) {
+    // compute the highest max_y that allows us to have a screen of num_lines_
+    uint16_t max_y = rows_ - num_lines_;
+
+    // if the cursor is currently below that position we need to force scroll
+    // until the cursor moves up and reaches it
+    int16_t excess = origin.y - max_y;
+    if (excess > 0) {
+        for (auto i = 0; i < excess; ++i) {
+            fprintf(stdout, "\n");
+        }
+    }
+
+    return max_y;
 }
 
 } // namespace termui
