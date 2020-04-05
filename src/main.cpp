@@ -41,7 +41,8 @@ void collect(const std::unique_ptr<sampling::Sampler> &sampler,
 }
 
 void visualize(const std::unique_ptr<sampling::Sampler> &sampler,
-               const std::string &iface_name, termui::BarChart *bar_chart) {
+               const std::string &iface_name, termui::Display &display,
+               termui::BarChart &bar_chart) {
     std::vector<uint64_t> rxs{};
 
     sampling::Sample prev_sample = sampler->get_sample(iface_name);
@@ -56,9 +57,14 @@ void visualize(const std::unique_ptr<sampling::Sampler> &sampler,
         };
         rxs.push_back(rec.rx);
 
+        // make sure the vector isn't longer than the width of the display
+        if (rxs.size() > display.get_dimensions().width) {
+            rxs.erase(rxs.begin());
+        }
+
         prev_sample = sample;
 
-        bar_chart->draw_bars_from_right(rxs);
+        bar_chart.draw_bars_from_right(rxs);
     }
 }
 
@@ -127,5 +133,5 @@ int main(int argc, char *argv[]) {
 
     termui::BarChart chart{&disp};
 
-    visualize(sys_sampler, iface_name, &chart);
+    visualize(sys_sampler, iface_name, disp, chart);
 }
