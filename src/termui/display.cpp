@@ -29,7 +29,7 @@ void Display::clear_screen() { surface_->clear_screen(); }
 void Display::put_char(Point loc, char ch) {
     Point origin = surface_->get_origin();
 
-    loc.x += origin.x;
+    loc.x += origin.x - 1;
     loc.y += origin.y;
 
     surface_->put_char(loc, ch);
