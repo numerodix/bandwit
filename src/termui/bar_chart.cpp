@@ -28,7 +28,7 @@ void BarChart::draw_bars_from_right(std::vector<uint64_t> values) {
 
     display_->clear_screen();
 
-    uint16_t col_cur = dim.width - 1;
+    uint16_t col_cur = dim.width;
     for (auto value : scaled) {
 
         for (uint16_t j = 0; j < value; ++j) {
