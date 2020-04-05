@@ -18,7 +18,7 @@ void BarChart::draw_bars_from_right(std::vector<uint64_t> values) {
     std::vector<uint16_t> scaled{};
     for (auto it = values.rbegin(); it != values.rend(); ++it) {
         double perc = static_cast<double>(*it) / static_cast<double>(max);
-        uint16_t magnitude =
+        auto magnitude =
             static_cast<uint16_t>(perc * static_cast<double>(dim.height));
         scaled.push_back(magnitude);
     }

@@ -11,7 +11,7 @@ namespace termui {
 
 class BarChart {
   public:
-    BarChart(Display *display) : display_{display} {}
+    explicit BarChart(Display *display) : display_{display} {}
     void draw_bars_from_right(std::vector<uint64_t> values);
 
   private:
