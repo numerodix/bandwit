@@ -15,7 +15,7 @@ class BarChart {
     void draw_bars_from_right(std::vector<uint64_t> values);
 
   private:
-    void draw_legend(uint64_t avg, uint64_t min, uint64_t max, uint64_t last);
+    void draw_legend(uint64_t avg, uint64_t max, uint64_t last);
 
     Display *display_{nullptr};
 };

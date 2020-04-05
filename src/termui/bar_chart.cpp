@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include "bar_chart.h"
+#include "formatter.h"
 
 namespace bmon {
 namespace termui {
@@ -12,8 +13,7 @@ namespace termui {
 void BarChart::draw_bars_from_right(std::vector<uint64_t> values) {
     Dimensions dim = display_->get_dimensions();
 
-    auto [min, max] = std::minmax_element(values.begin(), values.end());
-    uint64_t min_value = *min;
+    auto max = std::max_element(values.begin(), values.end());
     uint64_t max_value = *max;
     uint64_t sum = std::accumulate(values.begin(), values.end(), U64(0));
     auto avg_value = U64(F64(sum) / F64(values.size()));
@@ -40,16 +40,16 @@ void BarChart::draw_bars_from_right(std::vector<uint64_t> values) {
         --col_cur;
     }
 
-    draw_legend(avg_value, min_value, max_value, last_value);
+    draw_legend(avg_value, max_value, last_value);
 
     display_->redraw();
 }
 
-void BarChart::draw_legend(uint64_t avg, uint64_t min, uint64_t max,
-                           uint64_t last) {
+void BarChart::draw_legend(uint64_t avg, uint64_t max, uint64_t last) {
+    Formatter fmt{};
+
     std::vector<std::pair<std::string, uint64_t>> pairs{
         {"max ", max},
-        {"min ", min},
         {"avg ", avg},
         {"last", last},
     };
@@ -58,7 +58,8 @@ void BarChart::draw_legend(uint64_t avg, uint64_t min, uint64_t max,
 
     for (auto pair : pairs) {
         std::stringstream ss{};
-        ss << "[" << pair.first << ": " << pair.second << " B/s]";
+        std::string rate = fmt.format_num_byte_rate(pair.second, "s");
+        ss << "[" << pair.first << ": " << rate << "]";
         std::string legend = ss.str();
 
         for (size_t i = 0; i < legend.size(); ++i) {
