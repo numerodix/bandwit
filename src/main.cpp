@@ -145,6 +145,8 @@ int mainc(int argc, char *argv[]) {
 #include <termios.h>
 #include <algorithm>
 
+#include "termui/dummy.h"
+
 std::pair<uint16_t, uint16_t> get_term_size() {
     struct winsize size {};
 
@@ -262,7 +264,7 @@ void on_resize(int sig) {
     fill_surface(cur_surf.num_lines);
 }
 
-int main() {
+int mainz() {
     set_term_mode();
 
     auto [cols, rows] = get_term_size();
@@ -275,4 +277,23 @@ int main() {
     signal(SIGWINCH, on_resize);
 
     while (true) {}
+}
+
+
+int main() {
+    SignalController con{SIGINT};
+
+    con.disable();
+    std::cout << "SIGINT is off, try to Ctrl+C now\n";
+
+    // if we Ctrl+C here the signal will be delivered just after enable()
+    // is called and the last sleep won't ever happen
+
+    sleep(2);
+
+    std::cout << "re-enabling SIGINT\n";
+    con.enable();
+    std::cout << "SIGINT is on, try again now\n";
+
+    sleep(2);
 }
