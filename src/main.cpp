@@ -156,9 +156,9 @@ std::pair<uint16_t, uint16_t> get_term_size() {
 }
 
 std::pair<int, int> get_cursor_pos() {
-    // This is bit error prone: store the cursor position in the program to avoid
-    // reading it more than just at the very beginning.
-    // Maybe on startup just fall back on taking over the whole screen.
+    // This is bit error prone: store the cursor position in the program to
+    // avoid reading it more than just at the very beginning. Maybe on startup
+    // just fall back on taking over the whole screen.
     fprintf(stdout, "\033[6n");
     int cur_x, cur_y;
     if (scanf("\033[%d;%dR", &cur_y, &cur_x) < 2) {

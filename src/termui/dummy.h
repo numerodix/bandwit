@@ -138,12 +138,12 @@ class TerminalModeSetter {
 
 class TerminalModeSet {
   public:
-    TerminalModeSet& local_on(tcflag_t flag) {
+    TerminalModeSet &local_on(tcflag_t flag) {
         flags_local_on_ |= flag;
         return *this;
     }
 
-    TerminalModeSet& local_off(tcflag_t flag) {
+    TerminalModeSet &local_off(tcflag_t flag) {
         flags_local_off_ = flags_local_off_ | flag;
         return *this;
     }
