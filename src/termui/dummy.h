@@ -3,12 +3,15 @@
 
 class SignalController {
   public:
-    explicit SignalController(int signo) : signo_{signo} {}
+    explicit SignalController(std::initializer_list<int> lst) : signums_{lst} {}
 
     void disable() {
         sigset_t mask;
         sigemptyset(&mask);
-        sigaddset(&mask, signo_);
+
+        for (auto signo: signums_) {
+            sigaddset(&mask, signo);
+        }
 
         if (sigprocmask(SIG_BLOCK, &mask, nullptr) < 0) {
             throw std::runtime_error(
@@ -19,7 +22,10 @@ class SignalController {
     void reenable() {
         sigset_t mask;
         sigemptyset(&mask);
-        sigaddset(&mask, signo_);
+
+        for (auto signo: signums_) {
+            sigaddset(&mask, signo);
+        }
 
         if (sigprocmask(SIG_UNBLOCK, &mask, nullptr) < 0) {
             throw std::runtime_error(
@@ -28,7 +34,7 @@ class SignalController {
     }
 
   private:
-    int signo_{};
+    std::vector<int> signums_{};
 };
 
 #include <vector>
