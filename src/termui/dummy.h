@@ -77,12 +77,14 @@ class TerminalModeSetter {
         SignalGuard guard{signal_controllers_};
 
         struct termios tm {};
-        orig_termios_ = tm;
 
         if (tcgetattr(STDIN_FILENO, &tm) < 0) {
             throw std::runtime_error(
                 "TerminalModeSetter.set failed in tcgetattr()");
         }
+
+        // save the unmodified state so we can restore it
+        orig_termios_ = tm;
 
         tm.c_lflag &= ~local_off_;
 
@@ -91,16 +93,17 @@ class TerminalModeSetter {
                 "TerminalModeSetter.set failed in tcsetattr()");
         }
 
+        // Now check that the set actually set all of our flags
+
         struct termios tm_after{};
         if (tcgetattr(STDIN_FILENO, &tm_after) < 0) {
             throw std::runtime_error(
                 "TerminalModeSetter.set failed in #2 tcgetattr()");
         }
 
-        // this is broken!
-        // if (tm_after.c_lflag | local_off_) {
-        //     throw std::runtime_error("TerminalModeSetter.set failed to actually set the flags!");
-        // }
+        if ((tm_after.c_lflag & local_off_) > 0) {
+            throw std::runtime_error("TerminalModeSetter.set failed to actually set the flags!");
+        }
     }
 
     void unset() {
@@ -109,6 +112,18 @@ class TerminalModeSetter {
         if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios_) < 0) {
             throw std::runtime_error(
                 "TerminalModeSetter.unset failed in tcsetattr()");
+        }
+
+        // Now check that the set actually unset all of our flags
+
+        struct termios tm_after{};
+        if (tcgetattr(STDIN_FILENO, &tm_after) < 0) {
+            throw std::runtime_error(
+                "TerminalModeSetter.unset failed in tcgetattr()");
+        }
+
+        if ((tm_after.c_lflag & local_off_) != local_off_) {
+            throw std::runtime_error("TerminalModeSetter.unset failed to actually unset the flags!");
         }
     }
 
