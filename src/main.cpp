@@ -180,14 +180,24 @@ std::pair<int, int> get_cursor_pos() {
     return std::make_pair(cur_x, cur_y);
 }
 
-void fill_surface(uint16_t rows, uint16_t cols, int num_lines, int cur_y) {
+struct surface {
+    uint16_t cols;
+    uint16_t rows;
+    uint16_t xpos;
+    uint16_t ypos;
+    int num_lines;
+};
+
+static struct surface cur_surf{};
+
+void fill_surface(int num_lines) {
+    auto [cols, rows] = get_term_size();
+    auto [cur_x, cur_y] = get_cursor_pos();
+
     for (int y = 0; y < num_lines; ++y) {
         for (int x = 0; x < cols - 0; ++x) {
             fprintf(stdout, "x");
         }
-        // if (y != num_lines - 1) {
-            // fprintf(stdout, "\n");
-        // }
     }
 
     fprintf(stdout, "\033[%d;%dH", 1, 1);
@@ -196,9 +206,15 @@ void fill_surface(uint16_t rows, uint16_t cols, int num_lines, int cur_y) {
     fprintf(stdout, "\033[%d;%dH", rows, cols);
     fprintf(stdout, "T");
 
-    fprintf(stdout, "\033[%d;%dH", num_lines + cur_y, cols);
+    int ypos = num_lines + cur_y - 1;
+    fprintf(stdout, "\033[%d;%dH", ypos, cols);
     fflush(stdout);
 
+    cur_surf.cols = cols;
+    cur_surf.rows = rows;
+    cur_surf.xpos = cols;
+    cur_surf.ypos = ypos;
+    cur_surf.num_lines = num_lines;
 }
 
 int main() {
@@ -210,8 +226,7 @@ int main() {
     std::cout << "[dim] cols: " << cols << ", rows: " << rows << "\n";
     std::cout << "[cur] x: " << cur_x << ", y: " << cur_y << "\n";
 
-    auto num_lines = 5;
-    fill_surface(rows, cols, num_lines, cur_y + 1);
+    fill_surface(5);
 
     while (true) {}
 }
