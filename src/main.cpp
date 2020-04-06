@@ -170,7 +170,17 @@ int main() {
     }
 
 
-    std::cout << "cols: " << cols << ", rows: " << rows << "\n";
+    std::cout << "[dim] cols: " << cols << ", rows: " << rows << "\n";
+
+
+    fprintf(stdout, "\033[6n");
+    int cur_x, cur_y;
+    if (scanf("\033[%d;%dR", &cur_y, &cur_x) < 2) {
+        throw std::runtime_error("failed to read cursor position");
+    }
+    std::cout << "[cur] x: " << cur_x << ", y: " << cur_y << "\n";
+
+
 
     auto num_lines = 5;
 
@@ -178,9 +188,9 @@ int main() {
         for (int x = 0; x < cols - 0; ++x) {
             fprintf(stdout, "x");
         }
-        if (y != num_lines - 1) {
-            fprintf(stdout, "\n");
-        }
+        // if (y != num_lines - 1) {
+            // fprintf(stdout, "\n");
+        // }
     }
 
     fprintf(stdout, "\033[%d;%dH", 1, 1);
@@ -189,7 +199,7 @@ int main() {
     fprintf(stdout, "\033[%d;%dH", rows, cols);
     fprintf(stdout, "T");
 
-    fprintf(stdout, "\033[%d;%dH", num_lines + 1, cols);
+    fprintf(stdout, "\033[%d;%dH", num_lines + cur_y, cols);
     fflush(stdout);
 
     while (true) {}
