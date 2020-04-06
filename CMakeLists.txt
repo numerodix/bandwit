@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.10)
 project(bmon CXX)
 
 # compiler options
-add_compile_options(-g -Wall -Wextra -Wpedantic -Wnon-virtual-dtor -Wold-style-cast)
+add_compile_options(-std=c++2a -g -Wall -Wextra -Wpedantic -Wnon-virtual-dtor -Wold-style-cast)
 
 # run clang-tidy during compilation
 include(cmake/static_analyzers.cmake)
@@ -20,4 +20,3 @@ file(GLOB SOURCES_TERMUI "src/termui/*.cpp")
 
 # targets
 add_executable(bmon ${SOURCES_SAMPLING} ${SOURCES_TERMUI} ${SOURCES_ROOT})
-set_target_properties(bmon PROPERTIES CXX_STANDARD 17)
