@@ -129,7 +129,7 @@ class TerminalModeSet {
     }
 
     TerminalModeSet &local_off(tcflag_t flag) {
-        flags_local_off_ = flags_local_off_ | flag;
+        flags_local_off_ |= flag;
         return *this;
     }
 
