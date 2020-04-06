@@ -34,7 +34,7 @@ void BarChart::draw_bars_from_right(std::vector<uint64_t> values) {
         for (uint16_t j = 0; j < value; ++j) {
             uint16_t y = dim.height - 1 - j;
             Point pt{col_cur, y};
-            display_->put_char(pt, '*');
+            display_->put_char(pt, '|');
         }
 
         --col_cur;
