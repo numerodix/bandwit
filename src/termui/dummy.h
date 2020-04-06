@@ -84,12 +84,23 @@ class TerminalModeSetter {
                 "TerminalModeSetter.set failed in tcgetattr()");
         }
 
-        tm.c_lflag &= ~(local_off_);
+        tm.c_lflag &= ~local_off_;
 
         if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &tm) < 0) {
             throw std::runtime_error(
                 "TerminalModeSetter.set failed in tcsetattr()");
         }
+
+        struct termios tm_after{};
+        if (tcgetattr(STDIN_FILENO, &tm_after) < 0) {
+            throw std::runtime_error(
+                "TerminalModeSetter.set failed in #2 tcgetattr()");
+        }
+
+        // this is broken!
+        // if (tm_after.c_lflag | local_off_) {
+        //     throw std::runtime_error("TerminalModeSetter.set failed to actually set the flags!");
+        // }
     }
 
     void unset() {
