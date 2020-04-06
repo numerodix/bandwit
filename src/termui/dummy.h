@@ -95,14 +95,15 @@ class TerminalModeSetter {
 
         // Now check that the set actually set all of our flags
 
-        struct termios tm_after{};
+        struct termios tm_after {};
         if (tcgetattr(STDIN_FILENO, &tm_after) < 0) {
             throw std::runtime_error(
                 "TerminalModeSetter.set failed in #2 tcgetattr()");
         }
 
         if ((tm_after.c_lflag & local_off_) > 0) {
-            throw std::runtime_error("TerminalModeSetter.set failed to actually set the flags!");
+            throw std::runtime_error(
+                "TerminalModeSetter.set failed to actually set the flags!");
         }
     }
 
@@ -116,14 +117,15 @@ class TerminalModeSetter {
 
         // Now check that the set actually unset all of our flags
 
-        struct termios tm_after{};
+        struct termios tm_after {};
         if (tcgetattr(STDIN_FILENO, &tm_after) < 0) {
             throw std::runtime_error(
                 "TerminalModeSetter.unset failed in tcgetattr()");
         }
 
         if ((tm_after.c_lflag & local_off_) != local_off_) {
-            throw std::runtime_error("TerminalModeSetter.unset failed to actually unset the flags!");
+            throw std::runtime_error(
+                "TerminalModeSetter.unset failed to actually unset the flags!");
         }
     }
 
