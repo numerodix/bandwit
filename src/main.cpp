@@ -264,8 +264,12 @@ void on_resize(int sig) {
     fill_surface(cur_surf.num_lines);
 }
 
-int mainz() {
-    set_term_mode();
+int main() {
+    SignalController con{SIGINT};
+    SignalControllerSet cs{con};
+
+    TerminalModeSetter ms{ECHO | ICANON, cs};
+    ms.set();
 
     auto [cols, rows] = get_term_size();
     auto [cur_x, cur_y] = get_cursor_pos();
@@ -280,7 +284,7 @@ int mainz() {
 }
 
 
-int main() {
+int main44() {
     SignalController con{SIGINT};
 
     con.disable();
