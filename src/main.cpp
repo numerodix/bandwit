@@ -143,6 +143,7 @@ int mainc(int argc, char *argv[]) {
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <termios.h>
+#include <algorithm>
 
 std::pair<uint16_t, uint16_t> get_term_size() {
     struct winsize size {};
@@ -207,7 +208,7 @@ void fill_surface(int num_lines) {
     fprintf(stdout, "\033[%d;%dH", rows, cols);
     fprintf(stdout, "T");
 
-    int ypos = num_lines + cur_y - 1;
+    int ypos = std::min(U16(num_lines + cur_y - 1), rows);
     fprintf(stdout, "\033[%d;%dH", ypos, cols);
     fflush(stdout);
 
