@@ -139,6 +139,7 @@ int mainc(int argc, char *argv[]) {
 
 
 
+#include <signal.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <termios.h>
@@ -196,7 +197,7 @@ void fill_surface(int num_lines) {
 
     for (int y = 0; y < num_lines; ++y) {
         for (int x = 0; x < cols - 0; ++x) {
-            fprintf(stdout, "x");
+            fprintf(stdout, "%d", y);
         }
     }
 
@@ -217,6 +218,15 @@ void fill_surface(int num_lines) {
     cur_surf.num_lines = num_lines;
 }
 
+void on_resize(int sig) {
+    auto ulhs_ypos = cur_surf.ypos - cur_surf.num_lines + 1;
+
+    fprintf(stdout, "\033[%d;%dH", ulhs_ypos, 1);
+    fflush(stdout);
+
+    fill_surface(cur_surf.num_lines);
+}
+
 int main() {
     set_term_mode();
 
@@ -226,7 +236,10 @@ int main() {
     std::cout << "[dim] cols: " << cols << ", rows: " << rows << "\n";
     std::cout << "[cur] x: " << cur_x << ", y: " << cur_y << "\n";
 
-    fill_surface(5);
+    fill_surface(10);
+
+    signal(SIGWINCH, on_resize);
+    on_resize(0);
 
     while (true) {}
 }
