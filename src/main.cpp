@@ -222,12 +222,15 @@ void on_resize(int sig) {
     auto [cols, rows] = get_term_size();
 
     // Case 1: After resize the terminal is too small to display the surface
-    //      hard error
-    // Case 2: After resize the lower right hand corner is off the screen
-    //      we cannot redraw without clobbering text that used to be above
+    //      Hard error.
+    // Case 2: After resize the lower right hand corner is below the bottom edge
+    // of the terminal.
+    //      We cannot redraw without clobbering text that used to be above
     //      the surface, so we might as well clear the whole screen and
-    //      move the surface to the top
-    // Case default: Just move the cursor to the upper left hand side
+    //      move the surface to the top. Then move the cursor to the top left
+    //      hand side of the new surface location.
+    // Case default: Just move the cursor to the upper left hand side of the
+    // surface.
 
     auto ulhs_ypos_new = 0;
 
