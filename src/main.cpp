@@ -155,23 +155,6 @@ std::pair<uint16_t, uint16_t> get_term_size() {
     return std::make_pair(size.ws_col, size.ws_row);
 }
 
-void set_term_mode() {
-    struct termios tm {};
-    if (tcgetattr(STDIN_FILENO, &tm) < 0) {
-        throw std::runtime_error("tcgetattr() failed");
-    }
-
-    // tm.c_lflag &= ~(ECHO | ICANON | ISIG | IEXTEN);
-    tm.c_lflag &= ~(ECHO | ICANON);
-    // tm.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
-    // tm.c_cflag &= ~(CSIZE | PARENB);
-    // tm.c_oflag &= ~(OPOST);
-
-    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &tm) < 0) {
-        throw std::runtime_error("tcsetattr() failed");
-    }
-}
-
 std::pair<int, int> get_cursor_pos() {
     // This is bit error prone: store the cursor position in the program to avoid
     // reading it more than just at the very beginning.
