@@ -143,17 +143,18 @@ int mainc(int argc, char *argv[]) {
 #include <sys/ioctl.h>
 #include <termios.h>
 
-int main() {
+std::pair<uint16_t, uint16_t> get_term_size() {
     struct winsize size {};
 
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &size) < 0) {
         throw std::runtime_error(
             "ioctl() failed when trying to read terminal size");
     }
-    auto cols = size.ws_col;
-    auto rows = size.ws_row;
 
+    return std::make_pair(size.ws_col, size.ws_row);
+}
 
+void set_term_mode() {
     struct termios tm {};
     if (tcgetattr(STDIN_FILENO, &tm) < 0) {
         throw std::runtime_error("tcgetattr() failed");
@@ -168,22 +169,18 @@ int main() {
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &tm) < 0) {
         throw std::runtime_error("tcsetattr() failed");
     }
+}
 
-
-    std::cout << "[dim] cols: " << cols << ", rows: " << rows << "\n";
-
-
+std::pair<int, int> get_cursor_pos() {
     fprintf(stdout, "\033[6n");
     int cur_x, cur_y;
     if (scanf("\033[%d;%dR", &cur_y, &cur_x) < 2) {
         throw std::runtime_error("failed to read cursor position");
     }
-    std::cout << "[cur] x: " << cur_x << ", y: " << cur_y << "\n";
+    return std::make_pair(cur_x, cur_y);
+}
 
-
-
-    auto num_lines = 5;
-
+void fill_surface(uint16_t rows, uint16_t cols, int num_lines, int cur_y) {
     for (int y = 0; y < num_lines; ++y) {
         for (int x = 0; x < cols - 0; ++x) {
             fprintf(stdout, "x");
@@ -201,6 +198,21 @@ int main() {
 
     fprintf(stdout, "\033[%d;%dH", num_lines + cur_y, cols);
     fflush(stdout);
+
+}
+
+int main() {
+    auto [cols, rows] = get_term_size();
+
+    set_term_mode();
+
+    std::cout << "[dim] cols: " << cols << ", rows: " << rows << "\n";
+
+    auto [cur_x, cur_y] = get_cursor_pos();
+    std::cout << "[cur] x: " << cur_x << ", y: " << cur_y << "\n";
+
+    auto num_lines = 5;
+    fill_surface(rows, cols, num_lines, cur_y);
 
     while (true) {}
 }
