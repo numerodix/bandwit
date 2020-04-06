@@ -268,8 +268,8 @@ int main() {
     SignalController con{SIGINT};
     SignalControllerSet cs{con};
 
-    TerminalModeSetter ms{ECHO | ICANON, cs};
-    ms.set();
+    TerminalModeSetter ms{ECHO | ICANON, &cs};
+    TerminalModeGuard mg{&ms};
 
     auto [cols, rows] = get_term_size();
     auto [cur_x, cur_y] = get_cursor_pos();
@@ -296,7 +296,7 @@ int main44() {
     sleep(2);
 
     std::cout << "re-enabling SIGINT\n";
-    con.enable();
+    con.reenable();
     std::cout << "SIGINT is on, try again now\n";
 
     sleep(2);

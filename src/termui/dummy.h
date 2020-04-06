@@ -16,13 +16,13 @@ class SignalController {
         }
     }
 
-    void enable() {
+    void reenable() {
         sigset_t mask;
         sigemptyset(&mask);
         sigaddset(&mask, signo_);
 
         if (sigprocmask(SIG_UNBLOCK, &mask, nullptr) < 0) {
-            throw std::runtime_error("SignalController.enable failed in sigprocmask()");
+            throw std::runtime_error("SignalController.reenable failed in sigprocmask()");
         }
     }
 
@@ -37,15 +37,15 @@ class SignalControllerSet {
     explicit SignalControllerSet(std::initializer_list<SignalController> lst)
      : controllers_{lst} {}
 
-    void enable() const {
+    void disable() {
         for (auto controller: controllers_) {
-            controller.enable();
+            controller.disable();
         }
     }
 
-    void disable() const {
+    void reenable() {
         for (auto controller: controllers_) {
-            controller.disable();
+            controller.reenable();
         }
     }
 
@@ -53,33 +53,68 @@ class SignalControllerSet {
     std::vector<SignalController> controllers_{};
 };
 
+class SignalGuard {
+  public:
+    SignalGuard(SignalControllerSet* set) : set_{set} {
+        set_->disable();
+    }
+    ~SignalGuard() {
+        set_->reenable();
+    }
+
+  private:
+    SignalControllerSet* set_{nullptr};
+};
+
 
 #include <termios.h>
 
 class TerminalModeSetter {
   public:
-    TerminalModeSetter(tcflag_t local_off, const SignalControllerSet& signal_controllers)
+    TerminalModeSetter(tcflag_t local_off, SignalControllerSet* signal_controllers)
      : local_off_{local_off}, signal_controllers_{signal_controllers} {}
 
     void set() {
-        signal_controllers_.disable();
+        SignalGuard guard{signal_controllers_};
 
         struct termios tm{};
+        orig_termios_ = tm;
 
         if (tcgetattr(STDIN_FILENO, &tm) < 0) {
-            throw std::runtime_error("TerminalModeSetter.enable failed in tcgetattr()");
+            throw std::runtime_error("TerminalModeSetter.set failed in tcgetattr()");
         }
 
         tm.c_lflag &= ~(local_off_);
 
         if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &tm) < 0) {
-            throw std::runtime_error("TerminalModeSetter.enable failed in tcsetattr()");
+            throw std::runtime_error("TerminalModeSetter.set failed in tcsetattr()");
         }
+    }
 
-        signal_controllers_.enable();
+    void unset() {
+        SignalGuard guard{signal_controllers_};
+
+        if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios_) < 0) {
+            throw std::runtime_error("TerminalModeSetter.unset failed in tcsetattr()");
+        }
     }
 
   private:
     tcflag_t local_off_{};
-    const SignalControllerSet& signal_controllers_{};
+    struct termios orig_termios_{};
+
+    SignalControllerSet* signal_controllers_{nullptr};
+};
+
+class TerminalModeGuard {
+  public:
+    TerminalModeGuard(TerminalModeSetter* setter) : setter_{setter} {
+        setter->set();
+    }
+    ~TerminalModeGuard() {
+        setter_->unset();
+    }
+
+  private:
+    TerminalModeSetter* setter_{nullptr};
 };
