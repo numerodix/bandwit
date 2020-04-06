@@ -136,6 +136,28 @@ class TerminalModeSetter {
     SignalControllerSet *signal_controllers_{nullptr};
 };
 
+class TerminalModeSet {
+  public:
+    TerminalModeSet& local_on(tcflag_t flag) {
+        flags_local_on_ |= flag;
+        return *this;
+    }
+
+    TerminalModeSet& local_off(tcflag_t flag) {
+        flags_local_off_ = flags_local_off_ | flag;
+        return *this;
+    }
+
+    TerminalModeSetter build_setter(SignalControllerSet *signal_controllers) {
+        TerminalModeSetter setter{flags_local_off_, signal_controllers};
+        return setter;
+    }
+
+  private:
+    tcflag_t flags_local_on_{};
+    tcflag_t flags_local_off_{};
+};
+
 class TerminalModeGuard {
   public:
     explicit TerminalModeGuard(TerminalModeSetter *setter) : setter_{setter} {

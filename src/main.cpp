@@ -251,7 +251,8 @@ int main() {
     SignalController con{SIGINT};
     SignalControllerSet cs{con};
 
-    TerminalModeSetter ms{ECHO | ICANON, &cs};
+    TerminalModeSet set{};
+    auto ms = set.local_off(ECHO).local_off(ICANON).build_setter(&cs);
     TerminalModeGuard mg{&ms};
 
     auto [cols, rows] = get_term_size();
