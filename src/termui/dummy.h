@@ -1,35 +1,37 @@
 #include <signal.h>
 #include <stdexcept>
+#include <vector>
 
-class SignalController {
+class SignalSuspender {
   public:
-    explicit SignalController(std::initializer_list<int> lst) : signums_{lst} {}
+    explicit SignalSuspender(std::initializer_list<int> signums)
+        : signums_{signums} {}
 
-    void disable() {
+    void suspend() {
         sigset_t mask;
         sigemptyset(&mask);
 
-        for (auto signo: signums_) {
+        for (auto signo : signums_) {
             sigaddset(&mask, signo);
         }
 
         if (sigprocmask(SIG_BLOCK, &mask, nullptr) < 0) {
             throw std::runtime_error(
-                "SignalController.disable failed in sigprocmask()");
+                "SignalSuspender.suspend failed in sigprocmask()");
         }
     }
 
-    void reenable() {
+    void restore() {
         sigset_t mask;
         sigemptyset(&mask);
 
-        for (auto signo: signums_) {
+        for (auto signo : signums_) {
             sigaddset(&mask, signo);
         }
 
         if (sigprocmask(SIG_UNBLOCK, &mask, nullptr) < 0) {
             throw std::runtime_error(
-                "SignalController.reenable failed in sigprocmask()");
+                "SignalSuspender.restore failed in sigprocmask()");
         }
     }
 
@@ -37,38 +39,15 @@ class SignalController {
     std::vector<int> signums_{};
 };
 
-#include <vector>
-
-class SignalControllerSet {
-  public:
-    explicit SignalControllerSet(std::initializer_list<SignalController> lst)
-        : controllers_{lst} {}
-
-    void disable() {
-        for (auto controller : controllers_) {
-            controller.disable();
-        }
-    }
-
-    void reenable() {
-        for (auto controller : controllers_) {
-            controller.reenable();
-        }
-    }
-
-  private:
-    std::vector<SignalController> controllers_{};
-};
-
 class SignalGuard {
   public:
-    explicit SignalGuard(SignalControllerSet *set) : set_{set} {
-        set_->disable();
+    explicit SignalGuard(SignalSuspender *suspender) : suspender_{suspender} {
+        suspender_->suspend();
     }
-    ~SignalGuard() { set_->reenable(); }
+    ~SignalGuard() { suspender_->restore(); }
 
   private:
-    SignalControllerSet *set_{nullptr};
+    SignalSuspender *suspender_{nullptr};
 };
 
 #include <termios.h>
@@ -76,11 +55,11 @@ class SignalGuard {
 class TerminalModeSetter {
   public:
     explicit TerminalModeSetter(tcflag_t local_off,
-                                SignalControllerSet *signal_controllers)
-        : local_off_{local_off}, signal_controllers_{signal_controllers} {}
+                                SignalSuspender *signal_suspender)
+        : local_off_{local_off}, signal_suspender_{signal_suspender} {}
 
     void set() {
-        SignalGuard guard{signal_controllers_};
+        SignalGuard guard{signal_suspender_};
 
         struct termios tm {};
 
@@ -114,7 +93,7 @@ class TerminalModeSetter {
     }
 
     void unset() {
-        SignalGuard guard{signal_controllers_};
+        SignalGuard guard{signal_suspender_};
 
         if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios_) < 0) {
             throw std::runtime_error(
@@ -139,7 +118,7 @@ class TerminalModeSetter {
     tcflag_t local_off_{};
     struct termios orig_termios_ {};
 
-    SignalControllerSet *signal_controllers_{nullptr};
+    SignalSuspender *signal_suspender_{nullptr};
 };
 
 class TerminalModeSet {
@@ -154,8 +133,8 @@ class TerminalModeSet {
         return *this;
     }
 
-    TerminalModeSetter build_setter(SignalControllerSet *signal_controllers) {
-        TerminalModeSetter setter{flags_local_off_, signal_controllers};
+    TerminalModeSetter build_setter(SignalSuspender *signal_suspender) {
+        TerminalModeSetter setter{flags_local_off_, signal_suspender};
         return setter;
     }
 

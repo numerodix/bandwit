@@ -248,11 +248,10 @@ void on_resize(int sig) {
 }
 
 int main() {
-    SignalController con{SIGINT};
-    SignalControllerSet cs{con};
+    SignalSuspender susp{SIGINT};
 
     TerminalModeSet set{};
-    auto ms = set.local_off(ECHO).local_off(ICANON).build_setter(&cs);
+    auto ms = set.local_off(ECHO).local_off(ICANON).build_setter(&susp);
     TerminalModeGuard mg{&ms};
 
     auto [cols, rows] = get_term_size();
@@ -269,9 +268,9 @@ int main() {
 }
 
 int main44() {
-    SignalController con{SIGINT};
+    SignalSuspender con{SIGINT};
 
-    con.disable();
+    con.suspend();
     std::cout << "SIGINT is off, try to Ctrl+C now\n";
 
     // if we Ctrl+C here the signal will be delivered just after enable()
@@ -280,7 +279,7 @@ int main44() {
     sleep(2);
 
     std::cout << "re-enabling SIGINT\n";
-    con.reenable();
+    con.restore();
     std::cout << "SIGINT is on, try again now\n";
 
     sleep(2);
