@@ -161,7 +161,7 @@ void set_term_mode() {
     }
 
     // tm.c_lflag &= ~(ECHO | ICANON | ISIG | IEXTEN);
-    tm.c_lflag &= ~(ECHO | ICANON | IEXTEN);
+    tm.c_lflag &= ~(ECHO | ICANON);
     // tm.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
     // tm.c_cflag &= ~(CSIZE | PARENB);
     // tm.c_oflag &= ~(OPOST);
@@ -202,17 +202,16 @@ void fill_surface(uint16_t rows, uint16_t cols, int num_lines, int cur_y) {
 }
 
 int main() {
-    auto [cols, rows] = get_term_size();
-
     set_term_mode();
 
-    std::cout << "[dim] cols: " << cols << ", rows: " << rows << "\n";
-
+    auto [cols, rows] = get_term_size();
     auto [cur_x, cur_y] = get_cursor_pos();
+
+    std::cout << "[dim] cols: " << cols << ", rows: " << rows << "\n";
     std::cout << "[cur] x: " << cur_x << ", y: " << cur_y << "\n";
 
     auto num_lines = 5;
-    fill_surface(rows, cols, num_lines, cur_y);
+    fill_surface(rows, cols, num_lines, cur_y + 1);
 
     while (true) {}
 }
