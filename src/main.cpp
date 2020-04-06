@@ -116,7 +116,7 @@ int main2() {
     chart.draw_bars_from_right(values);
 }
 
-int main(int argc, char *argv[]) {
+int mainc(int argc, char *argv[]) {
     if (argc < 2) {
         std::cout << "Must pass <iface_name>\n";
         exit(EXIT_FAILURE);
@@ -134,4 +134,63 @@ int main(int argc, char *argv[]) {
     termui::BarChart chart{&disp};
 
     visualize(sys_sampler, iface_name, disp, chart);
+}
+
+
+
+
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <termios.h>
+
+int main() {
+    struct winsize size {};
+
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &size) < 0) {
+        throw std::runtime_error(
+            "ioctl() failed when trying to read terminal size");
+    }
+    auto cols = size.ws_col;
+    auto rows = size.ws_row;
+
+
+    struct termios tm {};
+    if (tcgetattr(STDIN_FILENO, &tm) < 0) {
+        throw std::runtime_error("tcgetattr() failed");
+    }
+
+    // tm.c_lflag &= ~(ECHO | ICANON | ISIG | IEXTEN);
+    tm.c_lflag &= ~(ECHO | ICANON | IEXTEN);
+    // tm.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+    // tm.c_cflag &= ~(CSIZE | PARENB);
+    // tm.c_oflag &= ~(OPOST);
+
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &tm) < 0) {
+        throw std::runtime_error("tcsetattr() failed");
+    }
+
+
+    std::cout << "cols: " << cols << ", rows: " << rows << "\n";
+
+    auto num_lines = 5;
+
+    for (int y = 0; y < num_lines; ++y) {
+        for (int x = 0; x < cols - 0; ++x) {
+            fprintf(stdout, "x");
+        }
+        if (y != num_lines - 1) {
+            fprintf(stdout, "\n");
+        }
+    }
+
+    fprintf(stdout, "\033[%d;%dH", 1, 1);
+    fprintf(stdout, "YYY");
+
+    fprintf(stdout, "\033[%d;%dH", rows, cols);
+    fprintf(stdout, "T");
+
+    fprintf(stdout, "\033[%d;%dH", num_lines + 1, cols);
+    fflush(stdout);
+
+    while (true) {}
 }
