@@ -1,7 +1,6 @@
 #include <signal.h>
 #include <stdexcept>
 
-
 class SignalController {
   public:
     explicit SignalController(int signo) : signo_{signo} {}
@@ -12,7 +11,8 @@ class SignalController {
         sigaddset(&mask, signo_);
 
         if (sigprocmask(SIG_BLOCK, &mask, nullptr) < 0) {
-            throw std::runtime_error("SignalController.disable failed in sigprocmask()");
+            throw std::runtime_error(
+                "SignalController.disable failed in sigprocmask()");
         }
     }
 
@@ -22,7 +22,8 @@ class SignalController {
         sigaddset(&mask, signo_);
 
         if (sigprocmask(SIG_UNBLOCK, &mask, nullptr) < 0) {
-            throw std::runtime_error("SignalController.reenable failed in sigprocmask()");
+            throw std::runtime_error(
+                "SignalController.reenable failed in sigprocmask()");
         }
     }
 
@@ -35,16 +36,16 @@ class SignalController {
 class SignalControllerSet {
   public:
     explicit SignalControllerSet(std::initializer_list<SignalController> lst)
-     : controllers_{lst} {}
+        : controllers_{lst} {}
 
     void disable() {
-        for (auto controller: controllers_) {
+        for (auto controller : controllers_) {
             controller.disable();
         }
     }
 
     void reenable() {
-        for (auto controller: controllers_) {
+        for (auto controller : controllers_) {
             controller.reenable();
         }
     }
@@ -55,39 +56,39 @@ class SignalControllerSet {
 
 class SignalGuard {
   public:
-    SignalGuard(SignalControllerSet* set) : set_{set} {
+    explicit SignalGuard(SignalControllerSet *set) : set_{set} {
         set_->disable();
     }
-    ~SignalGuard() {
-        set_->reenable();
-    }
+    ~SignalGuard() { set_->reenable(); }
 
   private:
-    SignalControllerSet* set_{nullptr};
+    SignalControllerSet *set_{nullptr};
 };
-
 
 #include <termios.h>
 
 class TerminalModeSetter {
   public:
-    TerminalModeSetter(tcflag_t local_off, SignalControllerSet* signal_controllers)
-     : local_off_{local_off}, signal_controllers_{signal_controllers} {}
+    explicit TerminalModeSetter(tcflag_t local_off,
+                                SignalControllerSet *signal_controllers)
+        : local_off_{local_off}, signal_controllers_{signal_controllers} {}
 
     void set() {
         SignalGuard guard{signal_controllers_};
 
-        struct termios tm{};
+        struct termios tm {};
         orig_termios_ = tm;
 
         if (tcgetattr(STDIN_FILENO, &tm) < 0) {
-            throw std::runtime_error("TerminalModeSetter.set failed in tcgetattr()");
+            throw std::runtime_error(
+                "TerminalModeSetter.set failed in tcgetattr()");
         }
 
         tm.c_lflag &= ~(local_off_);
 
         if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &tm) < 0) {
-            throw std::runtime_error("TerminalModeSetter.set failed in tcsetattr()");
+            throw std::runtime_error(
+                "TerminalModeSetter.set failed in tcsetattr()");
         }
     }
 
@@ -95,26 +96,25 @@ class TerminalModeSetter {
         SignalGuard guard{signal_controllers_};
 
         if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios_) < 0) {
-            throw std::runtime_error("TerminalModeSetter.unset failed in tcsetattr()");
+            throw std::runtime_error(
+                "TerminalModeSetter.unset failed in tcsetattr()");
         }
     }
 
   private:
     tcflag_t local_off_{};
-    struct termios orig_termios_{};
+    struct termios orig_termios_ {};
 
-    SignalControllerSet* signal_controllers_{nullptr};
+    SignalControllerSet *signal_controllers_{nullptr};
 };
 
 class TerminalModeGuard {
   public:
-    TerminalModeGuard(TerminalModeSetter* setter) : setter_{setter} {
+    explicit TerminalModeGuard(TerminalModeSetter *setter) : setter_{setter} {
         setter->set();
     }
-    ~TerminalModeGuard() {
-        setter_->unset();
-    }
+    ~TerminalModeGuard() { setter_->unset(); }
 
   private:
-    TerminalModeSetter* setter_{nullptr};
+    TerminalModeSetter *setter_{nullptr};
 };

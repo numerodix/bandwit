@@ -136,14 +136,11 @@ int mainc(int argc, char *argv[]) {
     visualize(sys_sampler, iface_name, disp, chart);
 }
 
-
-
-
+#include <algorithm>
 #include <signal.h>
-#include <unistd.h>
 #include <sys/ioctl.h>
 #include <termios.h>
-#include <algorithm>
+#include <unistd.h>
 
 #include "termui/dummy.h"
 
@@ -192,7 +189,7 @@ struct surface {
     int num_lines;
 };
 
-static struct surface cur_surf{};
+static struct surface cur_surf {};
 
 void fill_surface(int num_lines) {
     auto [cols, rows] = get_term_size();
@@ -280,9 +277,9 @@ int main() {
     fill_surface(10);
     signal(SIGWINCH, on_resize);
 
-    while (true) {}
+    while (true) {
+    }
 }
-
 
 int main44() {
     SignalController con{SIGINT};
