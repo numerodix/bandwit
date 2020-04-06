@@ -196,7 +196,7 @@ void fill_surface(int num_lines) {
     auto [cur_x, cur_y] = get_cursor_pos();
 
     for (int y = 0; y < num_lines; ++y) {
-        for (int x = 0; x < cols - 0; ++x) {
+        for (int x = 0; x < cols; ++x) {
             fprintf(stdout, "%d", y);
         }
     }
@@ -218,10 +218,44 @@ void fill_surface(int num_lines) {
     cur_surf.num_lines = num_lines;
 }
 
-void on_resize(int sig) {
-    auto ulhs_ypos = cur_surf.ypos - cur_surf.num_lines + 1;
+void clear_screen() {
+    auto [cols, rows] = get_term_size();
 
-    fprintf(stdout, "\033[%d;%dH", ulhs_ypos, 1);
+    for (int y = 0; y < rows; ++y) {
+        for (int x = 0; x < cols; ++x) {
+            fprintf(stdout, " ");
+        }
+    }
+
+    // move cursor to top left hand side
+    fprintf(stdout, "\033[%d;%dH", 1, 1);
+    fflush(stdout);
+}
+
+void on_resize(int sig) {
+    auto [cols, rows] = get_term_size();
+
+    // Case 1: After resize the terminal is too small to display the surface
+    //      hard error
+    // Case 2: After resize the lower right hand corner is off the screen
+    //      we cannot redraw without clobbering text that used to be above
+    //      the surface, so we might as well clear the whole screen and
+    //      move the surface to the top
+    // Case default: Just move the cursor to the upper left hand side
+
+    auto ulhs_ypos_new = 0;
+
+    if (cur_surf.num_lines > rows) {
+        clear_screen();
+        throw std::runtime_error("terminal window too small :(");
+    } else if (cur_surf.ypos > rows) {
+        clear_screen();
+        ulhs_ypos_new = 1;
+    } else {
+        ulhs_ypos_new = cur_surf.ypos - cur_surf.num_lines + 1;
+    }
+
+    fprintf(stdout, "\033[%d;%dH", ulhs_ypos_new, 1);
     fflush(stdout);
 
     fill_surface(cur_surf.num_lines);
@@ -237,9 +271,7 @@ int main() {
     std::cout << "[cur] x: " << cur_x << ", y: " << cur_y << "\n";
 
     fill_surface(10);
-
     signal(SIGWINCH, on_resize);
-    on_resize(0);
 
     while (true) {}
 }
