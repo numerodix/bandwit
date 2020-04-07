@@ -326,7 +326,8 @@ int main() {
     auto pwin = termui::TerminalWindow::create(&dr);
     auto win = std::unique_ptr<termui::TerminalWindow>(pwin);
 
-    termui::TermSurface surf{pwin, 10};
+    termui::TermSurface surf{pwin, 9};
+    // termui::TermSurface surf{pwin, 2};
 
     while (true) {
     }

@@ -223,6 +223,7 @@ class TermSurface {
   public:
     TermSurface(TerminalWindow *win, uint16_t num_lines);
 
+    void on_startup();
     void on_window_resize();
 
     void redraw();
@@ -232,6 +233,10 @@ class TermSurface {
     const Point &get_lower_right() const;
 
   private:
+    void check_surface_fits();
+    Dimensions recompute_dimensions(Dimensions win_dim) const;
+    Point recompute_lower_right(Dimensions win_dim, Point upper_left) const;
+
     TerminalWindow *win_{nullptr};
     uint16_t num_lines_{0};
     const char bg_char_ = 'X';
@@ -337,12 +342,53 @@ void TerminalWindow_signal_handler(int sig) {
 TermSurface::TermSurface(TerminalWindow *win, uint16_t num_lines)
     : win_{win}, num_lines_{num_lines} {
     win_->register_surface(this);
+    on_startup();
+}
 
-    // does not set up dim_, upper_left_ etc etc :(
-    redraw();
+void TermSurface::on_startup() {
+    check_surface_fits();
+
+    // Initialize instance state
+    auto win_dim = win_->get_size();
+    auto win_cur = win_->get_cursor();
+
+    // Detect if the bottom of our surface would currently overshoot the
+    // terminal height - if so we need to force scroll the terminal by the
+    // amount of the overshoot.
+    int overshoot = INT(win_cur.y) + INT(num_lines_) - INT(win_dim.height);
+
+    if (overshoot > 0) {
+        for (int y = 0; y < overshoot; ++y) {
+            for (int x = 1; x <= win_dim.width; ++x) {
+                win_->put_char('O');
+            }
+        }
+    }
+    win_->flush();
+
+    // The upper left is normally just where the cursor was
+    auto upper_left_y = win_cur.y;
+
+    // ...but if we had to force scroll then we have to calculate it based on
+    // the overshoot because the scroll made the cursor effectively shift
+    // upwards.
+    if (overshoot > 0) {
+        upper_left_y = U16(INT(win_cur.y) - INT(overshoot) + 1);
+    }
+
+    // Initialize all positional state
+    dim_ = recompute_dimensions(win_dim);
+    upper_left_ = Point{win_cur.x, upper_left_y};
+    lower_right_ = recompute_lower_right(win_dim, upper_left_);
+
+    clear_screen();
 }
 
 void TermSurface::on_window_resize() {
+    /// TODO!!
+}
+
+void TermSurface::on_window_resize_() {
     // After a redraw() the cursor is in the lower right of the surface.
     // We need to move it to the surface upper left before calling redraw()
     // again.
@@ -451,6 +497,9 @@ void TermSurface::clear_screen() {
     }
 
     win_->set_cursor(lower_right);
+    win_->flush();
+
+    // post condition: the cursor is at the lower right
 }
 
 const Dimensions &TermSurface::get_size() const { return dim_; }
@@ -458,6 +507,32 @@ const Dimensions &TermSurface::get_size() const { return dim_; }
 const Point &TermSurface::get_upper_left() const { return upper_left_; }
 
 const Point &TermSurface::get_lower_right() const { return lower_right_; }
+
+void TermSurface::check_surface_fits() {
+    auto win_dim = win_->get_size();
+
+    if (num_lines_ > win_dim.height) {
+        win_->clear_screen(' ');
+
+        // seems to leave the terminal in cbreak mode :/
+        throw std::runtime_error("terminal window too small :(");
+    }
+}
+
+Dimensions TermSurface::recompute_dimensions(Dimensions win_dim) const {
+    Dimensions dim{win_dim.width, num_lines_};
+
+    return dim;
+}
+
+Point TermSurface::recompute_lower_right(Dimensions win_dim,
+                                         Point upper_left) const {
+    Point lower_right{
+        U16(upper_left.x + win_dim.width - 1),
+        U16(upper_left.y + num_lines_ - 1),
+    };
+    return lower_right;
+}
 
 } // namespace termui
 } // namespace bmon
