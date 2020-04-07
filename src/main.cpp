@@ -363,7 +363,7 @@ int main(int argc, char *argv[]) {
     auto pwin = termui::TerminalWindow::create(&dr);
     auto win = std::unique_ptr<termui::TerminalWindow>(pwin);
 
-    termui::TermSurface surf{pwin, 9};
+    termui::TermSurface surf{pwin, 10};
     termui::TermChart chart{&surf};
 
     visualize2(sys_sampler, iface_name, surf, chart);
