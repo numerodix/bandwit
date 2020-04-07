@@ -331,7 +331,8 @@ TermSurface::TermSurface(TerminalWindow *win, uint16_t num_lines)
 
 void TermSurface::on_window_resize() {
     // After a redraw() the cursor is in the lower right of the surface.
-    // We need to move it to the surface upper left before calling redraw() again.
+    // We need to move it to the surface upper left before calling redraw()
+    // again.
 
     // the post resize dimensions
     auto dim = win_->get_size();
@@ -359,13 +360,21 @@ void TermSurface::on_window_resize() {
         // seems to leave the terminal in cbreak mode :/
         throw std::runtime_error("terminal window too small :(");
 
-    // Resize decreased height and shifted cursor to below the bottom edge
+        // Resize decreased height and shifted cursor to below the bottom edge
     } else if (cur.y > dim.height) {
-        win_->clear_screen(clear_fill_char);
+        // Nothing to do, as surface_upper_left_y is already 1.
+        // But we don't want to enter the unconditional else branch below.
 
-    // Any other resize
+        // Any other resize
     } else {
         surface_upper_left_y = U16(cur.y - num_lines_ + 1);
+    }
+
+    // If we are setting the cursor at the top left of the screen we should
+    // clear the whole screen proactively to make sure there isn't any left-over
+    // output in the lower parts of the screen, below the surface.
+    if (surface_upper_left_y == 1) {
+        win_->clear_screen(clear_fill_char);
     }
 
     auto surface_upper_left = Point{surface_upper_left_x, surface_upper_left_y};
@@ -381,7 +390,8 @@ void TermSurface::redraw() {
     auto win_top_left = Point{1, 1};
     auto win_lower_right = Point{dim.width, dim.height};
 
-    auto surface_lower_right_y = std::min(U16(cur.y + num_lines_ - 1), dim.height);
+    auto surface_lower_right_y =
+        std::min(U16(cur.y + num_lines_ - 1), dim.height);
     auto surface_lower_right = Point{dim.width, surface_lower_right_y};
 
     for (int y = 0; y < num_lines_; ++y) {
@@ -400,25 +410,6 @@ void TermSurface::redraw() {
 
     win_->set_cursor(surface_lower_right);
     win_->flush();
-
-    // auto [cols, rows] = get_term_size();
-    // auto [cur_x, cur_y] = get_cursor_pos();
-
-    // for (int y = 0; y < num_lines; ++y) {
-    //     for (int x = 0; x < cols; ++x) {
-    //         fprintf(stdout, "%d", y);
-    //     }
-    // }
-
-    // fprintf(stdout, "\033[%d;%dH", 1, 1);
-    // fprintf(stdout, "YYY");
-
-    // fprintf(stdout, "\033[%d;%dH", rows, cols);
-    // fprintf(stdout, "T");
-
-    // int ypos = std::min(U16(num_lines + cur_y - 1), rows);
-    // fprintf(stdout, "\033[%d;%dH", ypos, cols);
-    // fflush(stdout);
 }
 
 } // namespace termui
