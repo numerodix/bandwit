@@ -328,8 +328,6 @@ int main() {
 
     termui::TermSurface surf{pwin, 10};
 
-    surf.redraw();
-
     while (true) {
     }
 }

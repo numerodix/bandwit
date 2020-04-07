@@ -222,13 +222,23 @@ class TerminalWindow;
 class TermSurface {
   public:
     TermSurface(TerminalWindow *win, uint16_t num_lines);
+
     void on_window_resize();
+
     void redraw();
+    void clear_screen();
+    const Dimensions& get_size() const;
+    const Point& get_upper_left() const;
+    const Point& get_lower_right() const;
 
   private:
     TerminalWindow *win_{nullptr};
     uint16_t num_lines_{0};
     const char bg_char_ = 'X';
+
+    Dimensions dim_{};
+    Point upper_left_{};
+    Point lower_right_{};
 };
 
 // eugh
@@ -327,6 +337,9 @@ void TerminalWindow_signal_handler(int sig) {
 TermSurface::TermSurface(TerminalWindow *win, uint16_t num_lines)
     : win_{win}, num_lines_{num_lines} {
     win_->register_surface(this);
+
+    // does not set up dim_, upper_left_ etc etc :(
+    redraw();
 }
 
 void TermSurface::on_window_resize() {
@@ -359,7 +372,6 @@ void TermSurface::on_window_resize() {
         win_->clear_screen(clear_fill_char);
         // seems to leave the terminal in cbreak mode :/
         throw std::runtime_error("terminal window too small :(");
-        // TODO: Currently this condition is not detected at surface creation
 
         // Case 2: Resize decreased height and shifted cursor to below the
         // bottom edge
@@ -382,10 +394,20 @@ void TermSurface::on_window_resize() {
     auto surf_upper_left = Point{surf_upper_left_x, surf_upper_left_y};
     win_->set_cursor(surf_upper_left);
 
+    // Update (or initialize) instance state
+    dim_ = dim;
+    upper_left_ = surf_upper_left;
+    lower_right_ = Point{
+        U16(upper_left_.x + dim.width - 1),
+        U16(upper_left_.y + num_lines_ - 1),
+    };
+
     redraw();
 }
 
 void TermSurface::redraw() {
+    // pre condition: the cursor is at the top left of the surface
+
     auto dim = win_->get_size();
     auto cur = win_->get_cursor();
 
@@ -413,6 +435,34 @@ void TermSurface::redraw() {
     win_->set_cursor(surf_lower_right);
 
     win_->flush();
+}
+
+void TermSurface::clear_screen() {
+    auto dim = get_size();
+    auto upper_left = get_upper_left();
+    auto lower_right = get_lower_right();
+
+    win_->set_cursor(upper_left);
+
+    for (int y = 0; y < num_lines_; ++y) {
+        for (int x = 1; x <= dim.width; ++x) {
+            win_->put_char(bg_char_);
+        }
+    }
+
+    win_->set_cursor(lower_right);
+}
+
+const Dimensions& TermSurface::get_size() const {
+    return dim_;
+}
+
+const Point& TermSurface::get_upper_left() const {
+    return upper_left_;
+}
+
+const Point& TermSurface::get_lower_right() const {
+    return lower_right_;
 }
 
 } // namespace termui
