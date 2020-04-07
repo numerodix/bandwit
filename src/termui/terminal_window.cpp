@@ -21,6 +21,17 @@ TerminalWindow *TerminalWindow::create(TerminalDriver *driver) {
     return WINDOW;
 }
 
+TerminalWindow::TerminalWindow(TerminalDriver *driver) : driver_{driver} {
+    // the window has to know its size at all times
+    dim_ = driver_->get_terminal_size();
+
+    // check cursor within dimensions?
+    cursor_ = driver_->get_cursor_position();
+
+    // install handler to update size when it changes
+    install_resize_handler();
+}
+
 TerminalWindow::~TerminalWindow() { WINDOW = nullptr; }
 
 void TerminalWindow::on_resize() {
@@ -67,17 +78,8 @@ void TerminalWindow::clear_screen(const char &fill_char) {
     flush();
 }
 
-void TerminalWindow::register_surface(TerminalSurface *surface) { surface_ = surface; }
-
-TerminalWindow::TerminalWindow(TerminalDriver *driver) : driver_{driver} {
-    // the window has to know its size at all times
-    dim_ = driver_->get_terminal_size();
-
-    // check cursor within dimensions?
-    cursor_ = driver_->get_cursor_position();
-
-    // install handler to update size when it changes
-    install_resize_handler();
+void TerminalWindow::register_surface(TerminalSurface *surface) {
+    surface_ = surface;
 }
 
 void TerminalWindow::install_resize_handler() {

@@ -2,8 +2,8 @@
 #include <iostream>
 #include <map>
 #include <memory>
-#include <thread>
 #include <signal.h>
+#include <thread>
 
 #include "sampling/ip_cmd_sampler.h"
 #include "sampling/procfs_sampler.h"

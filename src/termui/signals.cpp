@@ -1,8 +1,7 @@
 #include <signal.h>
 
-#include <stdexcept>
 #include "signals.h"
-
+#include <stdexcept>
 
 namespace bmon {
 namespace termui {

@@ -1,8 +1,8 @@
 #include <stdexcept>
 
+#include "macros.h"
 #include "terminal_surface.h"
 #include "terminal_window.h"
-#include "macros.h"
 
 namespace bmon {
 namespace termui {
@@ -129,13 +129,14 @@ void TerminalSurface::check_surface_fits(const Dimensions &win_dim) {
     }
 }
 
-Dimensions TerminalSurface::recompute_dimensions(const Dimensions &win_dim) const {
+Dimensions
+TerminalSurface::recompute_dimensions(const Dimensions &win_dim) const {
     Dimensions dim{win_dim.width, num_lines_};
     return dim;
 }
 
 Point TerminalSurface::recompute_lower_right(const Dimensions &win_dim,
-                                         const Point &upper_left) const {
+                                             const Point &upper_left) const {
     Point lower_right{
         U16(INT(upper_left.x) + INT(win_dim.width) - 1),
         U16(INT(upper_left.y) + INT(num_lines_) - 1),
