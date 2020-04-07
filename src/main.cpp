@@ -288,7 +288,7 @@ int main44() {
     sleep(2);
 }
 
-int main() {
+int main42522() {
     SignalSuspender susp{SIGINT};
 
     TerminalModeSet set{};
@@ -313,4 +313,17 @@ int main() {
 
     dr.set_cursor_position(termui::Point{pt1.x, U16(pt1.y + U16(1))});
     std::cout << "[cur] x: " << pt2.x << ", y: " << pt2.y << "\n";
+}
+
+int main() {
+    SignalSuspender susp{SIGINT};
+
+    TerminalModeSet set{};
+    auto ms = set.local_off(ECHO).local_off(ICANON).build_setter(&susp);
+    TerminalModeGuard mg{&ms};
+
+    termui::TerminalDriver dr{stdin, stdout};
+    auto win = termui::TerminalWindow::create(&dr);
+
+    while (true) {}
 }

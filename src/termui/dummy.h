@@ -149,7 +149,7 @@ class TerminalModeSet {
 class TerminalModeGuard {
   public:
     explicit TerminalModeGuard(TerminalModeSetter *setter) : setter_{setter} {
-        setter->set();
+        setter_->set();
     }
     ~TerminalModeGuard() { setter_->unset(); }
 
@@ -179,6 +179,8 @@ class TerminalDriver {
     }
 
     Point get_cursor_position() {
+        // TODO: document the mode the terminal has to be in for this to work
+
         // This is bit error prone: store the cursor position in the program to
         // avoid reading it more than just at the very beginning. Maybe on
         // startup just fall back on taking over the whole screen (or retry?).
@@ -212,6 +214,49 @@ class TerminalDriver {
     // we need a one char null terminated string
     char char_str_[2] = {0};
 };
+
+
+void TerminalWindow_signal_handler(int sig);
+
+class TerminalWindow;
+// eugh
+static TerminalWindow *WINDOW = nullptr;
+
+class TerminalWindow {
+  public:
+    static TerminalWindow* create(TerminalDriver *driver) {
+        WINDOW = new TerminalWindow(driver);
+        return WINDOW;
+    }
+
+    void on_resize() {
+        dim_ = driver_->get_terminal_size();
+        std::cout << "[dim] cols: " << dim_.width << ", rows: " << dim_.height
+                << "\n";
+    }
+
+  private:
+    TerminalWindow(TerminalDriver *driver) : driver_{driver} {
+        on_resize();
+        install_resize_handler();
+    }
+
+    ~TerminalWindow() {
+        WINDOW = nullptr;
+    }
+
+    void install_resize_handler() {
+        signal(SIGWINCH, TerminalWindow_signal_handler);
+    }
+
+    TerminalDriver *driver_{nullptr};
+    Dimensions dim_{};
+};
+
+void TerminalWindow_signal_handler(int sig) {
+    // check WINDOW is not nullptr
+    WINDOW->on_resize();
+}
 
 } // namespace termui
 } // namespace bmon
