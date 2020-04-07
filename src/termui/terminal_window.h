@@ -8,7 +8,7 @@ namespace bmon {
 namespace termui {
 
 class TerminalDriver;
-class TermSurface;
+class TerminalSurface;
 
 class TerminalWindow {
   public:
@@ -24,7 +24,7 @@ class TerminalWindow {
     void flush();
     void clear_screen(const char &fill_char);
 
-    void register_surface(TermSurface *surface);
+    void register_surface(TerminalSurface *surface);
 
   private:
     TerminalWindow(TerminalDriver *driver);
@@ -34,7 +34,7 @@ class TerminalWindow {
     TerminalDriver *driver_{nullptr};
     Dimensions dim_{};
     Point cursor_{};
-    TermSurface *surface_{nullptr};
+    TerminalSurface *surface_{nullptr};
 };
 
 } // namespace termui

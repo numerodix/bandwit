@@ -9,9 +9,9 @@ namespace termui {
 
 class TerminalWindow;
 
-class TermSurface {
+class TerminalSurface {
   public:
-    TermSurface(TerminalWindow *win, uint16_t num_lines);
+    TerminalSurface(TerminalWindow *win, uint16_t num_lines);
 
     void on_startup();
     void on_window_resize(const Dimensions &win_dim_new);

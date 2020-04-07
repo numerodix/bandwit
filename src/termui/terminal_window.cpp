@@ -67,7 +67,7 @@ void TerminalWindow::clear_screen(const char &fill_char) {
     flush();
 }
 
-void TerminalWindow::register_surface(TermSurface *surface) { surface_ = surface; }
+void TerminalWindow::register_surface(TerminalSurface *surface) { surface_ = surface; }
 
 TerminalWindow::TerminalWindow(TerminalDriver *driver) : driver_{driver} {
     // the window has to know its size at all times

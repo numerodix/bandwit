@@ -7,13 +7,13 @@
 namespace bmon {
 namespace termui {
 
-TermSurface::TermSurface(TerminalWindow *win, uint16_t num_lines)
+TerminalSurface::TerminalSurface(TerminalWindow *win, uint16_t num_lines)
     : win_{win}, num_lines_{num_lines} {
     win_->register_surface(this);
     on_startup();
 }
 
-void TermSurface::on_startup() {
+void TerminalSurface::on_startup() {
     auto win_dim = win_->get_size();
     auto win_cur = win_->get_cursor();
 
@@ -52,7 +52,7 @@ void TermSurface::on_startup() {
     clear_surface();
 }
 
-void TermSurface::on_window_resize(const Dimensions &win_dim_new) {
+void TerminalSurface::on_window_resize(const Dimensions &win_dim_new) {
     // Fail fast if the new size cannot fit the surface
     check_surface_fits(win_dim_new);
 
@@ -77,7 +77,7 @@ void TermSurface::on_window_resize(const Dimensions &win_dim_new) {
     clear_surface();
 }
 
-void TermSurface::clear_surface() {
+void TerminalSurface::clear_surface() {
     auto dim = get_size();
     auto upper_left = get_upper_left();
     auto lower_right = get_lower_right();
@@ -94,7 +94,7 @@ void TermSurface::clear_surface() {
     win_->flush();
 }
 
-void TermSurface::put_char(const Point &point, const char &ch) {
+void TerminalSurface::put_char(const Point &point, const char &ch) {
     auto upper_left = get_upper_left();
 
     Point point_win{
@@ -106,20 +106,20 @@ void TermSurface::put_char(const Point &point, const char &ch) {
     win_->put_char(ch);
 }
 
-void TermSurface::flush() {
+void TerminalSurface::flush() {
     auto lower_right = get_lower_right();
     win_->set_cursor(lower_right);
 
     win_->flush();
 }
 
-const Dimensions &TermSurface::get_size() const { return dim_; }
+const Dimensions &TerminalSurface::get_size() const { return dim_; }
 
-const Point &TermSurface::get_upper_left() const { return upper_left_; }
+const Point &TerminalSurface::get_upper_left() const { return upper_left_; }
 
-const Point &TermSurface::get_lower_right() const { return lower_right_; }
+const Point &TerminalSurface::get_lower_right() const { return lower_right_; }
 
-void TermSurface::check_surface_fits(const Dimensions &win_dim) {
+void TerminalSurface::check_surface_fits(const Dimensions &win_dim) {
     if (num_lines_ > win_dim.height) {
         // to make the error message visible
         win_->clear_screen(' ');
@@ -129,12 +129,12 @@ void TermSurface::check_surface_fits(const Dimensions &win_dim) {
     }
 }
 
-Dimensions TermSurface::recompute_dimensions(const Dimensions &win_dim) const {
+Dimensions TerminalSurface::recompute_dimensions(const Dimensions &win_dim) const {
     Dimensions dim{win_dim.width, num_lines_};
     return dim;
 }
 
-Point TermSurface::recompute_lower_right(const Dimensions &win_dim,
+Point TerminalSurface::recompute_lower_right(const Dimensions &win_dim,
                                          const Point &upper_left) const {
     Point lower_right{
         U16(INT(upper_left.x) + INT(win_dim.width) - 1),
