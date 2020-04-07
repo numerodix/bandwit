@@ -126,7 +126,6 @@ int mainc(int argc, char *argv[]) {
 
     std::unique_ptr<sampling::Sampler> sys_sampler{
         new sampling::SysFsSampler()};
-    sampling::Sample sample3 = sys_sampler->get_sample(iface_name);
 
     termui::Display disp{10};
     disp.initialize();
@@ -315,7 +314,45 @@ int main42522() {
     std::cout << "[cur] x: " << pt2.x << ", y: " << pt2.y << "\n";
 }
 
-int main() {
+void visualize2(const std::unique_ptr<sampling::Sampler> &sampler,
+                const std::string &iface_name, termui::TermSurface &surface,
+                termui::TermChart &bar_chart) {
+    std::vector<uint64_t> rxs{};
+
+    sampling::Sample prev_sample = sampler->get_sample(iface_name);
+
+    while (true) {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        sampling::Sample sample = sampler->get_sample(iface_name);
+
+        FlowRecord rec{
+            sample.rx - prev_sample.rx,
+            sample.tx - prev_sample.tx,
+        };
+        rxs.push_back(rec.rx);
+
+        // make sure the vector isn't longer than the width of the display
+        if (rxs.size() > surface.get_size().width) {
+            rxs.erase(rxs.begin());
+        }
+
+        prev_sample = sample;
+
+        bar_chart.draw_bars_from_right(rxs);
+    }
+}
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        std::cout << "Must pass <iface_name>\n";
+        exit(EXIT_FAILURE);
+    }
+
+    std::string iface_name{argv[1]};
+
+    std::unique_ptr<sampling::Sampler> sys_sampler{
+        new sampling::SysFsSampler()};
+
     SignalSuspender susp{SIGINT};
 
     TerminalModeSet set{};
@@ -327,7 +364,7 @@ int main() {
     auto win = std::unique_ptr<termui::TerminalWindow>(pwin);
 
     termui::TermSurface surf{pwin, 9};
+    termui::TermChart chart{&surf};
 
-    while (true) {
-    }
+    visualize2(sys_sampler, iface_name, surf, chart);
 }

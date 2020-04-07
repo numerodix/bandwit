@@ -1,7 +1,12 @@
+#include <algorithm>
+#include <iostream>
+#include <numeric>
 #include <signal.h>
+#include <sstream>
 #include <stdexcept>
 #include <vector>
 
+#include "formatter.h"
 #include "termui/dimensions.h"
 
 class SignalSuspender {
@@ -227,7 +232,7 @@ class TermSurface {
     void on_window_resize(const Dimensions &win_dim_new);
 
     void clear_surface();
-    void put_char(const Point& point, const char& ch);
+    void put_char(const Point &point, const char &ch);
     void flush();
 
     const Dimensions &get_size() const;
@@ -242,7 +247,7 @@ class TermSurface {
 
     TerminalWindow *win_{nullptr};
     uint16_t num_lines_{0};
-    const char bg_char_ = 'X';
+    const char bg_char_ = ' ';
 
     Dimensions dim_{};
     Point upper_left_{};
@@ -308,9 +313,7 @@ class TerminalWindow {
         flush();
     }
 
-    void register_surface(TermSurface *surface) {
-        surface_ = surface;
-    }
+    void register_surface(TermSurface *surface) { surface_ = surface; }
 
   private:
     TerminalWindow(TerminalDriver *driver) : driver_{driver} {
@@ -331,7 +334,7 @@ class TerminalWindow {
     TerminalDriver *driver_{nullptr};
     Dimensions dim_{};
     Point cursor_{};
-    TermSurface * surface_{nullptr};
+    TermSurface *surface_{nullptr};
 };
 
 void TerminalWindow_signal_handler(int sig) {
@@ -360,7 +363,7 @@ void TermSurface::on_startup() {
     if (overshoot > 0) {
         for (int y = 0; y < overshoot; ++y) {
             for (auto x = 1; x <= win_dim.width; ++x) {
-                win_->put_char('O');
+                win_->put_char('O'); /// XXX
             }
         }
     }
@@ -426,12 +429,12 @@ void TermSurface::clear_surface() {
     win_->flush();
 }
 
-void TermSurface::put_char(const Point& point, const char& ch) {
+void TermSurface::put_char(const Point &point, const char &ch) {
     auto upper_left = get_upper_left();
 
     Point point_win{
         point.x,
-        U16(INT(upper_left.y) + INT(point.y) - 1),
+        U16(INT(upper_left.y) + INT(point.y)),
     };
 
     win_->set_cursor(point_win);
@@ -439,6 +442,9 @@ void TermSurface::put_char(const Point& point, const char& ch) {
 }
 
 void TermSurface::flush() {
+    auto lower_right = get_lower_right();
+    win_->set_cursor(lower_right);
+
     win_->flush();
 }
 
@@ -470,6 +476,80 @@ Point TermSurface::recompute_lower_right(const Dimensions &win_dim,
         U16(INT(upper_left.y) + INT(num_lines_) - 1),
     };
     return lower_right;
+}
+
+/// XXX
+
+class TermChart {
+  public:
+    TermChart(TermSurface *surface) : surface_{surface} {}
+    void draw_bars_from_right(std::vector<uint64_t> values);
+    void draw_legend(uint64_t avg, uint64_t max, uint64_t last);
+
+  private:
+    TermSurface *surface_{nullptr};
+};
+
+void TermChart::draw_bars_from_right(std::vector<uint64_t> values) {
+    auto dim = surface_->get_size();
+
+    auto max = std::max_element(values.begin(), values.end());
+    uint64_t max_value = *max;
+    uint64_t sum = std::accumulate(values.begin(), values.end(), U64(0));
+    auto avg_value = U64(F64(sum) / F64(values.size()));
+    uint64_t last_value = values.at(values.size() - 1);
+
+    std::vector<uint16_t> scaled{};
+    for (auto it = values.rbegin(); it != values.rend(); ++it) {
+        double perc = F64(*it) / F64(max_value);
+        auto magnitude = U64(perc * F64(dim.height));
+        scaled.push_back(magnitude);
+    }
+
+    surface_->clear_surface();
+
+    uint16_t col_cur = dim.width;
+    for (auto value : scaled) {
+
+        for (uint16_t j = 0; j < value; ++j) {
+            uint16_t y = dim.height - 1 - j;
+            Point pt{col_cur, y};
+            surface_->put_char(pt, '|');
+        }
+
+        --col_cur;
+    }
+
+    draw_legend(avg_value, max_value, last_value);
+
+    surface_->flush();
+}
+
+void TermChart::draw_legend(uint64_t avg, uint64_t max, uint64_t last) {
+    Formatter fmt{};
+
+    std::vector<std::pair<std::string, uint64_t>> pairs{
+        {"max ", max},
+        {"avg ", avg},
+        {"last", last},
+    };
+
+    uint16_t row = 0;
+
+    for (auto pair : pairs) {
+        std::stringstream ss{};
+        std::string rate = fmt.format_num_byte_rate(pair.second, "s");
+        ss << "[" << pair.first << ": " << rate << "]";
+        std::string legend = ss.str();
+
+        for (size_t i = 0; i < legend.size(); ++i) {
+            uint16_t x = U16(i) + U16(1);
+            Point pt{x, row};
+            surface_->put_char(pt, legend[i]);
+        }
+
+        row++;
+    }
 }
 
 } // namespace termui
