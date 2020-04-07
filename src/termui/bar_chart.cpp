@@ -10,7 +10,7 @@
 namespace bmon {
 namespace termui {
 
-void TermChart::draw_bars_from_right(std::vector<uint64_t> values) {
+void BarChart::draw_bars_from_right(std::vector<uint64_t> values) {
     auto dim = surface_->get_size();
 
     auto max = std::max_element(values.begin(), values.end());
@@ -45,7 +45,7 @@ void TermChart::draw_bars_from_right(std::vector<uint64_t> values) {
     surface_->flush();
 }
 
-void TermChart::draw_legend(uint64_t avg, uint64_t max, uint64_t last) {
+void BarChart::draw_legend(uint64_t avg, uint64_t max, uint64_t last) {
     Formatter fmt{};
 
     std::vector<std::pair<std::string, uint64_t>> pairs{

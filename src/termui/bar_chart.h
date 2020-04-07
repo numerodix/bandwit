@@ -9,9 +9,9 @@ namespace termui {
 
 class TermSurface;
 
-class TermChart {
+class BarChart {
   public:
-    TermChart(TermSurface *surface) : surface_{surface} {}
+    BarChart(TermSurface *surface) : surface_{surface} {}
     void draw_bars_from_right(std::vector<uint64_t> values);
     void draw_legend(uint64_t avg, uint64_t max, uint64_t last);
 

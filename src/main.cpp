@@ -23,7 +23,7 @@ struct FlowRecord {
 
 void visualize(const std::unique_ptr<sampling::Sampler> &sampler,
                const std::string &iface_name, termui::TermSurface &surface,
-               termui::TermChart &bar_chart) {
+               termui::BarChart &bar_chart) {
     std::vector<uint64_t> rxs{};
 
     sampling::Sample prev_sample = sampler->get_sample(iface_name);
@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
     auto win = std::unique_ptr<termui::TerminalWindow>(pwin);
 
     termui::TermSurface surf{pwin, 10};
-    termui::TermChart chart{&surf};
+    termui::BarChart chart{&surf};
 
     visualize(sys_sampler, iface_name, surf, chart);
 }
