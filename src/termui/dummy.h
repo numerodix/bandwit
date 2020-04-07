@@ -233,9 +233,10 @@ class TermSurface {
     const Point &get_lower_right() const;
 
   private:
-    void check_surface_fits();
-    Dimensions recompute_dimensions(Dimensions win_dim) const;
-    Point recompute_lower_right(Dimensions win_dim, Point upper_left) const;
+    void check_surface_fits(const Dimensions &win_dim);
+    Dimensions recompute_dimensions(const Dimensions &win_dim) const;
+    Point recompute_lower_right(const Dimensions &win_dim,
+                                const Point &upper_left) const;
 
     TerminalWindow *win_{nullptr};
     uint16_t num_lines_{0};
@@ -346,11 +347,11 @@ TermSurface::TermSurface(TerminalWindow *win, uint16_t num_lines)
 }
 
 void TermSurface::on_startup() {
-    check_surface_fits();
-
     // Initialize instance state
     auto win_dim = win_->get_size();
     auto win_cur = win_->get_cursor();
+
+    check_surface_fits(win_dim);
 
     // Detect if the bottom of our surface would currently overshoot the
     // terminal height - if so we need to force scroll the terminal by the
@@ -385,10 +386,6 @@ void TermSurface::on_startup() {
 }
 
 void TermSurface::on_window_resize() {
-    /// TODO!!
-}
-
-void TermSurface::on_window_resize_() {
     // After a redraw() the cursor is in the lower right of the surface.
     // We need to move it to the surface upper left before calling redraw()
     // again.
@@ -508,9 +505,7 @@ const Point &TermSurface::get_upper_left() const { return upper_left_; }
 
 const Point &TermSurface::get_lower_right() const { return lower_right_; }
 
-void TermSurface::check_surface_fits() {
-    auto win_dim = win_->get_size();
-
+void TermSurface::check_surface_fits(const Dimensions &win_dim) {
     if (num_lines_ > win_dim.height) {
         win_->clear_screen(' ');
 
@@ -519,14 +514,13 @@ void TermSurface::check_surface_fits() {
     }
 }
 
-Dimensions TermSurface::recompute_dimensions(Dimensions win_dim) const {
+Dimensions TermSurface::recompute_dimensions(const Dimensions &win_dim) const {
     Dimensions dim{win_dim.width, num_lines_};
-
     return dim;
 }
 
-Point TermSurface::recompute_lower_right(Dimensions win_dim,
-                                         Point upper_left) const {
+Point TermSurface::recompute_lower_right(const Dimensions &win_dim,
+                                         const Point &upper_left) const {
     Point lower_right{
         U16(upper_left.x + win_dim.width - 1),
         U16(upper_left.y + num_lines_ - 1),
