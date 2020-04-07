@@ -359,6 +359,7 @@ void TermSurface::on_window_resize() {
         win_->clear_screen(clear_fill_char);
         // seems to leave the terminal in cbreak mode :/
         throw std::runtime_error("terminal window too small :(");
+        // TODO: Currently this condition is not detected at surface creation
 
         // Case 2: Resize decreased height and shifted cursor to below the
         // bottom edge
