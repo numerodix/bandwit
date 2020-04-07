@@ -224,10 +224,8 @@ class TermSurface {
     TermSurface(TerminalWindow *win, uint16_t num_lines);
 
     void on_startup();
-    void on_window_resize(const Dimensions &win_dim_old,
-                          const Dimensions &win_dim_new);
+    void on_window_resize(const Dimensions &win_dim_new);
 
-    void redraw();
     void clear_surface();
     const Dimensions &get_size() const;
     const Point &get_upper_left() const;
@@ -266,16 +264,11 @@ class TerminalWindow {
     void on_resize() {
         auto dim_new = driver_->get_terminal_size();
 
-        for (auto surface : surfaces_) {
-            surface->on_window_resize(dim_, dim_new);
+        if (surface_ != nullptr) {
+            surface_->on_window_resize(dim_new);
         }
 
         dim_ = dim_new;
-
-        // clear_screen('X'); /// XXX
-        // std::cout << "[dim] cols: " << dim_.width << ", rows: " <<
-        // dim_.height
-        //           << "\n";
     }
 
     const Dimensions &get_size() const { return dim_; }
@@ -313,7 +306,7 @@ class TerminalWindow {
     }
 
     void register_surface(TermSurface *surface) {
-        surfaces_.push_back(surface);
+        surface_ = surface;
     }
 
   private:
@@ -335,7 +328,7 @@ class TerminalWindow {
     TerminalDriver *driver_{nullptr};
     Dimensions dim_{};
     Point cursor_{};
-    std::vector<TermSurface *> surfaces_{};
+    TermSurface * surface_{nullptr};
 };
 
 void TerminalWindow_signal_handler(int sig) {
@@ -388,8 +381,7 @@ void TermSurface::on_startup() {
     clear_surface();
 }
 
-void TermSurface::on_window_resize(const Dimensions &win_dim_old,
-                                   const Dimensions &win_dim_new) {
+void TermSurface::on_window_resize(const Dimensions &win_dim_new) {
     // Fail fast if the new size cannot fit the surface
     check_surface_fits(win_dim_new);
 
@@ -412,38 +404,6 @@ void TermSurface::on_window_resize(const Dimensions &win_dim_old,
     dim_ = recompute_dimensions(win_dim_new);
 
     clear_surface();
-}
-
-void TermSurface::redraw() {
-    // pre condition: the cursor is at the top left of the surface
-
-    auto dim = win_->get_size();
-    auto cur = win_->get_cursor();
-
-    auto win_top_left = Point{1, 1};
-    auto win_lower_right = Point{dim.width, dim.height};
-
-    auto surf_lower_right_y = std::min(U16(cur.y + num_lines_ - 1), dim.height);
-    auto surf_lower_right = Point{dim.width, surf_lower_right_y};
-
-    for (int y = 0; y < num_lines_; ++y) {
-        for (int x = 1; x <= dim.width; ++x) {
-            win_->put_char(bg_char_);
-        }
-    }
-
-    win_->set_cursor(win_top_left);
-    win_->put_char('Y');
-    win_->put_char('Y');
-    win_->put_char('Y');
-
-    win_->set_cursor(win_lower_right);
-    win_->put_char('T');
-
-    // post condition: leave the cursor in the lower right of the surface
-    win_->set_cursor(surf_lower_right);
-
-    win_->flush();
 }
 
 void TermSurface::clear_surface() {
@@ -471,6 +431,7 @@ const Point &TermSurface::get_lower_right() const { return lower_right_; }
 
 void TermSurface::check_surface_fits(const Dimensions &win_dim) {
     if (num_lines_ > win_dim.height) {
+        // to make the error message visible
         win_->clear_screen(' ');
 
         // seems to leave the terminal in cbreak mode :/
@@ -486,8 +447,8 @@ Dimensions TermSurface::recompute_dimensions(const Dimensions &win_dim) const {
 Point TermSurface::recompute_lower_right(const Dimensions &win_dim,
                                          const Point &upper_left) const {
     Point lower_right{
-        U16(upper_left.x + win_dim.width - 1),
-        U16(upper_left.y + num_lines_ - 1),
+        U16(INT(upper_left.x) + INT(win_dim.width) - 1),
+        U16(INT(upper_left.y) + INT(num_lines_) - 1),
     };
     return lower_right;
 }
