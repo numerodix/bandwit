@@ -1,0 +1,149 @@
+#include "terminal_surface.h"
+#include "macros.h"
+
+namespace bmon {
+namespace termui {
+
+void TerminalWindow_signal_handler(int sig) {
+    // check WINDOW is not nullptr
+    WINDOW->on_resize();
+}
+
+TermSurface::TermSurface(TerminalWindow *win, uint16_t num_lines)
+    : win_{win}, num_lines_{num_lines} {
+    win_->register_surface(this);
+    on_startup();
+}
+
+void TermSurface::on_startup() {
+    auto win_dim = win_->get_size();
+    auto win_cur = win_->get_cursor();
+
+    // Fail fast if the window size cannot fit the surface
+    check_surface_fits(win_dim);
+
+    // Detect if the bottom of the surface would currently overshoot the
+    // terminal height - if so we need to force scroll the terminal by the
+    // amount of the overshoot.
+    int overshoot = INT(win_cur.y) + INT(num_lines_) - INT(win_dim.height);
+
+    if (overshoot > 0) {
+        for (int y = 0; y < overshoot; ++y) {
+            for (auto x = 1; x <= win_dim.width; ++x) {
+                win_->put_char('O'); /// XXX
+            }
+        }
+    }
+    win_->flush();
+
+    // The upper left is normally just where the cursor was
+    auto upper_left_y = win_cur.y;
+
+    // ...but if we had to force scroll then we have to calculate it based on
+    // the overshoot because the scroll made the cursor effectively shift
+    // upwards.
+    if (overshoot > 0) {
+        upper_left_y = U16(INT(win_cur.y) - INT(overshoot) + 1);
+    }
+
+    // Initialize all positional invariants
+    dim_ = recompute_dimensions(win_dim);
+    upper_left_ = Point{win_cur.x, upper_left_y};
+    lower_right_ = recompute_lower_right(win_dim, upper_left_);
+
+    clear_surface();
+}
+
+void TermSurface::on_window_resize(const Dimensions &win_dim_new) {
+    // Fail fast if the new size cannot fit the surface
+    check_surface_fits(win_dim_new);
+
+    // After resize the lower right corner of the surface is below the bottom
+    // edge of the terminal. We cannot move the surface up without clobbering
+    // text that used to be above the surface, so we might as well clear the
+    // whole screen and move the surface to the top.
+    if (lower_right_.y > win_dim_new.height) {
+        upper_left_ = Point{1, 1};
+    }
+
+    // If the surface is at the top of the screen let's clear the screen
+    // proactively to get rid of stray text below the surface from earlier
+    // resizes.
+    if (upper_left_.y == 1) {
+        win_->clear_screen(' ');
+    }
+
+    lower_right_ = recompute_lower_right(win_dim_new, upper_left_);
+    dim_ = recompute_dimensions(win_dim_new);
+
+    clear_surface();
+}
+
+void TermSurface::clear_surface() {
+    auto dim = get_size();
+    auto upper_left = get_upper_left();
+    auto lower_right = get_lower_right();
+
+    win_->set_cursor(upper_left);
+
+    for (int y = 0; y < num_lines_; ++y) {
+        for (int x = 1; x <= dim.width; ++x) {
+            win_->put_char(bg_char_);
+        }
+    }
+
+    win_->set_cursor(lower_right);
+    win_->flush();
+}
+
+void TermSurface::put_char(const Point &point, const char &ch) {
+    auto upper_left = get_upper_left();
+
+    Point point_win{
+        point.x,
+        U16(INT(upper_left.y) + INT(point.y)),
+    };
+
+    win_->set_cursor(point_win);
+    win_->put_char(ch);
+}
+
+void TermSurface::flush() {
+    auto lower_right = get_lower_right();
+    win_->set_cursor(lower_right);
+
+    win_->flush();
+}
+
+const Dimensions &TermSurface::get_size() const { return dim_; }
+
+const Point &TermSurface::get_upper_left() const { return upper_left_; }
+
+const Point &TermSurface::get_lower_right() const { return lower_right_; }
+
+void TermSurface::check_surface_fits(const Dimensions &win_dim) {
+    if (num_lines_ > win_dim.height) {
+        // to make the error message visible
+        win_->clear_screen(' ');
+
+        // seems to leave the terminal in cbreak mode :/
+        throw std::runtime_error("terminal window too small :(");
+    }
+}
+
+Dimensions TermSurface::recompute_dimensions(const Dimensions &win_dim) const {
+    Dimensions dim{win_dim.width, num_lines_};
+    return dim;
+}
+
+Point TermSurface::recompute_lower_right(const Dimensions &win_dim,
+                                         const Point &upper_left) const {
+    Point lower_right{
+        U16(INT(upper_left.x) + INT(win_dim.width) - 1),
+        U16(INT(upper_left.y) + INT(num_lines_) - 1),
+    };
+    return lower_right;
+}
+
+} // namespace termui
+} // namespace bmon

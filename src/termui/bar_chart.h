@@ -4,20 +4,19 @@
 #include <cstdint>
 #include <vector>
 
-#include "display.h"
+#include "terminal_surface.h"
 
 namespace bmon {
 namespace termui {
 
-class BarChart {
+class TermChart {
   public:
-    explicit BarChart(Display *display) : display_{display} {}
+    TermChart(TermSurface *surface) : surface_{surface} {}
     void draw_bars_from_right(std::vector<uint64_t> values);
-
-  private:
     void draw_legend(uint64_t avg, uint64_t max, uint64_t last);
 
-    Display *display_{nullptr};
+  private:
+    TermSurface *surface_{nullptr};
 };
 
 } // namespace termui
