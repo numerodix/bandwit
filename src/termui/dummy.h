@@ -227,9 +227,9 @@ class TermSurface {
 
     void redraw();
     void clear_screen();
-    const Dimensions& get_size() const;
-    const Point& get_upper_left() const;
-    const Point& get_lower_right() const;
+    const Dimensions &get_size() const;
+    const Point &get_upper_left() const;
+    const Point &get_lower_right() const;
 
   private:
     TerminalWindow *win_{nullptr};
@@ -453,17 +453,11 @@ void TermSurface::clear_screen() {
     win_->set_cursor(lower_right);
 }
 
-const Dimensions& TermSurface::get_size() const {
-    return dim_;
-}
+const Dimensions &TermSurface::get_size() const { return dim_; }
 
-const Point& TermSurface::get_upper_left() const {
-    return upper_left_;
-}
+const Point &TermSurface::get_upper_left() const { return upper_left_; }
 
-const Point& TermSurface::get_lower_right() const {
-    return lower_right_;
-}
+const Point &TermSurface::get_lower_right() const { return lower_right_; }
 
 } // namespace termui
 } // namespace bmon
