@@ -354,18 +354,19 @@ void TermSurface::on_window_resize() {
     auto surf_upper_left_y = U16(1);
     char clear_fill_char = ' ';
 
-    // Resize made the window is too small for surface
+    // Case 1: Resize made the window is too small for surface
     if (num_lines_ > dim.height) {
         win_->clear_screen(clear_fill_char);
         // seems to leave the terminal in cbreak mode :/
         throw std::runtime_error("terminal window too small :(");
 
-        // Resize decreased height and shifted cursor to below the bottom edge
+        // Case 2: Resize decreased height and shifted cursor to below the
+        // bottom edge
     } else if (cur.y > dim.height) {
         // Nothing to do, as surface_upper_left_y is already 1.
         // But we don't want to enter the unconditional else branch below.
 
-        // Any other resize
+        // Case default: Any other resize
     } else {
         surf_upper_left_y = U16(cur.y - num_lines_ + 1);
     }
