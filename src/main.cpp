@@ -326,7 +326,10 @@ int main() {
     auto pwin = termui::TerminalWindow::create(&dr);
     auto win = std::unique_ptr<termui::TerminalWindow>(pwin);
 
-    win->clear_screen('X');
+    termui::TermSurface surf{pwin, 10};
+
+    // win->clear_screen('X');
+    surf.redraw();
 
     while (true) {
     }

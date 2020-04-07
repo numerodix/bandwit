@@ -215,7 +215,22 @@ class TerminalDriver {
     char char_str_[2] = {0};
 };
 
+// XXXXXXX
+
 class TerminalWindow;
+
+class TermSurface {
+  public:
+    TermSurface(TerminalWindow *win, uint16_t num_lines);
+    void on_window_resize();
+    void redraw();
+
+  private:
+    TerminalWindow *win_{nullptr};
+    uint16_t num_lines_{0};
+    const char bg_char_ = 'X';
+};
+
 // eugh
 static TerminalWindow *WINDOW = nullptr;
 
@@ -234,8 +249,13 @@ class TerminalWindow {
     void on_resize() {
         dim_ = driver_->get_terminal_size();
 
+        for (auto surface : surfaces_) {
+            surface->on_window_resize();
+        }
+
         // clear_screen('X'); /// XXX
-        // std::cout << "[dim] cols: " << dim_.width << ", rows: " << dim_.height
+        // std::cout << "[dim] cols: " << dim_.width << ", rows: " <<
+        // dim_.height
         //           << "\n";
     }
 
@@ -244,11 +264,13 @@ class TerminalWindow {
     const Point &get_cursor() const { return cursor_; }
 
     void set_cursor(const Point &point) {
+        // check point within dimensions
         driver_->set_cursor_position(point);
         cursor_ = point;
     }
 
     void put_char(const char &ch) {
+        // check cursor pos leaves space for the char on the window?
         driver_->put_char(ch);
         // recalculate and update cursor_ ? (is_printable etc)
     }
@@ -271,6 +293,10 @@ class TerminalWindow {
         flush();
     }
 
+    void register_surface(TermSurface *surface) {
+        surfaces_.push_back(surface);
+    }
+
   private:
     TerminalWindow(TerminalDriver *driver) : driver_{driver} {
         // the window has to know its size at all times
@@ -290,11 +316,109 @@ class TerminalWindow {
     TerminalDriver *driver_{nullptr};
     Dimensions dim_{};
     Point cursor_{};
+    std::vector<TermSurface *> surfaces_{};
 };
 
 void TerminalWindow_signal_handler(int sig) {
     // check WINDOW is not nullptr
     WINDOW->on_resize();
+}
+
+TermSurface::TermSurface(TerminalWindow *win, uint16_t num_lines)
+    : win_{win}, num_lines_{num_lines} {
+    win_->register_surface(this);
+}
+
+void TermSurface::on_window_resize() {
+    // After a redraw() the cursor is in the lower right of the surface.
+    // We need to move it to the surface upper left before calling redraw() again.
+
+    // the post resize dimensions
+    auto dim = win_->get_size();
+    // the cursor position has not changed
+    auto cur = win_->get_cursor();
+
+    // Case 1: After resize the terminal is too small to display the surface
+    //      Hard error.
+    // Case 2: After resize the lower right hand corner is below the bottom edge
+    // of the terminal.
+    //      We cannot redraw without clobbering text that used to be above
+    //      the surface, so we might as well clear the whole screen and
+    //      move the surface to the top. Then move the cursor to the top left
+    //      hand side of the new surface location.
+    // Case default: Just move the cursor to the upper left hand side of the
+    // surface.
+
+    auto surface_upper_left_x = U16(1);
+    auto surface_upper_left_y = U16(1);
+    char clear_fill_char = ' ';
+
+    // Resize made the window is too small for surface
+    if (num_lines_ > dim.height) {
+        win_->clear_screen(clear_fill_char);
+        // seems to leave the terminal in cbreak mode :/
+        throw std::runtime_error("terminal window too small :(");
+
+    // Resize decreased height and shifted cursor to below the bottom edge
+    } else if (cur.y > dim.height) {
+        win_->clear_screen(clear_fill_char);
+
+    // Any other resize
+    } else {
+        surface_upper_left_y = U16(cur.y - num_lines_ + 1);
+    }
+
+    auto surface_upper_left = Point{surface_upper_left_x, surface_upper_left_y};
+    win_->set_cursor(surface_upper_left);
+
+    redraw();
+}
+
+void TermSurface::redraw() {
+    auto dim = win_->get_size();
+    auto cur = win_->get_cursor();
+
+    auto win_top_left = Point{1, 1};
+    auto win_lower_right = Point{dim.width, dim.height};
+
+    auto surface_lower_right_y = std::min(U16(cur.y + num_lines_ - 1), dim.height);
+    auto surface_lower_right = Point{dim.width, surface_lower_right_y};
+
+    for (int y = 0; y < num_lines_; ++y) {
+        for (int x = 1; x <= dim.width; ++x) {
+            win_->put_char(bg_char_);
+        }
+    }
+
+    win_->set_cursor(win_top_left);
+    win_->put_char('Y');
+    win_->put_char('Y');
+    win_->put_char('Y');
+
+    win_->set_cursor(win_lower_right);
+    win_->put_char('T');
+
+    win_->set_cursor(surface_lower_right);
+    win_->flush();
+
+    // auto [cols, rows] = get_term_size();
+    // auto [cur_x, cur_y] = get_cursor_pos();
+
+    // for (int y = 0; y < num_lines; ++y) {
+    //     for (int x = 0; x < cols; ++x) {
+    //         fprintf(stdout, "%d", y);
+    //     }
+    // }
+
+    // fprintf(stdout, "\033[%d;%dH", 1, 1);
+    // fprintf(stdout, "YYY");
+
+    // fprintf(stdout, "\033[%d;%dH", rows, cols);
+    // fprintf(stdout, "T");
+
+    // int ypos = std::min(U16(num_lines + cur_y - 1), rows);
+    // fprintf(stdout, "\033[%d;%dH", ypos, cols);
+    // fflush(stdout);
 }
 
 } // namespace termui
