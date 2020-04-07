@@ -392,68 +392,26 @@ void TermSurface::on_window_resize(const Dimensions &win_dim_old,
                                    const Dimensions &win_dim_new) {
     // Fail fast if the new size cannot fit the surface
     check_surface_fits(win_dim_new);
-    return;
 
-    // After a redraw() the cursor is in the lower right of the surface.
-    // We need to move it to the surface upper left before calling redraw()
-    // again.
-
-    // the post resize dimensions
-    auto dim = win_->get_size();
-    // the cursor position has not changed
-    auto cur = win_->get_cursor();
-
-    // Case 1: After resize the terminal is too small to display the surface
-    //      Hard error.
-    // Case 2: After resize the lower right hand corner is below the bottom edge
-    // of the terminal.
-    //      We cannot redraw without clobbering text that used to be above
-    //      the surface, so we might as well clear the whole screen and
-    //      move the surface to the top. Then move the cursor to the top left
-    //      hand side of the new surface location.
-    // Case default: Just move the cursor to the upper left hand side of the
-    // surface.
-
-    auto surf_upper_left_x = U16(1);
-    auto surf_upper_left_y = U16(1);
-    char clear_fill_char = ' ';
-
-    // Case 1: Resize made the window is too small for surface
-    if (num_lines_ > dim.height) {
-        win_->clear_screen(clear_fill_char);
-        // seems to leave the terminal in cbreak mode :/
-        throw std::runtime_error("terminal window too small :(");
-
-        // Case 2: Resize decreased height and shifted cursor to below the
-        // bottom edge
-    } else if (cur.y > dim.height) {
-        // Nothing to do, as surface_upper_left_y is already 1.
-        // But we don't want to enter the unconditional else branch below.
-
-        // Case default: Any other resize
-    } else {
-        surf_upper_left_y = U16(cur.y - num_lines_ + 1);
+    // After resize the lower right corner of the surface is below the bottom
+    // edge of the terminal. We cannot move the surface up without clobbering
+    // text that used to be above the surface, so we might as well clear the
+    // whole screen and move the surface to the top.
+    if (lower_right_.y > win_dim_new.height) {
+        upper_left_ = Point{1, 1};
     }
 
-    // If we are setting the cursor at the top left of the screen we should
-    // clear the whole screen proactively to make sure there isn't any left-over
-    // output in the lower parts of the screen, below the surface.
-    if (surf_upper_left_y == 1) {
-        win_->clear_screen(clear_fill_char);
+    // If the surface is at the top of the screen let's clear the screen
+    // proactively to get rid of stray text below the surface from earlier
+    // resizes.
+    if (upper_left_.y == 1) {
+        win_->clear_screen(' ');
     }
 
-    auto surf_upper_left = Point{surf_upper_left_x, surf_upper_left_y};
-    win_->set_cursor(surf_upper_left);
+    lower_right_ = recompute_lower_right(win_dim_new, upper_left_);
+    dim_ = recompute_dimensions(win_dim_new);
 
-    // Update (or initialize) instance state
-    dim_ = dim;
-    upper_left_ = surf_upper_left;
-    lower_right_ = Point{
-        U16(upper_left_.x + dim.width - 1),
-        U16(upper_left_.y + num_lines_ - 1),
-    };
-
-    redraw();
+    clear_surface();
 }
 
 void TermSurface::redraw() {
@@ -503,8 +461,6 @@ void TermSurface::clear_surface() {
 
     win_->set_cursor(lower_right);
     win_->flush();
-
-    // post condition: the cursor is at the lower right
 }
 
 const Dimensions &TermSurface::get_size() const { return dim_; }
