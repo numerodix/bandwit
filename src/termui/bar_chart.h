@@ -4,10 +4,10 @@
 #include <cstdint>
 #include <vector>
 
-#include "terminal_surface.h"
-
 namespace bmon {
 namespace termui {
+
+class TermSurface;
 
 class TermChart {
   public:

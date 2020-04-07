@@ -5,6 +5,7 @@
 #include "bar_chart.h"
 #include "formatter.h"
 #include "macros.h"
+#include "terminal_surface.h"
 
 namespace bmon {
 namespace termui {
