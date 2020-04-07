@@ -1,13 +1,11 @@
+#include <stdexcept>
+
 #include "terminal_surface.h"
+#include "terminal_window.h"
 #include "macros.h"
 
 namespace bmon {
 namespace termui {
-
-void TerminalWindow_signal_handler(int sig) {
-    // check WINDOW is not nullptr
-    WINDOW->on_resize();
-}
 
 TermSurface::TermSurface(TerminalWindow *win, uint16_t num_lines)
     : win_{win}, num_lines_{num_lines} {

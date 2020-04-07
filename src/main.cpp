@@ -12,6 +12,7 @@
 #include "termui/terminal_driver.h"
 #include "termui/terminal_mode.h"
 #include "termui/terminal_surface.h"
+#include "termui/terminal_window.h"
 
 using namespace bmon;
 

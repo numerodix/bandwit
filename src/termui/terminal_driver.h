@@ -7,6 +7,7 @@
 
 #include "macros.h"
 #include "termui/dimensions.h"
+#include "termui/point.h"
 
 namespace bmon {
 namespace termui {
