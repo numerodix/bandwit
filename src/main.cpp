@@ -3,6 +3,7 @@
 #include <map>
 #include <memory>
 #include <thread>
+#include <signal.h>
 
 #include "sampling/ip_cmd_sampler.h"
 #include "sampling/procfs_sampler.h"
