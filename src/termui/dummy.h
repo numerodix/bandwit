@@ -227,6 +227,9 @@ class TermSurface {
     void on_window_resize(const Dimensions &win_dim_new);
 
     void clear_surface();
+    void put_char(const Point& point, const char& ch);
+    void flush();
+
     const Dimensions &get_size() const;
     const Point &get_upper_left() const;
     const Point &get_lower_right() const;
@@ -420,6 +423,22 @@ void TermSurface::clear_surface() {
     }
 
     win_->set_cursor(lower_right);
+    win_->flush();
+}
+
+void TermSurface::put_char(const Point& point, const char& ch) {
+    auto upper_left = get_upper_left();
+
+    Point point_win{
+        point.x,
+        U16(INT(upper_left.y) + INT(point.y) - 1),
+    };
+
+    win_->set_cursor(point_win);
+    win_->put_char(ch);
+}
+
+void TermSurface::flush() {
     win_->flush();
 }
 
