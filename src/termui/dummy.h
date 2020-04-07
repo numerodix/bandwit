@@ -200,7 +200,7 @@ class TerminalDriver {
         fprintf(stdout_file_, "\033[%d;%dH", pt.y, pt.x);
     }
 
-    void put_char(char ch) {
+    void put_char(const char &ch) {
         char_str_[0] = ch;
         fprintf(stdout_file_, "%s", char_str_);
     }
@@ -215,34 +215,72 @@ class TerminalDriver {
     char char_str_[2] = {0};
 };
 
-
-void TerminalWindow_signal_handler(int sig);
-
 class TerminalWindow;
 // eugh
 static TerminalWindow *WINDOW = nullptr;
 
+void TerminalWindow_signal_handler(int sig);
+
 class TerminalWindow {
   public:
-    static TerminalWindow* create(TerminalDriver *driver) {
+    static TerminalWindow *create(TerminalDriver *driver) {
+        // check WINDOW is nullptr
         WINDOW = new TerminalWindow(driver);
         return WINDOW;
     }
 
+    ~TerminalWindow() { WINDOW = nullptr; }
+
     void on_resize() {
         dim_ = driver_->get_terminal_size();
-        std::cout << "[dim] cols: " << dim_.width << ", rows: " << dim_.height
-                << "\n";
+
+        // clear_screen('X'); /// XXX
+        // std::cout << "[dim] cols: " << dim_.width << ", rows: " << dim_.height
+        //           << "\n";
+    }
+
+    const Dimensions &get_size() const { return dim_; }
+
+    const Point &get_cursor() const { return cursor_; }
+
+    void set_cursor(const Point &point) {
+        driver_->set_cursor_position(point);
+        cursor_ = point;
+    }
+
+    void put_char(const char &ch) {
+        driver_->put_char(ch);
+        // recalculate and update cursor_ ? (is_printable etc)
+    }
+
+    void flush() { driver_->flush_output(); }
+
+    void clear_screen(const char &fill_char) {
+        auto top_left = Point{1, 1};
+        auto dim = get_size();
+
+        set_cursor(top_left);
+
+        for (auto y = 1; y <= dim.height; ++y) {
+            for (auto x = 1; x <= dim.width; ++x) {
+                put_char(fill_char);
+            }
+        }
+
+        set_cursor(top_left);
+        flush();
     }
 
   private:
     TerminalWindow(TerminalDriver *driver) : driver_{driver} {
-        on_resize();
-        install_resize_handler();
-    }
+        // the window has to know its size at all times
+        dim_ = driver_->get_terminal_size();
 
-    ~TerminalWindow() {
-        WINDOW = nullptr;
+        // check cursor within dimensions?
+        cursor_ = driver_->get_cursor_position();
+
+        // install handler to update size when it changes
+        install_resize_handler();
     }
 
     void install_resize_handler() {
@@ -251,6 +289,7 @@ class TerminalWindow {
 
     TerminalDriver *driver_{nullptr};
     Dimensions dim_{};
+    Point cursor_{};
 };
 
 void TerminalWindow_signal_handler(int sig) {

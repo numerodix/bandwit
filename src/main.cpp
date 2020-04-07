@@ -323,7 +323,11 @@ int main() {
     TerminalModeGuard mg{&ms};
 
     termui::TerminalDriver dr{stdin, stdout};
-    auto win = termui::TerminalWindow::create(&dr);
+    auto pwin = termui::TerminalWindow::create(&dr);
+    auto win = std::unique_ptr<termui::TerminalWindow>(pwin);
 
-    while (true) {}
+    win->clear_screen('X');
+
+    while (true) {
+    }
 }
