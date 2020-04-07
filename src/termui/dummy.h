@@ -350,8 +350,8 @@ void TermSurface::on_window_resize() {
     // Case default: Just move the cursor to the upper left hand side of the
     // surface.
 
-    auto surface_upper_left_x = U16(1);
-    auto surface_upper_left_y = U16(1);
+    auto surf_upper_left_x = U16(1);
+    auto surf_upper_left_y = U16(1);
     char clear_fill_char = ' ';
 
     // Resize made the window is too small for surface
@@ -367,18 +367,18 @@ void TermSurface::on_window_resize() {
 
         // Any other resize
     } else {
-        surface_upper_left_y = U16(cur.y - num_lines_ + 1);
+        surf_upper_left_y = U16(cur.y - num_lines_ + 1);
     }
 
     // If we are setting the cursor at the top left of the screen we should
     // clear the whole screen proactively to make sure there isn't any left-over
     // output in the lower parts of the screen, below the surface.
-    if (surface_upper_left_y == 1) {
+    if (surf_upper_left_y == 1) {
         win_->clear_screen(clear_fill_char);
     }
 
-    auto surface_upper_left = Point{surface_upper_left_x, surface_upper_left_y};
-    win_->set_cursor(surface_upper_left);
+    auto surf_upper_left = Point{surf_upper_left_x, surf_upper_left_y};
+    win_->set_cursor(surf_upper_left);
 
     redraw();
 }
@@ -390,9 +390,8 @@ void TermSurface::redraw() {
     auto win_top_left = Point{1, 1};
     auto win_lower_right = Point{dim.width, dim.height};
 
-    auto surface_lower_right_y =
-        std::min(U16(cur.y + num_lines_ - 1), dim.height);
-    auto surface_lower_right = Point{dim.width, surface_lower_right_y};
+    auto surf_lower_right_y = std::min(U16(cur.y + num_lines_ - 1), dim.height);
+    auto surf_lower_right = Point{dim.width, surf_lower_right_y};
 
     for (int y = 0; y < num_lines_; ++y) {
         for (int x = 1; x <= dim.width; ++x) {
@@ -408,7 +407,9 @@ void TermSurface::redraw() {
     win_->set_cursor(win_lower_right);
     win_->put_char('T');
 
-    win_->set_cursor(surface_lower_right);
+    // post condition: leave the cursor in the lower right of the surface
+    win_->set_cursor(surf_lower_right);
+
     win_->flush();
 }
 
