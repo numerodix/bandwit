@@ -250,7 +250,7 @@ void on_resize(int sig) {
     fill_surface(cur_surf.num_lines);
 }
 
-int main() {
+int main67() {
     SignalSuspender susp{SIGINT};
 
     TerminalModeSet set{};
@@ -286,4 +286,31 @@ int main44() {
     std::cout << "SIGINT is on, try again now\n";
 
     sleep(2);
+}
+
+int main() {
+    SignalSuspender susp{SIGINT};
+
+    TerminalModeSet set{};
+    auto ms = set.local_off(ECHO).local_off(ICANON).build_setter(&susp);
+    TerminalModeGuard mg{&ms};
+
+    termui::TerminalDriver dr{stdin, stdout};
+
+    auto dim = dr.get_terminal_size();
+    std::cout << "[dim] cols: " << dim.width << ", rows: " << dim.height
+              << "\n";
+
+    auto pt1 = dr.get_cursor_position();
+    std::cout << "[cur] x: " << pt1.x << ", y: " << pt1.y << "\n";
+
+    dr.set_cursor_position(termui::Point{20, 10});
+    auto pt2 = dr.get_cursor_position();
+    for (auto ch : std::string{"\033[31;1mXXXXXGGGGXXXXX\033[0m"}) {
+        dr.put_char(ch);
+    }
+    dr.flush_output();
+
+    dr.set_cursor_position(termui::Point{pt1.x, U16(pt1.y + U16(1))});
+    std::cout << "[cur] x: " << pt2.x << ", y: " << pt2.y << "\n";
 }
