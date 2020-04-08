@@ -121,7 +121,7 @@ const Point &TerminalSurface::get_upper_left() const { return upper_left_; }
 const Point &TerminalSurface::get_lower_right() const { return lower_right_; }
 
 void TerminalSurface::check_surface_fits(const Dimensions &win_dim) {
-    if (min_lines_ > win_dim.height) {
+    if (win_dim.height < min_lines_) {
         // to make the error message visible
         win_->clear_screen(' ');
 
