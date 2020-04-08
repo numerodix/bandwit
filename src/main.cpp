@@ -1,8 +1,11 @@
 #include <chrono>
+#include <fcntl.h>
+#include <future>
 #include <iostream>
 #include <map>
 #include <memory>
 #include <signal.h>
+#include <stdio.h>
 #include <thread>
 
 #include "sampling/ip_cmd_sampler.h"
@@ -22,6 +25,25 @@ struct FlowRecord {
     uint64_t tx;
 };
 
+void accept_input(termui::TerminalSurface &surface) {
+    std::this_thread::sleep_for(std::chrono::milliseconds{10});
+
+    char ch = fgetc(stdin);
+    while (ch >= 0) {
+        if (ch == 10) {
+            surface.on_carriage_return();
+        }
+
+        ch = fgetc(stdin);
+    }
+}
+
+void accept_loop(termui::TerminalSurface &surface) {
+    for (int i = 0; i < 100; ++i) {
+        accept_input(surface);
+    }
+}
+
 void visualize(const std::unique_ptr<sampling::Sampler> &sampler,
                const std::string &iface_name, termui::TerminalSurface &surface,
                termui::BarChart &bar_chart) {
@@ -30,7 +52,8 @@ void visualize(const std::unique_ptr<sampling::Sampler> &sampler,
     sampling::Sample prev_sample = sampler->get_sample(iface_name);
 
     while (true) {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        // std::this_thread::sleep_for(std::chrono::seconds{1});
+        accept_loop(surface);
         sampling::Sample sample = sampler->get_sample(iface_name);
 
         FlowRecord rec{
@@ -73,6 +96,9 @@ int main(int argc, char *argv[]) {
 
     termui::TerminalSurface surf{pwin, 10};
     termui::BarChart chart{&surf};
+
+    // Modify stdin to be non-blocking
+    fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
 
     visualize(sys_sampler, iface_name, surf, chart);
 }
