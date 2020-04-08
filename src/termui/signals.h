@@ -9,7 +9,7 @@ namespace termui {
 
 class SignalSuspender {
   public:
-    explicit SignalSuspender(std::initializer_list<int> signums)
+    SignalSuspender(std::initializer_list<int> signums)
         : signums_{signums} {}
 
     void suspend();
