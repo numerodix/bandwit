@@ -52,23 +52,24 @@ void TerminalSurface::on_startup() {
     clear_surface();
 }
 
-void TerminalSurface::on_window_resize(const Dimensions &win_dim_new) {
+void TerminalSurface::on_window_resize(const Dimensions &win_dim_old,
+                                       const Dimensions &win_dim_new) {
     // Fail fast if the new size cannot fit the surface
     check_surface_fits(win_dim_new);
 
-    // After resize the lower right corner of the surface is below the bottom
-    // edge of the terminal. We cannot move the surface up without clobbering
-    // text that used to be above the surface, so we might as well clear the
-    // whole screen and move the surface to the top.
-    if (lower_right_.y > win_dim_new.height) {
-        upper_left_ = Point{1, 1};
-    }
+    // The terminal height has changed
+    int delta = INT(win_dim_new.height) - INT(win_dim_old.height);
 
-    // If the surface is at the top of the screen let's clear the screen
-    // proactively to get rid of stray text below the surface from earlier
-    // resizes.
-    if (upper_left_.y == 1) {
-        win_->clear_screen(' ');
+    // The terminal has become taller - we extend the surface to fill the empty
+    // space below!
+    if (delta > 0) {
+        num_lines_ += delta;
+
+        // The terminal has become shorter - terminals expect the cursor to
+        // shift upwards by clearing the space above the surface. We let the
+        // surface stay the same size, but move it up accordingly.
+    } else if (delta < 0) {
+        upper_left_.y += delta;
     }
 
     lower_right_ = recompute_lower_right(win_dim_new, upper_left_);
@@ -120,7 +121,7 @@ const Point &TerminalSurface::get_upper_left() const { return upper_left_; }
 const Point &TerminalSurface::get_lower_right() const { return lower_right_; }
 
 void TerminalSurface::check_surface_fits(const Dimensions &win_dim) {
-    if (num_lines_ > win_dim.height) {
+    if (min_lines_ > win_dim.height) {
         // to make the error message visible
         win_->clear_screen(' ');
 

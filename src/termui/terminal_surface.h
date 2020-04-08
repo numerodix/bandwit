@@ -14,7 +14,8 @@ class TerminalSurface {
     TerminalSurface(TerminalWindow *win, uint16_t num_lines);
 
     void on_startup();
-    void on_window_resize(const Dimensions &win_dim_new);
+    void on_window_resize(const Dimensions &win_dim_old,
+                          const Dimensions &win_dim_new);
 
     void clear_surface();
     void put_char(const Point &point, const char &ch);
@@ -31,6 +32,7 @@ class TerminalSurface {
                                 const Point &upper_left) const;
 
     TerminalWindow *win_{nullptr};
+    uint16_t min_lines_{5};
     uint16_t num_lines_{0};
     const char bg_char_ = ' ';
 
