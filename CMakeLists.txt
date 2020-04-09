@@ -5,6 +5,8 @@ project(bmon CXX)
 
 # compiler options
 add_compile_options(-std=c++2a -g -Wall -Wextra -Wpedantic -Wnon-virtual-dtor -Wold-style-cast)
+# enables function names in backtraces
+set(CMAKE_EXE_LINKER_FLAGS -rdynamic)
 
 # run clang-tidy during compilation
 include(cmake/static_analyzers.cmake)

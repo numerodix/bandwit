@@ -73,14 +73,7 @@ void visualize(const std::unique_ptr<sampling::Sampler> &sampler,
     }
 }
 
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        std::cout << "Must pass <iface_name>\n";
-        exit(EXIT_FAILURE);
-    }
-
-    std::string iface_name{argv[1]};
-
+void run(const std::string &iface_name) {
     std::unique_ptr<sampling::Sampler> sys_sampler{
         new sampling::SysFsSampler()};
 
@@ -101,4 +94,27 @@ int main(int argc, char *argv[]) {
     fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
 
     visualize(sys_sampler, iface_name, surf, chart);
+}
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        std::cout << "Must pass <iface_name>\n";
+        exit(EXIT_FAILURE);
+    }
+
+    std::string iface_name{argv[1]};
+
+    // We desperately need to wrap the execution in a try/catch otherwise an
+    // uncaught exception will terminate the program bypassing all destructors
+    // and leave the terminal in a corrupted state.
+    try {
+        run(iface_name);
+    } catch (std::exception &e) {
+        std::cerr << "Trapped uncaught exception:\n  " << e.what() << "\n";
+        exit(EXIT_FAILURE);
+    } catch (...) {
+        std::cerr << "This is the last resort exception handler. I have no "
+                     "state about the error.\n";
+        exit(EXIT_FAILURE);
+    }
 }
