@@ -23,13 +23,12 @@ class TerminalSurface {
 
     const Dimensions &get_size() const;
     const Point &get_upper_left() const;
-    const Point &get_lower_right() const;
+    const Point &get_lower_left() const;
 
   private:
     void check_surface_fits(const Dimensions &win_dim);
     Dimensions recompute_dimensions(const Dimensions &win_dim) const;
-    Point recompute_lower_right(const Dimensions &win_dim,
-                                const Point &upper_left) const;
+    Point recompute_lower_left(const Point &upper_left) const;
 
     TerminalWindow *win_{nullptr};
     uint16_t min_lines_{6};
@@ -38,7 +37,7 @@ class TerminalSurface {
 
     Dimensions dim_{};
     Point upper_left_{};
-    Point lower_right_{};
+    Point lower_left_{};
 };
 
 } // namespace termui

@@ -47,7 +47,7 @@ void TerminalSurface::on_startup() {
     // Initialize all positional invariants
     dim_ = recompute_dimensions(win_dim);
     upper_left_ = Point{win_cur.x, upper_left_y};
-    lower_right_ = recompute_lower_right(win_dim, upper_left_);
+    lower_left_ = recompute_lower_left(upper_left_);
 
     clear_surface();
 }
@@ -72,7 +72,7 @@ void TerminalSurface::on_window_resize(const Dimensions &win_dim_old,
         upper_left_.y += delta;
     }
 
-    lower_right_ = recompute_lower_right(win_dim_new, upper_left_);
+    lower_left_ = recompute_lower_left(upper_left_);
     dim_ = recompute_dimensions(win_dim_new);
 
     clear_surface();
@@ -81,7 +81,7 @@ void TerminalSurface::on_window_resize(const Dimensions &win_dim_old,
 void TerminalSurface::clear_surface() {
     auto dim = get_size();
     auto upper_left = get_upper_left();
-    auto lower_right = get_lower_right();
+    auto lower_left = get_lower_left();
 
     win_->set_cursor(upper_left);
 
@@ -91,7 +91,7 @@ void TerminalSurface::clear_surface() {
         }
     }
 
-    win_->set_cursor(lower_right);
+    win_->set_cursor(lower_left);
     win_->flush();
 }
 
@@ -108,8 +108,8 @@ void TerminalSurface::put_char(const Point &point, const char &ch) {
 }
 
 void TerminalSurface::flush() {
-    auto lower_right = get_lower_right();
-    win_->set_cursor(lower_right);
+    auto lower_left = get_lower_left();
+    win_->set_cursor(lower_left);
 
     win_->flush();
 }
@@ -118,7 +118,7 @@ const Dimensions &TerminalSurface::get_size() const { return dim_; }
 
 const Point &TerminalSurface::get_upper_left() const { return upper_left_; }
 
-const Point &TerminalSurface::get_lower_right() const { return lower_right_; }
+const Point &TerminalSurface::get_lower_left() const { return lower_left_; }
 
 void TerminalSurface::check_surface_fits(const Dimensions &win_dim) {
     if (win_dim.height < min_lines_) {
@@ -133,13 +133,12 @@ TerminalSurface::recompute_dimensions(const Dimensions &win_dim) const {
     return dim;
 }
 
-Point TerminalSurface::recompute_lower_right(const Dimensions &win_dim,
-                                             const Point &upper_left) const {
-    Point lower_right{
-        U16(INT(upper_left.x) + INT(win_dim.width) - 1),
+Point TerminalSurface::recompute_lower_left(const Point &upper_left) const {
+    Point lower_left{
+        U16(1),
         U16(INT(upper_left.y) + INT(num_lines_) - 1),
     };
-    return lower_right;
+    return lower_left;
 }
 
 } // namespace termui
