@@ -122,11 +122,8 @@ const Point &TerminalSurface::get_lower_right() const { return lower_right_; }
 
 void TerminalSurface::check_surface_fits(const Dimensions &win_dim) {
     if (win_dim.height < min_lines_) {
-        // to make the error message visible
-        win_->clear_screen(' ');
-
-        // seems to leave the terminal in cbreak mode :/
-        throw std::runtime_error("terminal window too small :(");
+        throw std::runtime_error(
+            "TerminalSurface.check_surface_fits terminal window too small :(");
     }
 }
 
