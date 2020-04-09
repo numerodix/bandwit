@@ -23,6 +23,8 @@ struct FlowRecord {
 };
 
 void signal_handler(int sig) {
+    // TODO: make this a dedicated exc class so we can match on it without
+    // treating it like an error
     throw std::runtime_error("Got signal SIGINT (did you Ctrl+C?)");
 }
 

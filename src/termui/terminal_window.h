@@ -29,6 +29,8 @@ class TerminalWindow {
   private:
     TerminalWindow(TerminalDriver *driver);
 
+    void check_is_on_window(const Point &point);
+
     void install_resize_handler();
 
     TerminalDriver *driver_{nullptr};

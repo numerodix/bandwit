@@ -123,7 +123,7 @@ const Point &TerminalSurface::get_lower_left() const { return lower_left_; }
 void TerminalSurface::check_surface_fits(const Dimensions &win_dim) {
     if (win_dim.height < min_lines_) {
         throw std::runtime_error(
-            "TerminalSurface.check_surface_fits terminal window too small :(");
+            "TerminalSurface.check_surface_fits: terminal window too small :(");
     }
 }
 
