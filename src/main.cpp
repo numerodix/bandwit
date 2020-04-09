@@ -22,6 +22,10 @@ struct FlowRecord {
     uint64_t tx;
 };
 
+void signal_handler(int sig) {
+    throw std::runtime_error("Got signal SIGINT (did you Ctrl+C?)");
+}
+
 void visualize(const std::unique_ptr<sampling::Sampler> &sampler,
                const std::string &iface_name, termui::TerminalSurface &surface,
                termui::BarChart &bar_chart) {
@@ -77,6 +81,11 @@ int main(int argc, char *argv[]) {
     }
 
     std::string iface_name{argv[1]};
+
+    // We expect to get a Ctrl+C. Install a SIGINT handler that throws an
+    // exception such that we can unwind orderly and enter the catch block
+    // below.
+    signal(SIGINT, signal_handler);
 
     // We desperately need to wrap the execution in a try/catch otherwise an
     // uncaught exception will terminate the program bypassing all destructors
