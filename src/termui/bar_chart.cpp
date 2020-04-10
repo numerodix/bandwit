@@ -74,7 +74,7 @@ void BarChart::draw_scale(const Dimensions &dim, uint64_t max_value) {
     std::vector<std::string> ticks{};
 
     double factor = 1.0 / DOUBLE(dim.height);
-    for (int x = 0; x < dim.height; ++x) {
+    for (int x = 1; x <= dim.height; ++x) {
         uint64_t tick = U64(DOUBLE(max_value) * (x * factor));
         std::string tick_fmt = fmt.format_num_byte_rate(tick, "s");
         ticks.push_back(tick_fmt);
