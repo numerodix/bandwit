@@ -14,6 +14,11 @@ std::string Formatter::format_num_byte_rate(uint64_t num,
     uint64_t dec_part = 0;
     std::string unit{};
 
+    // don't bother printing all zeroes on the scale
+    if (num == 0) {
+        return "";
+    }
+
     for (auto it = units_.rbegin(); it != units_.rend(); ++it) {
         auto pair = *it;
         uint64_t exponent = U64(pair.first);
