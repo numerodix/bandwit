@@ -22,10 +22,10 @@ struct FlowRecord {
     uint64_t tx;
 };
 
-void signal_handler(int sig) {
-    // TODO: make this a dedicated exc class so we can match on it without
-    // treating it like an error
-    throw std::runtime_error("Got signal SIGINT (did you Ctrl+C?)");
+void sigint_handler(int sig) {
+    // Throw here to force the stack to unwind. If we did just exit() here that
+    // would not happen.
+    throw termui::InterruptException();
 }
 
 void visualize(const std::unique_ptr<sampling::Sampler> &sampler,
@@ -87,19 +87,23 @@ int main(int argc, char *argv[]) {
     // We expect to get a Ctrl+C. Install a SIGINT handler that throws an
     // exception such that we can unwind orderly and enter the catch block
     // below.
-    signal(SIGINT, signal_handler);
+    signal(SIGINT, sigint_handler);
 
     // We desperately need to wrap the execution in a try/catch otherwise an
     // uncaught exception will terminate the program bypassing all destructors
     // and leave the terminal in a corrupted state.
     try {
         run(iface_name);
+    } catch (termui::InterruptException &e) {
+        // This is the expected way to stop the program. Nothing to do here.
     } catch (std::exception &e) {
-        std::cerr << "Trapped uncaught exception:\n  " << e.what() << "\n";
+        std::cerr << "Trapped uncaught exception:\n  " << e.what();
         exit(EXIT_FAILURE);
     } catch (...) {
         std::cerr << "This is the last resort exception handler. I have no "
-                     "state about the error.\n";
+                     "state about the error.";
         exit(EXIT_FAILURE);
     }
+
+    return 0;
 }

@@ -29,6 +29,12 @@ class SignalGuard {
     SignalSuspender *suspender_{nullptr};
 };
 
+// Intended to be thrown from a signal handler that handles SIGINT
+class InterruptException : public std::exception {
+  public:
+    const char *what() const throw() override { return "Got signal SIGINT"; }
+};
+
 } // namespace termui
 } // namespace bmon
 
