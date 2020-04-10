@@ -22,12 +22,6 @@ struct FlowRecord {
     uint64_t tx;
 };
 
-void sigint_handler(int sig) {
-    // Throw here to force the stack to unwind. If we did just exit() here that
-    // would not happen.
-    throw termui::InterruptException();
-}
-
 void visualize(const std::unique_ptr<sampling::Sampler> &sampler,
                const std::string &iface_name, termui::BarChart &bar_chart) {
     std::vector<uint64_t> rxs{};
@@ -86,7 +80,7 @@ int main(int argc, char *argv[]) {
     // We expect to get a Ctrl+C. Install a SIGINT handler that throws an
     // exception such that we can unwind orderly and enter the catch block
     // below.
-    signal(SIGINT, sigint_handler);
+    signal(SIGINT, termui::sigint_handler);
 
     // We desperately need to wrap the execution in a try/catch otherwise an
     // uncaught exception will terminate the program bypassing all destructors

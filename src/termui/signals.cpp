@@ -35,5 +35,11 @@ void SignalSuspender::restore() {
     }
 }
 
+void sigint_handler(int sig) {
+    // Throw here to force the stack to unwind. If we did just exit() here that
+    // would not happen.
+    throw termui::InterruptException();
+}
+
 } // namespace termui
 } // namespace bmon
