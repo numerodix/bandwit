@@ -22,6 +22,9 @@ class BarChart {
 
   private:
     TerminalSurface *surface_{nullptr};
+
+    // 4 digits, a space, 4 chars, a space to delimit
+    uint16_t scale_width_{10};
 };
 
 } // namespace termui

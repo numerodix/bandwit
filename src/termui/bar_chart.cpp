@@ -94,9 +94,8 @@ void BarChart::draw_scale(const Dimensions &dim, uint64_t max_value) {
 }
 
 uint16_t BarChart::get_width() const {
-    uint16_t scale_width = 9;
     auto dim = surface_->get_size();
-    return dim.width - scale_width;
+    return dim.width - scale_width_;
 }
 
 } // namespace termui
