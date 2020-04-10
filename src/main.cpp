@@ -46,7 +46,7 @@ void visualize(const std::unique_ptr<sampling::Sampler> &sampler,
         rxs.push_back(rec.rx);
 
         // make sure the vector isn't longer than the width of the display
-        if (rxs.size() > surface.get_size().width) {
+        if (rxs.size() > bar_chart.get_width()) {
             rxs.erase(rxs.begin());
         }
 

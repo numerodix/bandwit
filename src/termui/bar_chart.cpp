@@ -40,7 +40,7 @@ void BarChart::draw_bars_from_right(std::vector<uint64_t> values) {
         --col_cur;
     }
 
-    draw_legend(avg_value, max_value, last_value);
+    draw_scale(dim, max_value);
 
     surface_->flush();
 }
@@ -70,6 +70,36 @@ void BarChart::draw_legend(uint64_t avg, uint64_t max, uint64_t last) {
 
         row++;
     }
+}
+
+void BarChart::draw_scale(const Dimensions& dim, uint64_t max_value) {
+    Formatter fmt{};
+    std::vector<std::string> ticks{};
+
+    double factor = 1.0 / DOUBLE(dim.height);
+    for (int x = 0; x < dim.height; ++x) {
+        uint64_t tick = U64(DOUBLE(max_value) * (x * factor));
+        std::string tick_fmt = fmt.format_num_byte_rate(tick, "s");
+        ticks.push_back(tick_fmt);
+    }
+
+    uint16_t row = dim.height - 1;
+
+    for (auto tick: ticks) {
+        for (size_t i = 0; i < tick.size(); ++i) {
+            uint16_t x = U16(i) + U16(1);
+            Point pt{x, row};
+            surface_->put_char(pt, tick[i]);
+        }
+
+        row--;
+    }
+}
+
+uint16_t BarChart::get_width() const {
+    uint16_t scale_width = 9;
+    auto dim = surface_->get_size();
+    return dim.width - scale_width;
 }
 
 } // namespace termui

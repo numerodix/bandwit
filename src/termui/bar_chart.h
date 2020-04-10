@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <vector>
 
+#include "termui/dimensions.h"
+
 namespace bmon {
 namespace termui {
 
@@ -13,7 +15,10 @@ class BarChart {
   public:
     BarChart(TerminalSurface *surface) : surface_{surface} {}
     void draw_bars_from_right(std::vector<uint64_t> values);
+    void draw_scale(const Dimensions& dim, uint64_t max_value);
     void draw_legend(uint64_t avg, uint64_t max, uint64_t last);
+
+    uint16_t get_width() const;
 
   private:
     TerminalSurface *surface_{nullptr};
