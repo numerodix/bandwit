@@ -98,6 +98,7 @@ void TerminalSurface::clear_surface() {
 void TerminalSurface::put_char(const Point &point, const char &ch) {
     auto upper_left = get_upper_left();
 
+    // Map surface coordinates onto window coordinates
     Point point_win{
         point.x,
         U16(INT(upper_left.y) + INT(point.y)),
