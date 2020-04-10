@@ -1,3 +1,4 @@
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 
@@ -9,6 +10,7 @@ namespace termui {
 std::string Formatter::format_num_byte_rate(uint64_t num,
                                             const std::string &time_unit) {
     std::stringstream ss{};
+    ss << std::setw(3); // right align numbers
 
     if (num > (1UL << 30UL)) {
         ss << (num >> 30UL) << " gb/" << time_unit;

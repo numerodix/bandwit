@@ -15,9 +15,6 @@ void BarChart::draw_bars_from_right(std::vector<uint64_t> values) {
 
     auto max = std::max_element(values.begin(), values.end());
     uint64_t max_value = *max;
-    uint64_t sum = std::accumulate(values.begin(), values.end(), U64(0));
-    auto avg_value = U64(F64(sum) / F64(values.size()));
-    uint64_t last_value = values.at(values.size() - 1);
 
     std::vector<uint16_t> scaled{};
     for (auto it = values.rbegin(); it != values.rend(); ++it) {
@@ -72,7 +69,7 @@ void BarChart::draw_legend(uint64_t avg, uint64_t max, uint64_t last) {
     }
 }
 
-void BarChart::draw_scale(const Dimensions& dim, uint64_t max_value) {
+void BarChart::draw_scale(const Dimensions &dim, uint64_t max_value) {
     Formatter fmt{};
     std::vector<std::string> ticks{};
 
@@ -85,7 +82,7 @@ void BarChart::draw_scale(const Dimensions& dim, uint64_t max_value) {
 
     uint16_t row = dim.height - 1;
 
-    for (auto tick: ticks) {
+    for (auto tick : ticks) {
         for (size_t i = 0; i < tick.size(); ++i) {
             uint16_t x = U16(i) + U16(1);
             Point pt{x, row};

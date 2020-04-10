@@ -29,8 +29,7 @@ void sigint_handler(int sig) {
 }
 
 void visualize(const std::unique_ptr<sampling::Sampler> &sampler,
-               const std::string &iface_name, termui::TerminalSurface &surface,
-               termui::BarChart &bar_chart) {
+               const std::string &iface_name, termui::BarChart &bar_chart) {
     std::vector<uint64_t> rxs{};
 
     sampling::Sample prev_sample = sampler->get_sample(iface_name);
@@ -73,7 +72,7 @@ void run(const std::string &iface_name) {
     termui::TerminalSurface surf{pwin, 10};
     termui::BarChart chart{&surf};
 
-    visualize(sys_sampler, iface_name, surf, chart);
+    visualize(sys_sampler, iface_name, chart);
 }
 
 int main(int argc, char *argv[]) {
