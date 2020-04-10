@@ -92,7 +92,7 @@ void TerminalWindow::check_is_on_window(const Point &point) {
             "TerminalWindow.check_is_on_window: tried to put cursor outside "
             "window, point: (%d, %d), x range: [%d, %d], y range: [%d, %d]",
             point.x, point.y, 1, dim_.width, 1, dim_.height);
-        throw std::runtime_error(buf);
+        throw std::out_of_range(buf);
     }
 }
 
