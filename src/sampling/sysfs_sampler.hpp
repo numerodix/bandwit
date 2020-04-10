@@ -1,7 +1,7 @@
 #ifndef SYSFS_SAMPLER_H
 #define SYSFS_SAMPLER_H
 
-#include "sampling/sampler.h"
+#include "sampling/sampler.hpp"
 
 namespace bmon {
 namespace sampling {

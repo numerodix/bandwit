@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <unordered_map>
 
-#include "sysfs_sampler.h"
+#include "sysfs_sampler.hpp"
 
 namespace bmon {
 namespace sampling {

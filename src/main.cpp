@@ -5,15 +5,15 @@
 #include <signal.h>
 #include <thread>
 
-#include "sampling/ip_cmd_sampler.h"
-#include "sampling/procfs_sampler.h"
-#include "sampling/sysfs_sampler.h"
-#include "termui/bar_chart.h"
-#include "termui/signals.h"
-#include "termui/terminal_driver.h"
-#include "termui/terminal_mode.h"
-#include "termui/terminal_surface.h"
-#include "termui/terminal_window.h"
+#include "sampling/ip_cmd_sampler.hpp"
+#include "sampling/procfs_sampler.hpp"
+#include "sampling/sysfs_sampler.hpp"
+#include "termui/bar_chart.hpp"
+#include "termui/signals.hpp"
+#include "termui/terminal_driver.hpp"
+#include "termui/terminal_mode.hpp"
+#include "termui/terminal_surface.hpp"
+#include "termui/terminal_window.hpp"
 
 using namespace bmon;
 

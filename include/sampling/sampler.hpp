@@ -3,8 +3,8 @@
 
 #include <string>
 
-#include "macros.h"
-#include "sample.h"
+#include "macros.hpp"
+#include "sample.hpp"
 
 namespace bmon {
 namespace sampling {

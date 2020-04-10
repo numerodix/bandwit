@@ -1,7 +1,7 @@
 #ifndef PROCFS_SAMPLER_H
 #define PROCFS_SAMPLER_H
 
-#include "sampling/sampler.h"
+#include "sampling/sampler.hpp"
 
 namespace bmon {
 namespace sampling {

@@ -3,9 +3,9 @@
 
 #include <iostream>
 
-#include "macros.h"
-#include "termui/dimensions.h"
-#include "termui/point.h"
+#include "macros.hpp"
+#include "termui/dimensions.hpp"
+#include "termui/point.hpp"
 
 namespace bmon {
 namespace termui {

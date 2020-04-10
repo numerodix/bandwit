@@ -2,10 +2,10 @@
 #include <numeric>
 #include <sstream>
 
-#include "bar_chart.h"
-#include "formatter.h"
-#include "macros.h"
-#include "terminal_surface.h"
+#include "bar_chart.hpp"
+#include "formatter.hpp"
+#include "macros.hpp"
+#include "terminal_surface.hpp"
 
 namespace bmon {
 namespace termui {

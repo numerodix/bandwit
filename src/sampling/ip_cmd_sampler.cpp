@@ -8,7 +8,7 @@
 #include <string>
 #include <string_view>
 
-#include "ip_cmd_sampler.h"
+#include "ip_cmd_sampler.hpp"
 
 namespace bmon {
 namespace sampling {

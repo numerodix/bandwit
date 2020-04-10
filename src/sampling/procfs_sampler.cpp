@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <vector>
 
-#include "procfs_sampler.h"
+#include "procfs_sampler.hpp"
 
 namespace bmon {
 namespace sampling {

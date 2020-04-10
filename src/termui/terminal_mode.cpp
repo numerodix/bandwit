@@ -1,8 +1,8 @@
 #include <stdexcept>
 #include <unistd.h>
 
-#include "signals.h"
-#include "terminal_mode.h"
+#include "signals.hpp"
+#include "terminal_mode.hpp"
 
 namespace bmon {
 namespace termui {

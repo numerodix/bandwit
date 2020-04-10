@@ -1,8 +1,8 @@
 #ifndef TERMINAL_WINDOW_H
 #define TERMINAL_WINDOW_H
 
-#include "termui/dimensions.h"
-#include "termui/point.h"
+#include "termui/dimensions.hpp"
+#include "termui/point.hpp"
 
 namespace bmon {
 namespace termui {

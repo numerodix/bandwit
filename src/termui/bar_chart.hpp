@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "termui/dimensions.h"
+#include "termui/dimensions.hpp"
 
 namespace bmon {
 namespace termui {

@@ -2,8 +2,8 @@
 #include <iostream>
 #include <sstream>
 
-#include "formatter.h"
-#include "macros.h"
+#include "formatter.hpp"
+#include "macros.hpp"
 
 namespace bmon {
 namespace termui {

@@ -1,6 +1,6 @@
 #include <csignal>
 
-#include "signals.h"
+#include "signals.hpp"
 #include <stdexcept>
 
 namespace bmon {

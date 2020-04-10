@@ -1,7 +1,7 @@
 #include <stdexcept>
 #include <sys/ioctl.h>
 
-#include "terminal_driver.h"
+#include "terminal_driver.hpp"
 
 namespace bmon {
 namespace termui {

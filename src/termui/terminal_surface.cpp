@@ -1,8 +1,8 @@
 #include <stdexcept>
 
-#include "macros.h"
-#include "terminal_surface.h"
-#include "terminal_window.h"
+#include "macros.hpp"
+#include "terminal_surface.hpp"
+#include "terminal_window.hpp"
 
 namespace bmon {
 namespace termui {

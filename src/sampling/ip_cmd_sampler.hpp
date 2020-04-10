@@ -1,7 +1,7 @@
 #ifndef IP_CMD_SAMPLER_H
 #define IP_CMD_SAMPLER_H
 
-#include "sampling/sampler.h"
+#include "sampling/sampler.hpp"
 
 namespace bmon {
 namespace sampling {
