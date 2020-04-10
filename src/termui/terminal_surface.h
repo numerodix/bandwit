@@ -31,7 +31,10 @@ class TerminalSurface {
     Point recompute_lower_left(const Point &upper_left) const;
 
     TerminalWindow *win_{nullptr};
+
     uint16_t min_lines_{6};
+    uint16_t min_cols_{30};
+
     uint16_t num_lines_{0};
     const char bg_char_ = ' ';
 
