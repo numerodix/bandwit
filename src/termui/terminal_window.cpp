@@ -36,12 +36,12 @@ TerminalWindow::~TerminalWindow() { WINDOW = nullptr; }
 
 void TerminalWindow::on_resize() {
     auto dim_new = driver_->get_terminal_size();
+    auto dim_old = dim_;
+    dim_ = dim_new;
 
     if (surface_ != nullptr) {
-        surface_->on_window_resize(dim_, dim_new);
+        surface_->on_window_resize(dim_old, dim_new);
     }
-
-    dim_ = dim_new;
 }
 
 const Dimensions &TerminalWindow::get_size() const { return dim_; }

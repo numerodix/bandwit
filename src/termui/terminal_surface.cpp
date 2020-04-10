@@ -60,16 +60,25 @@ void TerminalSurface::on_window_resize(const Dimensions &win_dim_old,
     // The terminal height has changed
     int delta = INT(win_dim_new.height) - INT(win_dim_old.height);
 
-    // The terminal has become taller - we extend the surface to fill the empty
-    // space below!
     if (delta > 0) {
-        num_lines_ += delta;
+        // The terminal has become taller - we extend the surface to fill the
+        // empty space below!
+        num_lines_ = num_lines_ + U16(delta);
 
+    } else if (delta < 0) {
         // The terminal has become shorter - terminals expect the cursor to
         // shift upwards by clearing the space above the surface. We let the
         // surface stay the same size, but move it up accordingly.
-    } else if (delta < 0) {
-        upper_left_.y += delta;
+        int upper_left_y = INT(upper_left_.y) - abs(delta);
+
+        // Is the terminal now too short to fit our current num_lines_? If so we
+        // need to reduce the surface to fill the size of the terminal.
+        if (upper_left_y < 1) {
+            upper_left_y = 1;
+            num_lines_ = win_dim_new.height;
+        }
+
+        upper_left_.y = U16(upper_left_y);
     }
 
     lower_left_ = recompute_lower_left(upper_left_);

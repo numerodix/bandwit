@@ -61,7 +61,7 @@ std::string Formatter::format_num_byte_rate(uint64_t num,
     }
 
     std::stringstream ss{};
-    ss << std::setw(4);  // right align numbers
+    ss << std::setw(4); // right align numbers
     ss << truncated << " " << unit << "/" << time_unit;
     return ss.str();
 }
