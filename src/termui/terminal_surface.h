@@ -32,6 +32,7 @@ class TerminalSurface {
 
     TerminalWindow *win_{nullptr};
 
+    // the minimum dimensions to display the surface
     uint16_t min_lines_{6};
     uint16_t min_cols_{30};
 
