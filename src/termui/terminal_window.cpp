@@ -11,14 +11,20 @@ namespace termui {
 // eugh
 static TerminalWindow *WINDOW = nullptr;
 
-void TerminalWindow_signal_handler(int sig) {
-    // check WINDOW is not nullptr
+void TerminalWindow_signal_handler([[maybe_unused]] int sig) {
+    if (WINDOW == nullptr) {
+        throw std::runtime_error("No TerminalWindow exists!");
+    }
+
     WINDOW->on_resize();
 }
 
 TerminalWindow *TerminalWindow::create(TerminalDriver *driver,
                                        SignalSuspender *signal_suspender) {
-    // check WINDOW is nullptr
+    if (WINDOW != nullptr) {
+        throw std::runtime_error("Cannot construct another TerminalWindow!");
+    }
+
     WINDOW = new TerminalWindow(driver, signal_suspender);
     return WINDOW;
 }
