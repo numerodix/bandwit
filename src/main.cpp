@@ -19,8 +19,9 @@
 namespace bmon {
 namespace termui {
 
-void read_input(TerminalSurface &surface) {
-    std::this_thread::sleep_for(std::chrono::milliseconds{10});
+void read_input(TerminalSurface &surface,
+                std::chrono::milliseconds sleep_duration) {
+    std::this_thread::sleep_for(sleep_duration);
 
     char ch = fgetc(stdin);
     while (ch >= 0) {
@@ -32,9 +33,15 @@ void read_input(TerminalSurface &surface) {
     }
 }
 
-void input_loop(TerminalSurface &surface) {
-    for (int i = 0; i < 100; ++i) {
-        read_input(surface);
+void input_loop(TerminalSurface &surface,
+                std::chrono::milliseconds time_budget) {
+    // We have 1s of time to spend. We'd rather do more loops with shorter
+    // sleeps for greater responsiveness
+    auto num_loops = 100;
+    auto sleep_duration = time_budget / num_loops;
+
+    for (auto i = 0; i < num_loops; ++i) {
+        read_input(surface, sleep_duration);
     }
 }
 
@@ -48,7 +55,7 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
     while (true) {
         // this used to be a sleep, but now we intermix sleeping with reading
         // input non-blocking
-        input_loop(surface);
+        input_loop(surface, std::chrono::seconds{1});
 
         sampling::Sample sample = sampler->get_sample(iface_name);
 
