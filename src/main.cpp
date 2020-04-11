@@ -17,11 +17,6 @@
 
 using namespace bmon;
 
-struct FlowRecord {
-    uint64_t rx;
-    uint64_t tx;
-};
-
 void visualize(const std::unique_ptr<sampling::Sampler> &sampler,
                const std::string &iface_name, termui::BarChart &bar_chart) {
     std::vector<uint64_t> rxs{};
@@ -32,11 +27,8 @@ void visualize(const std::unique_ptr<sampling::Sampler> &sampler,
         std::this_thread::sleep_for(std::chrono::seconds(1));
         sampling::Sample sample = sampler->get_sample(iface_name);
 
-        FlowRecord rec{
-            sample.rx - prev_sample.rx,
-            sample.tx - prev_sample.tx,
-        };
-        rxs.push_back(rec.rx);
+        auto rx = sample.rx - prev_sample.rx;
+        rxs.push_back(rx);
 
         // make sure the vector isn't longer than the width of the display
         if (rxs.size() > bar_chart.get_width()) {
