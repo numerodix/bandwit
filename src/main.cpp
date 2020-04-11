@@ -60,7 +60,7 @@ std::optional<DisplayMode> input_loop(TerminalSurface &surface,
     for (auto i = 0; i < num_loops; ++i) {
         auto new_mode = read_input(surface, sleep_duration);
         if (new_mode.has_value()) {
-            return new_mode.value();
+            return new_mode;
         }
     }
 
