@@ -1,5 +1,6 @@
 #include <chrono>
 #include <csignal>
+#include <fcntl.h>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -18,15 +19,37 @@
 namespace bmon {
 namespace termui {
 
+void read_input(TerminalSurface &surface) {
+    std::this_thread::sleep_for(std::chrono::milliseconds{10});
+
+    char ch = fgetc(stdin);
+    while (ch >= 0) {
+        if (ch == '\n') {
+            surface.on_carriage_return();
+        }
+
+        ch = fgetc(stdin);
+    }
+}
+
+void input_loop(TerminalSurface &surface) {
+    for (int i = 0; i < 100; ++i) {
+        read_input(surface);
+    }
+}
+
 void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
-                       const std::string &iface_name,
+                       const std::string &iface_name, TerminalSurface &surface,
                        BarChart &bar_chart) {
     std::vector<uint64_t> rxs{};
 
     sampling::Sample prev_sample = sampler->get_sample(iface_name);
 
     while (true) {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        // this used to be a sleep, but now we intermix sleeping with reading
+        // input non-blocking
+        input_loop(surface);
+
         sampling::Sample sample = sampler->get_sample(iface_name);
 
         auto rx = sample.rx - prev_sample.rx;
@@ -55,16 +78,21 @@ void run(const std::string &iface_name) {
         mode_set.local_off(ECHO).local_off(ICANON).build_setter(&susp_sigint);
     TerminalModeGuard mode_guard{&mode_setter};
 
+    // To read the cursor on terminal startup stdin has to be blocking
+    fcntl(0, F_SETFL, fcntl(0, F_GETFL) & ~O_NONBLOCK);
+
     TerminalDriver driver{stdin, stdout};
-    auto terminal_window =
-        TerminalWindow::create(&driver, &susp_sigwinch);
+    auto terminal_window = TerminalWindow::create(&driver, &susp_sigwinch);
     // unique_ptr to ensure deletion of terminal_window
     auto win = std::unique_ptr<TerminalWindow>(terminal_window);
 
     TerminalSurface surface{terminal_window, 10};
     BarChart bar_chart{&surface};
 
-    display_bar_chart(sys_sampler, iface_name, bar_chart);
+    // To read user keyboard input we need stdin to be non-blocking
+    fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
+
+    display_bar_chart(sys_sampler, iface_name, surface, bar_chart);
 }
 
 } // namespace termui

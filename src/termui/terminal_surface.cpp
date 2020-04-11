@@ -87,6 +87,35 @@ void TerminalSurface::on_window_resize(const Dimensions &win_dim_old,
     clear_surface();
 }
 
+void TerminalSurface::on_carriage_return() {
+    // When a carriage return occurs we take it as a cue to force scroll the
+    // terminal and increase the surface by one line
+    auto win_dim = win_->get_size();
+
+    // Is the surface already occupying the whole terminal window? If so we do
+    // nothing.
+    if (num_lines_ >= win_dim.height) {
+        return;
+    }
+
+    // Force scroll by one line
+    auto lower_left = get_lower_left();
+    win_->set_cursor(lower_left_);
+
+    for (auto x = 1; x <= win_dim.width; ++x) {
+        win_->put_char(' ');
+    }
+    win_->put_char('\n');
+
+    win_->flush();
+
+    // Update positional invariants
+    num_lines_ += 1;
+    dim_ = recompute_dimensions(win_dim);
+    upper_left_.y -= 1;
+    lower_left_ = recompute_lower_left(upper_left_);
+}
+
 void TerminalSurface::clear_surface() {
     auto dim = get_size();
     auto upper_left = get_upper_left();

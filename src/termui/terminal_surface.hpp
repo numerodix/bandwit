@@ -16,6 +16,7 @@ class TerminalSurface {
     void on_startup();
     void on_window_resize(const Dimensions &win_dim_old,
                           const Dimensions &win_dim_new);
+    void on_carriage_return();
 
     void clear_surface();
     void put_char(const Point &point, const char &ch);
