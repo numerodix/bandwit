@@ -1,8 +1,8 @@
 #include <chrono>
+#include <csignal>
 #include <iostream>
 #include <map>
 #include <memory>
-#include <signal.h>
 #include <thread>
 
 #include "sampling/ip_cmd_sampler.hpp"
