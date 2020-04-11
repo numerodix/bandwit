@@ -55,8 +55,6 @@ std::optional<DisplayMode> input_loop(TerminalSurface &surface,
     auto num_loops = 100;
     auto sleep_duration = time_budget / num_loops;
 
-    std::optional<DisplayMode> mode = std::nullopt;
-
     for (auto i = 0; i < num_loops; ++i) {
         auto new_mode = read_input(surface, sleep_duration);
         if (new_mode.has_value()) {
