@@ -34,7 +34,7 @@ void sigint_handler(int sig);
 // Intended to be thrown from a signal handler that handles SIGINT
 class InterruptException : public std::exception {
   public:
-    const char *what() const throw() override { return "Got signal SIGINT"; }
+    const char *what() const noexcept override { return "Got signal SIGINT"; }
 };
 
 } // namespace termui
