@@ -1,6 +1,7 @@
 #ifndef TERMINAL_WINDOW_H
 #define TERMINAL_WINDOW_H
 
+#include "macros.hpp"
 #include "termui/dimensions.hpp"
 #include "termui/point.hpp"
 
@@ -15,6 +16,9 @@ class TerminalWindow {
   public:
     static TerminalWindow *create(TerminalDriver *driver, SignalSuspender *signal_suspender);
     ~TerminalWindow();
+
+    CLASS_DISABLE_COPIES(TerminalWindow)
+    CLASS_DISABLE_MOVES(TerminalWindow)
 
     void on_resize();
 

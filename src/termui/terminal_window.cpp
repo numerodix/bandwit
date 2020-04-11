@@ -35,6 +35,7 @@ TerminalWindow::TerminalWindow(TerminalDriver *driver,
     // the window has to know its size at all times
     dim_ = driver_->get_terminal_size();
 
+    // and we need to know where the cursor is on startup
     // check cursor within dimensions?
     cursor_ = driver_->get_cursor_position();
 

@@ -4,6 +4,8 @@
 #include <initializer_list>
 #include <vector>
 
+#include "macros.hpp"
+
 namespace bmon {
 namespace termui {
 
@@ -24,6 +26,9 @@ class SignalGuard {
         suspender_->suspend();
     }
     ~SignalGuard() { suspender_->restore(); }
+
+    CLASS_DISABLE_COPIES(SignalGuard)
+    CLASS_DISABLE_MOVES(SignalGuard)
 
   private:
     SignalSuspender *suspender_{nullptr};

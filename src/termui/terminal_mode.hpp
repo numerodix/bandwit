@@ -3,6 +3,8 @@
 
 #include <termios.h>
 
+#include "macros.hpp"
+
 namespace bmon {
 namespace termui {
 
@@ -41,6 +43,9 @@ class TerminalModeGuard {
         setter_->set();
     }
     ~TerminalModeGuard() { setter_->unset(); }
+
+    CLASS_DISABLE_COPIES(TerminalModeGuard)
+    CLASS_DISABLE_MOVES(TerminalModeGuard)
 
   private:
     TerminalModeSetter *setter_{nullptr};
