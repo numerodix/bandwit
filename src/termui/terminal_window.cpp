@@ -1,4 +1,4 @@
-#include <signal.h>
+#include <csignal>
 
 #include "signals.hpp"
 #include "terminal_driver.hpp"

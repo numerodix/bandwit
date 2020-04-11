@@ -16,7 +16,7 @@ std::string Formatter::format_num_byte_rate(uint64_t num,
 
     for (auto it = units_.rbegin(); it != units_.rend(); ++it) {
         auto pair = *it;
-        uint64_t exponent = U64(pair.first);
+        auto exponent = U64(pair.first);
 
         uint64_t val = num >> exponent;
         if (val > 0) {
