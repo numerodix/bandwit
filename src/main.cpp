@@ -60,11 +60,11 @@ std::optional<DisplayMode> input_loop(TerminalSurface &surface,
     for (auto i = 0; i < num_loops; ++i) {
         auto new_mode = read_input(surface, sleep_duration);
         if (new_mode.has_value()) {
-            mode = new_mode.value();
+            return new_mode.value();
         }
     }
 
-    return mode;
+    return std::nullopt;
 }
 
 void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
