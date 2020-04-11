@@ -10,7 +10,8 @@
 namespace bmon {
 namespace termui {
 
-void BarChart::draw_bars_from_right(std::vector<uint64_t> values) {
+void BarChart::draw_bars_from_right(const std::string &title,
+                                    std::vector<uint64_t> values) {
     auto dim = surface_->get_size();
 
     auto max = std::max_element(values.begin(), values.end());
@@ -38,8 +39,50 @@ void BarChart::draw_bars_from_right(std::vector<uint64_t> values) {
     }
 
     draw_scale(dim, max_value);
+    draw_title(title);
 
     surface_->flush();
+}
+
+void BarChart::draw_scale(const Dimensions &dim, uint64_t max_value) {
+    Formatter fmt{};
+    std::vector<std::string> ticks{};
+
+    double factor = 1.0 / F64(dim.height);
+    for (int x = 1; x <= dim.height; ++x) {
+        auto tick = U64(F64(max_value) * (x * factor));
+        std::string tick_fmt = fmt.format_num_byte_rate(tick, "s");
+        ticks.push_back(tick_fmt);
+    }
+
+    uint16_t row = dim.height - 1;
+
+    for (auto tick : ticks) {
+        for (size_t i = 0; i < tick.size(); ++i) {
+            uint16_t x = U16(i) + U16(1);
+            Point pt{x, row};
+            surface_->put_char(pt, tick[i]);
+        }
+
+        row--;
+    }
+}
+
+void BarChart::draw_title(const std::string &title) {
+    auto dim = surface_->get_size();
+
+    std::stringstream ss{};
+    ss << "[" << title << "]";
+    std::string title_fmt = ss.str();
+
+    auto x = U16((INT(dim.width) / 2) - (INT(title_fmt.size()) / 2));
+    uint16_t y = 0;
+
+    for (size_t i = 0; i < title_fmt.size(); ++i) {
+        Point pt{x, y};
+        surface_->put_char(pt, title_fmt[i]);
+        x++;
+    }
 }
 
 void BarChart::draw_legend(uint64_t avg, uint64_t max, uint64_t last) {
@@ -66,30 +109,6 @@ void BarChart::draw_legend(uint64_t avg, uint64_t max, uint64_t last) {
         }
 
         row++;
-    }
-}
-
-void BarChart::draw_scale(const Dimensions &dim, uint64_t max_value) {
-    Formatter fmt{};
-    std::vector<std::string> ticks{};
-
-    double factor = 1.0 / F64(dim.height);
-    for (int x = 1; x <= dim.height; ++x) {
-        auto tick = U64(F64(max_value) * (x * factor));
-        std::string tick_fmt = fmt.format_num_byte_rate(tick, "s");
-        ticks.push_back(tick_fmt);
-    }
-
-    uint16_t row = dim.height - 1;
-
-    for (auto tick : ticks) {
-        for (size_t i = 0; i < tick.size(); ++i) {
-            uint16_t x = U16(i) + U16(1);
-            Point pt{x, row};
-            surface_->put_char(pt, tick[i]);
-        }
-
-        row--;
     }
 }
 

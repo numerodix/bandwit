@@ -4,6 +4,7 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <optional>
 #include <thread>
 
 #include "sampling/ip_cmd_sampler.hpp"
@@ -19,8 +20,13 @@
 namespace bmon {
 namespace termui {
 
-void read_input(TerminalSurface &surface,
-                std::chrono::milliseconds sleep_duration) {
+enum class DisplayMode {
+    DISPLAY_RX,
+    DISPLAY_TX,
+};
+
+std::optional<DisplayMode>
+read_input(TerminalSurface &surface, std::chrono::milliseconds sleep_duration) {
     // We're reading from stdin non-blocking, so we need to combine sleeping
     // with reading input
     std::this_thread::sleep_for(sleep_duration);
@@ -29,49 +35,78 @@ void read_input(TerminalSurface &surface,
     while (ch >= 0) {
         if (ch == '\n') {
             surface.on_carriage_return();
+
+        } else if (ch == 'r') {
+            return std::optional<DisplayMode>(DisplayMode::DISPLAY_RX);
+        } else if (ch == 't') {
+            return std::optional<DisplayMode>(DisplayMode::DISPLAY_TX);
         }
 
         ch = fgetc(stdin);
     }
+
+    return std::nullopt;
 }
 
-void input_loop(TerminalSurface &surface,
-                std::chrono::milliseconds time_budget) {
+std::optional<DisplayMode> input_loop(TerminalSurface &surface,
+                                      std::chrono::milliseconds time_budget) {
     // We have 1s of time to spend. We'd rather do more loops with shorter
     // sleeps for greater responsiveness
     auto num_loops = 100;
     auto sleep_duration = time_budget / num_loops;
 
+    std::optional<DisplayMode> mode = std::nullopt;
+
     for (auto i = 0; i < num_loops; ++i) {
-        read_input(surface, sleep_duration);
+        auto new_mode = read_input(surface, sleep_duration);
+        if (new_mode.has_value()) {
+            mode = new_mode.value();
+        }
     }
+
+    return mode;
 }
 
 void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
                        const std::string &iface_name, TerminalSurface &surface,
                        BarChart &bar_chart) {
+    DisplayMode mode = DisplayMode::DISPLAY_RX;
+
     std::vector<uint64_t> rxs{};
+    std::vector<uint64_t> txs{};
 
     sampling::Sample prev_sample = sampler->get_sample(iface_name);
 
     while (true) {
         // this used to be a sleep, but now we intermix sleeping with reading
         // input non-blocking
-        input_loop(surface, std::chrono::seconds{1});
+        auto new_mode = input_loop(surface, std::chrono::seconds{1});
+        if (new_mode.has_value()) {
+            mode = new_mode.value();
+        }
 
         sampling::Sample sample = sampler->get_sample(iface_name);
 
         auto rx = sample.rx - prev_sample.rx;
+        auto tx = sample.tx - prev_sample.tx;
         rxs.push_back(rx);
+        txs.push_back(tx);
 
         // make sure the vector isn't longer than the width of the display
         if (rxs.size() > bar_chart.get_width()) {
             rxs.erase(rxs.begin());
         }
+        if (txs.size() > bar_chart.get_width()) {
+            txs.erase(txs.begin());
+        }
 
         prev_sample = sample;
 
-        bar_chart.draw_bars_from_right(rxs);
+        if (mode == DisplayMode::DISPLAY_RX) {
+            bar_chart.draw_bars_from_right("received", rxs);
+        } else {
+            bar_chart.draw_bars_from_right("transmitted", txs);
+        }
     }
 }
 
