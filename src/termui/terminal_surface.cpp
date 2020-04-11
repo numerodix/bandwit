@@ -100,12 +100,14 @@ void TerminalSurface::on_carriage_return() {
 
     // Force scroll by one line
     auto lower_left = get_lower_left();
-    win_->set_cursor(lower_left_);
+    win_->set_cursor(lower_left);
 
-    for (auto x = 1; x <= win_dim.width; ++x) {
-        win_->put_char(' ');
+    // Fill the current line and the next
+    for (auto y = 0; y < 2; ++y) {
+        for (auto x = 1; x <= win_dim.width; ++x) {
+            win_->put_char(' ');
+        }
     }
-    win_->put_char('\n');
 
     win_->flush();
 
