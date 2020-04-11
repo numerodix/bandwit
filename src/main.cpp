@@ -21,6 +21,8 @@ namespace termui {
 
 void read_input(TerminalSurface &surface,
                 std::chrono::milliseconds sleep_duration) {
+    // We're reading from stdin non-blocking, so we need to combine sleeping
+    // with reading input
     std::this_thread::sleep_for(sleep_duration);
 
     char ch = fgetc(stdin);
