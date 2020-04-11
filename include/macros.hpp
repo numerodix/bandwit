@@ -14,7 +14,6 @@
     CLASS_DISABLE_MOVE_ASSIGNMENT(name)
 
 #define F64(num) static_cast<double>(num)
-#define DOUBLE(num) static_cast<int>(num)
 
 #define INT(num) static_cast<int>(num)
 #define U16(num) static_cast<uint16_t>(num)

@@ -42,7 +42,7 @@ std::string Formatter::format_num_byte_rate(uint64_t num,
 
     } else {
         // we need to glue together the int and dec parts
-        double reconstructed = DOUBLE(int_part) + DOUBLE(dec_part) / 1000.0;
+        double reconstructed = F64(int_part) + F64(dec_part) / 1000.0;
 
         sd.precision(3);
         sd << std::fixed << reconstructed;
