@@ -1,5 +1,6 @@
 #include <signal.h>
 
+#include "signals.hpp"
 #include "terminal_driver.hpp"
 #include "terminal_surface.hpp"
 #include "terminal_window.hpp"
@@ -15,13 +16,16 @@ void TerminalWindow_signal_handler(int sig) {
     WINDOW->on_resize();
 }
 
-TerminalWindow *TerminalWindow::create(TerminalDriver *driver) {
+TerminalWindow *TerminalWindow::create(TerminalDriver *driver,
+                                       SignalSuspender *signal_suspender) {
     // check WINDOW is nullptr
-    WINDOW = new TerminalWindow(driver);
+    WINDOW = new TerminalWindow(driver, signal_suspender);
     return WINDOW;
 }
 
-TerminalWindow::TerminalWindow(TerminalDriver *driver) : driver_{driver} {
+TerminalWindow::TerminalWindow(TerminalDriver *driver,
+                               SignalSuspender *signal_suspender)
+    : driver_{driver}, signal_suspender_{signal_suspender} {
     // the window has to know its size at all times
     dim_ = driver_->get_terminal_size();
 
@@ -35,6 +39,10 @@ TerminalWindow::TerminalWindow(TerminalDriver *driver) : driver_{driver} {
 TerminalWindow::~TerminalWindow() { WINDOW = nullptr; }
 
 void TerminalWindow::on_resize() {
+    // make sure we defer the next SIGWINCH while handling the current one
+    // because this function is not reentrant
+    SignalGuard guard{signal_suspender_};
+
     auto dim_new = driver_->get_terminal_size();
     auto dim_old = dim_;
     dim_ = dim_new;

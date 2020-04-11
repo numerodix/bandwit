@@ -7,12 +7,13 @@
 namespace bmon {
 namespace termui {
 
+class SignalSuspender;
 class TerminalDriver;
 class TerminalSurface;
 
 class TerminalWindow {
   public:
-    static TerminalWindow *create(TerminalDriver *driver);
+    static TerminalWindow *create(TerminalDriver *driver, SignalSuspender *signal_suspender);
     ~TerminalWindow();
 
     void on_resize();
@@ -27,7 +28,7 @@ class TerminalWindow {
     void register_surface(TerminalSurface *surface);
 
   private:
-    TerminalWindow(TerminalDriver *driver);
+    TerminalWindow(TerminalDriver *driver, SignalSuspender *signal_suspender);
 
     void check_is_on_window(const Point &point);
 
@@ -37,6 +38,7 @@ class TerminalWindow {
     Dimensions dim_{};
     Point cursor_{};
     TerminalSurface *surface_{nullptr};
+    SignalSuspender *signal_suspender_{nullptr};
 };
 
 } // namespace termui

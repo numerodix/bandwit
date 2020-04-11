@@ -53,20 +53,24 @@ void run(const std::string &iface_name) {
     std::unique_ptr<sampling::Sampler> sys_sampler{
         new sampling::SysFsSampler()};
 
-    termui::SignalSuspender susp{SIGINT};
+    termui::SignalSuspender susp_sigint{SIGINT};
+    termui::SignalSuspender susp_sigwinch{SIGWINCH};
 
-    termui::TerminalModeSet set{};
-    auto ms = set.local_off(ECHO).local_off(ICANON).build_setter(&susp);
-    termui::TerminalModeGuard mg{&ms};
+    termui::TerminalModeSet mode_set{};
+    auto mode_setter =
+        mode_set.local_off(ECHO).local_off(ICANON).build_setter(&susp_sigint);
+    termui::TerminalModeGuard mode_guard{&mode_setter};
 
-    termui::TerminalDriver dr{stdin, stdout};
-    auto pwin = termui::TerminalWindow::create(&dr);
-    auto win = std::unique_ptr<termui::TerminalWindow>(pwin);
+    termui::TerminalDriver driver{stdin, stdout};
+    auto terminal_window =
+        termui::TerminalWindow::create(&driver, &susp_sigwinch);
+    // unique_ptr to ensure deletion of terminal_window
+    auto win = std::unique_ptr<termui::TerminalWindow>(terminal_window);
 
-    termui::TerminalSurface surf{pwin, 10};
-    termui::BarChart chart{&surf};
+    termui::TerminalSurface surface{terminal_window, 10};
+    termui::BarChart bar_chart{&surface};
 
-    visualize(sys_sampler, iface_name, chart);
+    visualize(sys_sampler, iface_name, bar_chart);
 }
 
 int main(int argc, char *argv[]) {
