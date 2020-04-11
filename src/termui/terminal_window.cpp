@@ -100,7 +100,7 @@ void TerminalWindow::register_surface(TerminalSurface *surface) {
 void TerminalWindow::check_is_on_window(const Point &point) {
     if ((point.x < 1) || (point.x > dim_.width) || (point.y < 1) ||
         (point.y > dim_.height)) {
-        char *buf = (char *)calloc(512, 1);
+        char *buf = PCHAR(calloc(512, 1));
         sprintf(
             buf,
             "TerminalWindow.check_is_on_window: tried to put cursor outside "
