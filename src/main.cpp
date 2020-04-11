@@ -15,10 +15,12 @@
 #include "termui/terminal_surface.hpp"
 #include "termui/terminal_window.hpp"
 
-using namespace bmon;
+namespace bmon {
+namespace termui {
 
-void visualize(const std::unique_ptr<sampling::Sampler> &sampler,
-               const std::string &iface_name, termui::BarChart &bar_chart) {
+void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
+                       const std::string &iface_name,
+                       BarChart &bar_chart) {
     std::vector<uint64_t> rxs{};
 
     sampling::Sample prev_sample = sampler->get_sample(iface_name);
@@ -45,25 +47,28 @@ void run(const std::string &iface_name) {
     std::unique_ptr<sampling::Sampler> sys_sampler{
         new sampling::SysFsSampler()};
 
-    termui::SignalSuspender susp_sigint{SIGINT};
-    termui::SignalSuspender susp_sigwinch{SIGWINCH};
+    SignalSuspender susp_sigint{SIGINT};
+    SignalSuspender susp_sigwinch{SIGWINCH};
 
-    termui::TerminalModeSet mode_set{};
+    TerminalModeSet mode_set{};
     auto mode_setter =
         mode_set.local_off(ECHO).local_off(ICANON).build_setter(&susp_sigint);
-    termui::TerminalModeGuard mode_guard{&mode_setter};
+    TerminalModeGuard mode_guard{&mode_setter};
 
-    termui::TerminalDriver driver{stdin, stdout};
+    TerminalDriver driver{stdin, stdout};
     auto terminal_window =
-        termui::TerminalWindow::create(&driver, &susp_sigwinch);
+        TerminalWindow::create(&driver, &susp_sigwinch);
     // unique_ptr to ensure deletion of terminal_window
-    auto win = std::unique_ptr<termui::TerminalWindow>(terminal_window);
+    auto win = std::unique_ptr<TerminalWindow>(terminal_window);
 
-    termui::TerminalSurface surface{terminal_window, 10};
-    termui::BarChart bar_chart{&surface};
+    TerminalSurface surface{terminal_window, 10};
+    BarChart bar_chart{&surface};
 
-    visualize(sys_sampler, iface_name, bar_chart);
+    display_bar_chart(sys_sampler, iface_name, bar_chart);
 }
+
+} // namespace termui
+} // namespace bmon
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -76,14 +81,14 @@ int main(int argc, char *argv[]) {
     // We expect to get a Ctrl+C. Install a SIGINT handler that throws an
     // exception such that we can unwind orderly and enter the catch block
     // below.
-    signal(SIGINT, termui::sigint_handler);
+    signal(SIGINT, bmon::termui::sigint_handler);
 
     // We desperately need to wrap the execution in a try/catch otherwise an
     // uncaught exception will terminate the program bypassing all destructors
     // and leave the terminal in a corrupted state.
     try {
-        run(iface_name);
-    } catch (termui::InterruptException &e) {
+        bmon::termui::run(iface_name);
+    } catch (bmon::termui::InterruptException &e) {
         // This is the expected way to stop the program. Nothing to do here.
     } catch (std::exception &e) {
         std::cerr << "Trapped uncaught exception:\n  " << e.what();
