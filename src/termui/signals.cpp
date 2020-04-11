@@ -38,7 +38,7 @@ void SignalSuspender::restore() {
 void sigint_handler([[maybe_unused]] int sig) {
     // Throw here to force the stack to unwind. If we did just exit() here that
     // would not happen.
-    throw termui::InterruptException();
+    throw InterruptException();
 }
 
 } // namespace termui
