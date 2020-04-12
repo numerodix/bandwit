@@ -78,7 +78,7 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
     while (true) {
         // this used to be a sleep, but now we intermix sleeping with reading
         // input non-blocking
-        auto new_mode = input_loop(surface, std::chrono::seconds{1});
+        auto new_mode = input_loop(surface, std::chrono::milliseconds{1000});
         if (new_mode.has_value()) {
             mode = new_mode.value();
         }
