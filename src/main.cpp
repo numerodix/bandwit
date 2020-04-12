@@ -116,7 +116,7 @@ void run(const std::string &iface_name) {
     SignalSuspender susp_sigwinch{SIGWINCH};
 
     TerminalModeSet mode_set{};
-    auto mode_setter =
+    TerminalModeSetter mode_setter =
         mode_set.local_off(ECHO).local_off(ICANON).build_setter(&susp_sigint);
     TerminalModeGuard mode_guard{&mode_setter};
 
