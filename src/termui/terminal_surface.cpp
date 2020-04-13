@@ -141,7 +141,7 @@ void TerminalSurface::put_char(const Point &point, const char &ch) {
     // Map surface coordinates onto window coordinates
     Point point_win{
         point.x,
-        U16(INT(upper_left.y) + INT(point.y)),
+        U16(INT(upper_left.y) + INT(point.y) - 1),
     };
 
     win_->set_cursor(point_win);

@@ -30,7 +30,7 @@ void BarChart::draw_bars_from_right(const std::string &title,
     for (auto value : scaled) {
 
         for (uint16_t j = 0; j < value; ++j) {
-            uint16_t y = dim.height - 1 - j;
+            uint16_t y = dim.height - j;
             Point pt{col_cur, y};
             surface_->put_char(pt, '|');
         }
@@ -55,7 +55,7 @@ void BarChart::draw_scale(const Dimensions &dim, uint64_t max_value) {
         ticks.push_back(tick_fmt);
     }
 
-    uint16_t row = dim.height - 1;
+    uint16_t row = dim.height;
 
     for (auto tick : ticks) {
         for (size_t i = 0; i < tick.size(); ++i) {
@@ -76,7 +76,7 @@ void BarChart::draw_title(const std::string &title) {
     std::string title_fmt = ss.str();
 
     auto x = U16((INT(dim.width) / 2) - (INT(title_fmt.size()) / 2));
-    uint16_t y = 0;
+    uint16_t y = 1;
 
     for (size_t i = 0; i < title_fmt.size(); ++i) {
         Point pt{x, y};
@@ -94,7 +94,7 @@ void BarChart::draw_legend(uint64_t avg, uint64_t max, uint64_t last) {
         {"last", last},
     };
 
-    uint16_t row = 0;
+    uint16_t row = 1;
 
     for (auto pair : pairs) {
         std::stringstream ss{};
