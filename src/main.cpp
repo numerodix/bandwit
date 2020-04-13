@@ -111,7 +111,8 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
 }
 
 void run(const std::string &iface_name) {
-    std::unique_ptr<sampling::Sampler> sys_sampler{
+    std::unique_ptr<sampling::Sampler> sampler{
+        // new sampling::IpCommandSampler()};
         new sampling::SysFsSampler()};
 
     SignalSuspender susp_sigint{SIGINT};
@@ -143,7 +144,7 @@ void run(const std::string &iface_name) {
     // make sure stdin is non-blocking for the rest of this function
     FileStatusGuard non_block_status_guard{&non_blocking_status_setter};
 
-    display_bar_chart(sys_sampler, iface_name, surface, bar_chart);
+    display_bar_chart(sampler, iface_name, surface, bar_chart);
 }
 
 } // namespace termui
