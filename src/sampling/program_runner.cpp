@@ -27,7 +27,7 @@ std::vector<std::string> ProgramRunner::run(const std::string &args) const {
 
     int status_code = pclose(fl);
     if (status_code != 0) {
-        throw std::runtime_error("program return non-zero status code");
+        throw std::runtime_error("program returned non-zero status code");
     }
 
     return lines;
