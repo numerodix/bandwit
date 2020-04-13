@@ -2,7 +2,10 @@
 
 set -eux
 
+ulimit -c unlimited  # allow a core file to be written
+
 mkdir -p build
+rm -f build/core  # remove previous core file if any
 
 cd build
 # rm CMakeCache.txt  # invalidate options (sigh

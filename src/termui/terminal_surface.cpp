@@ -28,7 +28,7 @@ void TerminalSurface::on_startup() {
     if (overshoot > 0) {
         for (int y = 0; y < overshoot; ++y) {
             for (auto x = 1; x <= win_dim.width; ++x) {
-                win_->put_char('O'); /// XXX
+                win_->put_char(' '); /// XXX
             }
         }
     }
