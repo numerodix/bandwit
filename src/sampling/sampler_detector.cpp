@@ -31,7 +31,7 @@ SamplerDetector::detect_sampler(const std::string &iface_name) const {
         auto &sampler = pair.second;
 
         try {
-            sampler.get()->get_sample(iface_name);
+            sampler->get_sample(iface_name);
             return std::move(sampler);
 
         } catch (std::runtime_error &exc) {
@@ -48,7 +48,7 @@ SamplerDetector::detect_sampler(const std::string &iface_name) const {
     std::cerr << "Could not find a sampler supported by the system for the "
                  "interface: "
               << iface_name << "\n";
-    for (auto msg : errors) {
+    for (const auto& msg : errors) {
         std::cerr << "- " << msg << "\n";
     }
 
