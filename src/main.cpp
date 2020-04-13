@@ -113,7 +113,8 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
 void run(const std::string &iface_name) {
     std::unique_ptr<sampling::Sampler> sampler{
         // new sampling::IpCommandSampler()};
-        new sampling::SysFsSampler()};
+        new sampling::ProcFsSampler()};
+        // new sampling::SysFsSampler()};
 
     SignalSuspender susp_sigint{SIGINT};
     SignalSuspender susp_sigwinch{SIGWINCH};
