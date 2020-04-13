@@ -1,6 +1,8 @@
 #ifndef FILE_STATUS_H
 #define FILE_STATUS_H
 
+#include <macros.hpp>
+
 namespace bmon {
 namespace termui {
 
@@ -38,6 +40,9 @@ class FileStatusGuard {
     ~FileStatusGuard() {
         setter_->reset();
     }
+
+    CLASS_DISABLE_COPIES(FileStatusGuard)
+    CLASS_DISABLE_MOVES(FileStatusGuard)
 
   private:
     FileStatusSetter* setter_{nullptr};

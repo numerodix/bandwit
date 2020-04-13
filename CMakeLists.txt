@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.10)
 project(bmon CXX)
 
 # compiler options
-add_compile_options(-std=c++2a -g -Wall -Wextra -Wpedantic -Wnon-virtual-dtor -Wold-style-cast)
+add_compile_options(-std=c++17 -g -Wall -Wextra -Wpedantic -Wnon-virtual-dtor -Wold-style-cast)
 # enables function names in backtraces
 set(CMAKE_EXE_LINKER_FLAGS -rdynamic)
 
