@@ -44,7 +44,7 @@ SamplerDetector::detect_sampler(const std::string &iface_name) const {
     }
 
     throw std::runtime_error(
-        "Could not find a sampler supported by the system");
+        "Could not find a sampler supported by the system for the given interface");
 }
 
 } // namespace sampling

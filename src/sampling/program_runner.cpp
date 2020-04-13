@@ -1,4 +1,5 @@
 #include <array>
+#include <sstream>
 #include <stdexcept>
 
 #include "program_runner.hpp"
@@ -7,7 +8,12 @@ namespace bmon {
 namespace sampling {
 
 std::vector<std::string> ProgramRunner::run(const std::string &args) const {
-    FILE *fl = popen(args.c_str(), "r");
+    // append 2>/dev/null to get rid of stderr output
+    std::stringstream ss{};
+    ss << args << " 2>/dev/null";
+    std::string args_actual = ss.str();
+
+    FILE *fl = popen(args_actual.c_str(), "r");
     if (fl == nullptr) {
         throw std::runtime_error("popen() failed");
     }
