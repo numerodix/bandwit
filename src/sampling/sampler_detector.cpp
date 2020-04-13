@@ -60,7 +60,7 @@ SamplerDetector::detect_sampler(const std::string &iface_name) const {
     }
 
     std::cerr << "Could not find a sampler supported by the system for the "
-                 "given interface:\n";
+                 "interface: " << iface_name << "\n";
     for (auto msg : errors) {
         std::cerr << "- " << msg << "\n";
     }
