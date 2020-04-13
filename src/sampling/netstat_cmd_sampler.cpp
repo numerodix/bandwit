@@ -14,7 +14,7 @@
 namespace bmon {
 namespace sampling {
 
-class StatsParser {
+class NetstatStatsParser {
   public:
     std::pair<uint64_t, uint64_t> parse(const std::vector<std::string> &lines,
                                         const std::string &iface_name) {
@@ -54,14 +54,12 @@ class StatsParser {
 
 Sample NetstatCommandSampler::get_sample(const std::string &iface_name) const {
     ProgramRunner runner{};
-    StatsParser parser{};
+    NetstatStatsParser parser{};
 
     auto tp = std::chrono::system_clock::now();
     std::time_t ts = std::chrono::system_clock::to_time_t(tp);
 
-    std::stringstream ss{};
-    ss << "netstat -ibn" << iface_name;
-    std::string args = ss.str();
+    std::string args{"netstat -ibn"};
 
     auto output = runner.run(args);
     auto pair = parser.parse(output, iface_name);

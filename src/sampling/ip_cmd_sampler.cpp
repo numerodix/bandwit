@@ -14,7 +14,7 @@
 namespace bmon {
 namespace sampling {
 
-class StatsParser {
+class IpStatsParser {
   public:
     uint64_t parse_nbytes(const std::string &line) {
         std::smatch mres{};
@@ -93,7 +93,7 @@ class StatsParser {
 
 Sample IpCommandSampler::get_sample(const std::string &iface_name) const {
     ProgramRunner runner{};
-    StatsParser parser{};
+    IpStatsParser parser{};
 
     auto tp = std::chrono::system_clock::now();
     std::time_t ts = std::chrono::system_clock::to_time_t(tp);
