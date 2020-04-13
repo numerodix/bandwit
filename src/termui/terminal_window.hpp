@@ -26,6 +26,7 @@ class TerminalWindow {
     const Point &get_cursor() const;
     void set_cursor(const Point &point);
     void put_char(const char &ch);
+    void put_uchar(const std::string& ch);
     void flush();
     void clear_screen(const char &fill_char);
 

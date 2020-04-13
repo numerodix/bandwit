@@ -136,16 +136,17 @@ void TerminalSurface::clear_surface() {
 }
 
 void TerminalSurface::put_char(const Point &point, const char &ch) {
-    auto upper_left = get_upper_left();
-
-    // Map surface coordinates onto window coordinates
-    Point point_win{
-        point.x,
-        U16(INT(upper_left.y) + INT(point.y) - 1),
-    };
+    auto point_win = translate_point(point);
 
     win_->set_cursor(point_win);
     win_->put_char(ch);
+}
+
+void TerminalSurface::put_uchar(const Point &point, const std::string &ch) {
+    auto point_win = translate_point(point);
+
+    win_->set_cursor(point_win);
+    win_->put_uchar(ch);
 }
 
 void TerminalSurface::flush() {
@@ -180,6 +181,18 @@ Point TerminalSurface::recompute_lower_left(const Point &upper_left) const {
         U16(INT(upper_left.y) + INT(num_lines_) - 1),
     };
     return lower_left;
+}
+
+Point TerminalSurface::translate_point(const Point &point) {
+    auto upper_left = get_upper_left();
+
+    // Map surface coordinates onto window coordinates
+    Point point_win{
+        point.x,
+        U16(INT(upper_left.y) + INT(point.y) - 1),
+    };
+
+    return point_win;
 }
 
 } // namespace termui

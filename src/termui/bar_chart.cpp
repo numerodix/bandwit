@@ -32,7 +32,7 @@ void BarChart::draw_bars_from_right(const std::string &title,
         for (uint16_t j = 0; j < value; ++j) {
             uint16_t y = dim.height - j;
             Point pt{col_cur, y};
-            surface_->put_char(pt, '|');
+            surface_->put_uchar(pt, u8"║");
         }
 
         --col_cur;

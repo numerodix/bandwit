@@ -51,6 +51,13 @@ void TerminalDriver::put_char(const char &ch) {
     fprintf(stdout_file_, "%s", char_str_);
 }
 
+void TerminalDriver::put_uchar(const std::string &ch) {
+    // We can't really validate ch by checking the length or anything, it can be
+    // any sequence of bytes that make up a char. It's supposed to be only one
+    // char.
+    fprintf(stdout_file_, "%s", ch.c_str());
+}
+
 void TerminalDriver::flush_output() { fflush(stdout_file_); }
 
 } // namespace termui

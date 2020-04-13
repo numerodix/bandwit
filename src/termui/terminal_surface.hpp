@@ -20,6 +20,7 @@ class TerminalSurface {
 
     void clear_surface();
     void put_char(const Point &point, const char &ch);
+    void put_uchar(const Point& point, const std::string& ch);
     void flush();
 
     const Dimensions &get_size() const;
@@ -30,6 +31,7 @@ class TerminalSurface {
     void check_surface_fits(const Dimensions &win_dim);
     Dimensions recompute_dimensions(const Dimensions &win_dim) const;
     Point recompute_lower_left(const Point &upper_left) const;
+    Point translate_point(const Point& point);
 
     TerminalWindow *win_{nullptr};
 
