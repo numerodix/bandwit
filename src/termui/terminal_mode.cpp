@@ -63,11 +63,6 @@ void TerminalModeSetter::reset() {
     }
 }
 
-TerminalModeSet &TerminalModeSet::local_on(tcflag_t flag) {
-    flags_local_on_ |= flag;
-    return *this;
-}
-
 TerminalModeSet &TerminalModeSet::local_off(tcflag_t flag) {
     flags_local_off_ |= flag;
     return *this;

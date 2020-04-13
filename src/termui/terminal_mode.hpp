@@ -28,12 +28,10 @@ class TerminalModeSetter {
 
 class TerminalModeSet {
   public:
-    TerminalModeSet &local_on(tcflag_t flag);
     TerminalModeSet &local_off(tcflag_t flag);
     TerminalModeSetter build_setter(SignalSuspender *signal_suspender);
 
   private:
-    tcflag_t flags_local_on_{};
     tcflag_t flags_local_off_{};
 };
 
