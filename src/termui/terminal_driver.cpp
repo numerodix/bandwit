@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <sys/ioctl.h>
 
+#include "file_status.hpp"
 #include "terminal_driver.hpp"
 
 namespace bmon {
@@ -20,6 +21,15 @@ Dimensions TerminalDriver::get_terminal_size() {
 }
 
 Point TerminalDriver::get_cursor_position() {
+    // For this to work stdin needs to be in blocking mode.
+
+    // For some reason using the guard here does not work: ctor and dtor are
+    // both called before the fprintf below :(
+    // FileStatusGuard{&status_setter_};
+
+    // So instead we need to do an explicit set...
+    status_setter_->set();
+
     // TODO: document the mode the terminal has to be in for this to work
 
     // This is bit error prone: store the cursor position in the program to
@@ -34,6 +44,10 @@ Point TerminalDriver::get_cursor_position() {
     }
 
     Point pt{U16(cur_x), U16(cur_y)};
+
+    /// ... and reset before we return from the function
+    status_setter_->reset();
+
     return pt;
 }
 

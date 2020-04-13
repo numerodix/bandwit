@@ -6,11 +6,13 @@
 #include <memory>
 #include <optional>
 #include <thread>
+#include <unistd.h>
 
 #include "sampling/ip_cmd_sampler.hpp"
 #include "sampling/procfs_sampler.hpp"
 #include "sampling/sysfs_sampler.hpp"
 #include "termui/bar_chart.hpp"
+#include "termui/file_status.hpp"
 #include "termui/signals.hpp"
 #include "termui/terminal_driver.hpp"
 #include "termui/terminal_mode.hpp"
@@ -118,12 +120,15 @@ void run(const std::string &iface_name) {
     TerminalModeSet mode_set{};
     TerminalModeSetter mode_setter =
         mode_set.local_off(ECHO).local_off(ICANON).build_setter(&susp_sigint);
+    // make sure the terminal has -ECHO -ICANON for the rest of this function
     TerminalModeGuard mode_guard{&mode_setter};
 
-    // To read the cursor on terminal startup stdin has to be blocking
-    fcntl(0, F_SETFL, fcntl(0, F_GETFL) & ~O_NONBLOCK);
+    FileStatusSet blocking_status_set{};
+    // give the driver a way to make stdin blocking when needed
+    FileStatusSetter blocking_status_setter =
+        blocking_status_set.status_off(O_NONBLOCK).build_setter(STDIN_FILENO);
 
-    TerminalDriver driver{stdin, stdout};
+    TerminalDriver driver{stdin, stdout, &blocking_status_setter};
     auto terminal_window = TerminalWindow::create(&driver, &susp_sigwinch);
     // unique_ptr to ensure deletion of terminal_window
     auto win = std::unique_ptr<TerminalWindow>(terminal_window);
@@ -131,8 +136,12 @@ void run(const std::string &iface_name) {
     TerminalSurface surface{terminal_window, 10};
     BarChart bar_chart{&surface};
 
-    // To read user keyboard input we need stdin to be non-blocking
-    fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
+    FileStatusSet non_blocking_status_set{};
+    FileStatusSetter non_blocking_status_setter =
+        non_blocking_status_set.status_on(O_NONBLOCK)
+            .build_setter(STDIN_FILENO);
+    // make sure stdin is non-blocking for the rest of this function
+    FileStatusGuard non_block_status_guard{&non_blocking_status_setter};
 
     display_bar_chart(sys_sampler, iface_name, surface, bar_chart);
 }

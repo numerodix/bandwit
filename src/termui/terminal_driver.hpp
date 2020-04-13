@@ -10,10 +10,12 @@
 namespace bmon {
 namespace termui {
 
+class FileStatusSetter;
+
 class TerminalDriver {
   public:
-    TerminalDriver(FILE *stdin_file, FILE *stdout_file)
-        : stdin_file_{stdin_file}, stdout_file_{stdout_file} {}
+    TerminalDriver(FILE *stdin_file, FILE *stdout_file, FileStatusSetter* status_setter)
+        : stdin_file_{stdin_file}, stdout_file_{stdout_file}, status_setter_{status_setter} {}
 
     Dimensions get_terminal_size();
     Point get_cursor_position();
@@ -24,6 +26,8 @@ class TerminalDriver {
   private:
     FILE *stdin_file_{};
     FILE *stdout_file_{};
+
+    FileStatusSetter* status_setter_{nullptr};
 
     // we need a one char null terminated string
     char char_str_[2] = {0};
