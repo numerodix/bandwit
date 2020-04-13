@@ -24,11 +24,12 @@ Point TerminalDriver::get_cursor_position() {
     // For this to work stdin needs to be in blocking mode.
     FileStatusGuard guard{status_setter_};
 
-    // TODO: document the mode the terminal has to be in for this to work
-
-    // This is bit error prone: store the cursor position in the program to
-    // avoid reading it more than just at the very beginning. Maybe on
-    // startup just fall back on taking over the whole screen (or retry?).
+    // Reading the cursor position has been known to be flaky. To work around
+    // this we do it only once on program startup, and then we aim to compute it
+    // based on the events we generate (moving the cursor) or the events we
+    // observe (window resizing).
+    // If we did fail to read the cursor pos on startup we could fall back on
+    // taking over the whole terminal window...
     fprintf(stdout_file_, "\033[6n");
 
     int cur_x, cur_y;
