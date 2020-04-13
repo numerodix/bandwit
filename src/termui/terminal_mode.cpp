@@ -41,7 +41,7 @@ void TerminalModeSetter::set() {
     }
 }
 
-void TerminalModeSetter::unset() {
+void TerminalModeSetter::reset() {
     SignalGuard guard{signal_suspender_};
 
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios_) < 0) {

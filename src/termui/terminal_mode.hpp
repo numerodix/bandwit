@@ -17,7 +17,7 @@ class TerminalModeSetter {
         : local_off_{local_off}, signal_suspender_{signal_suspender} {}
 
     void set();
-    void unset();
+    void reset();
 
   private:
     tcflag_t local_off_{};
@@ -42,7 +42,7 @@ class TerminalModeGuard {
     explicit TerminalModeGuard(TerminalModeSetter *setter) : setter_{setter} {
         setter_->set();
     }
-    ~TerminalModeGuard() { setter_->unset(); }
+    ~TerminalModeGuard() { setter_->reset(); }
 
     CLASS_DISABLE_COPIES(TerminalModeGuard)
     CLASS_DISABLE_MOVES(TerminalModeGuard)
