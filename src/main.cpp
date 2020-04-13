@@ -11,6 +11,7 @@
 #include "sampling/ip_cmd_sampler.hpp"
 #include "sampling/netstat_cmd_sampler.hpp"
 #include "sampling/procfs_sampler.hpp"
+#include "sampling/sampler_detector.hpp"
 #include "sampling/sysfs_sampler.hpp"
 #include "termui/bar_chart.hpp"
 #include "termui/file_status.hpp"
@@ -112,10 +113,9 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
 }
 
 void run(const std::string &iface_name) {
-    std::unique_ptr<sampling::Sampler> sampler{
-        // new sampling::IpCommandSampler()};
-        new sampling::ProcFsSampler()};
-    // new sampling::SysFsSampler()};
+    sampling::SamplerDetector detector{};
+    std::unique_ptr<sampling::Sampler> sampler =
+        detector.detect_sampler(iface_name);
 
     SignalSuspender susp_sigint{SIGINT};
     SignalSuspender susp_sigwinch{SIGWINCH};
