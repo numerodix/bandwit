@@ -173,7 +173,7 @@ int main(int argc, char *argv[]) {
     } catch (bmon::termui::InterruptException &e) {
         // This is the expected way to stop the program. Nothing to do here.
     } catch (std::exception &e) {
-        std::cerr << "Trapped uncaught exception:\n  " << e.what();
+        std::cerr << "Trapped uncaught exception:\n  " << e.what() << "\n";
         exit(EXIT_FAILURE);
     } catch (...) {
         std::cerr << "This is the last resort exception handler. I have no "
