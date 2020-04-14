@@ -13,6 +13,7 @@
 #include "sampling/procfs_sampler.hpp"
 #include "sampling/sampler_detector.hpp"
 #include "sampling/sysfs_sampler.hpp"
+#include "sampling/time_series.hpp"
 #include "termui/bar_chart.hpp"
 #include "termui/file_status.hpp"
 #include "termui/signals.hpp"
@@ -74,6 +75,11 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
                        BarChart &bar_chart) {
     DisplayMode mode = DisplayMode::DISPLAY_RX;
 
+    std::chrono::seconds one_sec{1};
+    using clock = std::chrono::steady_clock;
+
+    sampling::TimeSeries ts{one_sec, clock::now()};
+
     std::vector<uint64_t> rxs{};
     std::vector<uint64_t> txs{};
 
@@ -94,6 +100,8 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
         rxs.push_back(rx);
         txs.push_back(tx);
 
+        ts.set(clock::now(), rx);
+
         // make sure the vector isn't longer than the width of the display
         if (rxs.size() > bar_chart.get_width()) {
             rxs.erase(rxs.begin());
@@ -105,10 +113,15 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
         prev_sample = sample;
 
         if (mode == DisplayMode::DISPLAY_RX) {
-            bar_chart.draw_bars_from_right("received", rxs);
+            // bar_chart.draw_bars_from_right("received", rxs);
         } else {
-            bar_chart.draw_bars_from_right("transmitted", txs);
+            // bar_chart.draw_bars_from_right("transmitted", txs);
         }
+
+        for (std::size_t i=0; i < ts.size(); ++i) {
+            std::cerr << ts.get_key(i) << ", ";
+        }
+        std::cerr << "\n";
     }
 }
 
@@ -183,3 +196,14 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
+// int main() {
+//     TimeSeries<uint64_t> ts{std::chrono::seconds{1},
+//     std::chrono::steady_clock::now()};
+//     ts.set(std::chrono::steady_clock::now(), 5);
+//     ts.set(std::chrono::steady_clock::now() + std::chrono::seconds{3}, 7);
+
+//     for (auto val: ts.storage_) {
+//         std::cerr << val << '\n';
+//     }
+// }
