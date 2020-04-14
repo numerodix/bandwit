@@ -40,13 +40,13 @@ void BarChart::draw_bars_from_right(const std::string &title,
         --col_cur;
     }
 
-    draw_scale(dim, max_value);
+    draw_yaxis(dim, max_value);
     draw_title(title);
 
     surface_->flush();
 }
 
-void BarChart::draw_scale(const Dimensions &dim, uint64_t max_value) {
+void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value) {
     Formatter fmt{};
     std::vector<std::string> ticks{};
 
