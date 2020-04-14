@@ -78,10 +78,8 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
     std::chrono::seconds one_sec{1};
     using clock = std::chrono::steady_clock;
 
-    sampling::TimeSeries ts{one_sec, clock::now()};
-
-    std::vector<uint64_t> rxs{};
-    std::vector<uint64_t> txs{};
+    sampling::TimeSeries ts_rx{one_sec, clock::now()};
+    sampling::TimeSeries ts_tx{one_sec, clock::now()};
 
     sampling::Sample prev_sample = sampler->get_sample(iface_name);
 
@@ -97,31 +95,20 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
 
         auto rx = sample.rx - prev_sample.rx;
         auto tx = sample.tx - prev_sample.tx;
-        rxs.push_back(rx);
-        txs.push_back(tx);
 
-        ts.set(clock::now(), rx);
-
-        // make sure the vector isn't longer than the width of the display
-        if (rxs.size() > bar_chart.get_width()) {
-            rxs.erase(rxs.begin());
-        }
-        if (txs.size() > bar_chart.get_width()) {
-            txs.erase(txs.begin());
-        }
+        auto now = clock::now();
+        ts_rx.set(now, rx);
+        ts_tx.set(now, tx);
 
         prev_sample = sample;
 
         if (mode == DisplayMode::DISPLAY_RX) {
-            // bar_chart.draw_bars_from_right("received", rxs);
+            auto rxs = ts_rx.get_slice_from_end(bar_chart.get_width());
+            bar_chart.draw_bars_from_right("received", rxs);
         } else {
-            // bar_chart.draw_bars_from_right("transmitted", txs);
+            auto txs = ts_tx.get_slice_from_end(bar_chart.get_width());
+            bar_chart.draw_bars_from_right("transmitted", txs);
         }
-
-        for (std::size_t i=0; i < ts.size(); ++i) {
-            std::cerr << ts.get_key(i) << ", ";
-        }
-        std::cerr << "\n";
     }
 }
 

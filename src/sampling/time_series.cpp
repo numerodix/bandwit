@@ -26,13 +26,24 @@ void TimeSeries::set_key(std::size_t key, uint64_t value) {
     max_key_ = key;
 }
 
-uint64_t TimeSeries::get_key(std::size_t key) const {
-    return storage_.at(key);
+uint64_t TimeSeries::get_key(std::size_t key) const { return storage_.at(key); }
+
+std::vector<uint64_t> TimeSeries::get_slice_from_end(std::size_t len) const {
+    auto last_key = max_key_;
+    auto first_key = len > size() ? 0 : last_key - len + 1;
+
+    std::vector<uint64_t> res(last_key - first_key + 1);
+    for (auto cursor = first_key; cursor <= last_key; ++cursor) {
+        auto value = get_key(cursor);
+        res.emplace_back(value);
+    }
+
+    return res;
 }
 
-std::size_t TimeSeries::size() const {
-    return max_key_ + 1;
-}
+std::size_t TimeSeries::size() const { return max_key_ + 1; }
+
+std::size_t TimeSeries::capacity() const { return storage_.capacity(); }
 
 std::size_t TimeSeries::calculate_key(TimePoint tp) const {
     auto distance = (tp - start_);
