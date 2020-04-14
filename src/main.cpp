@@ -183,14 +183,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-
-// int main() {
-//     TimeSeries<uint64_t> ts{std::chrono::seconds{1},
-//     std::chrono::steady_clock::now()};
-//     ts.set(std::chrono::steady_clock::now(), 5);
-//     ts.set(std::chrono::steady_clock::now() + std::chrono::seconds{3}, 7);
-
-//     for (auto val: ts.storage_) {
-//         std::cerr << val << '\n';
-//     }
-// }
