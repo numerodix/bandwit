@@ -78,8 +78,9 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
 
     std::chrono::seconds one_sec{1};
 
-    sampling::TimeSeries ts_rx{one_sec, Clock::now()};
-    sampling::TimeSeries ts_tx{one_sec, Clock::now()};
+    auto now = Clock::now();
+    sampling::TimeSeries ts_rx{one_sec, now};
+    sampling::TimeSeries ts_tx{one_sec, now};
 
     sampling::Sample prev_sample = sampler->get_sample(iface_name);
 
