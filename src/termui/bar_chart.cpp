@@ -21,7 +21,7 @@ void BarChart::draw_bars_from_right(const std::string &title,
     std::vector<uint16_t> scaled{};
     for (auto it = slice.values.rbegin(); it != slice.values.rend(); ++it) {
         double perc = F64(*it) / F64(max_value);
-        auto magnitude = U64(perc * F64(dim.height - 1));
+        auto magnitude = U64(perc * F64(dim.height - chart_offset_));
         scaled.push_back(magnitude);
     }
 
@@ -31,7 +31,7 @@ void BarChart::draw_bars_from_right(const std::string &title,
     for (auto value : scaled) {
 
         for (uint16_t j = 0; j < value; ++j) {
-            uint16_t y = dim.height - 1 - j;
+            uint16_t y = dim.height - chart_offset_ - j;
             Point pt{col_cur, y};
             surface_->put_uchar(pt, u8"▊");
         }
@@ -42,6 +42,7 @@ void BarChart::draw_bars_from_right(const std::string &title,
     draw_yaxis(dim, max_value);
     draw_xaxis(dim, slice);
     draw_title(title);
+    draw_menu(dim);
 
     surface_->flush();
 }
@@ -50,13 +51,13 @@ void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value) {
     std::vector<std::string> ticks{};
 
     double factor = 1.0 / F64(dim.height);
-    for (int x = 1; x <= dim.height - 1; ++x) {
+    for (int x = 1; x <= dim.height - chart_offset_; ++x) {
         auto tick = U64(F64(max_value) * (x * factor));
         std::string tick_fmt = formatter_.format_num_byte_rate(tick, "s");
         ticks.push_back(tick_fmt);
     }
 
-    uint16_t row = dim.height - 1;
+    uint16_t row = dim.height - chart_offset_;
 
     for (auto tick : ticks) {
         for (size_t i = 0; i < tick.size(); ++i) {
@@ -74,7 +75,8 @@ void BarChart::draw_xaxis(const Dimensions &dim, TimeSeriesSlice slice) {
 
     uint16_t col_cur = dim.width - axis.size() + 1;
     for (auto ch: axis) {
-        Point pt{col_cur++, dim.height};
+        auto y = U16(dim.height - xaxis_offset_);
+        Point pt{col_cur++, y};
         surface_->put_char(pt, ch);
     }
 }
@@ -93,6 +95,25 @@ void BarChart::draw_title(const std::string &title) {
         Point pt{x++, y};
         surface_->put_char(pt, ch);
     }
+}
+
+void BarChart::draw_menu(const Dimensions &dim) {
+    std::string menu{" (q)uit (r)x (t)x"};
+    menu.resize(dim.width, ' ');
+
+    uint16_t col_cur = 1;
+    uint16_t y = dim.height;
+
+    Point pt_start{col_cur, y};
+    surface_->put_uchar(pt_start, "\033[7m");
+
+    for (auto ch: menu) {
+        Point pt{col_cur++, y};
+        surface_->put_char(pt, ch);
+    }
+
+    Point pt_end{U16(col_cur - 1), y};
+    surface_->put_uchar(pt_end, "\033[0m");
 }
 
 uint16_t BarChart::get_width() const {

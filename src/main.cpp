@@ -139,7 +139,7 @@ void run(const std::string &iface_name) {
     // unique_ptr to ensure deletion of terminal_window
     auto win = std::unique_ptr<TerminalWindow>(terminal_window);
 
-    TerminalSurface surface{terminal_window, 11};
+    TerminalSurface surface{terminal_window, 12};
     BarChart bar_chart{&surface};
 
     FileStatusSet non_blocking_status_set{};
