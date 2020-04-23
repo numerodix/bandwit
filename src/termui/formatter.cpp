@@ -66,5 +66,82 @@ std::string Formatter::format_num_byte_rate(uint64_t num,
     return ss.str();
 }
 
+int get_hours(TimePoint tp) {
+    std::time_t tt = Clock::to_time_t(tp);
+    tm local_tm = *localtime(&tt);
+    int hours = local_tm.tm_hour;
+    return hours;
+}
+
+int get_minutes(TimePoint tp) {
+    std::time_t tt = Clock::to_time_t(tp);
+    tm local_tm = *localtime(&tt);
+    int mins = local_tm.tm_min;
+    return mins;
+}
+
+int get_seconds(TimePoint tp) {
+    std::time_t tt = Clock::to_time_t(tp);
+    tm local_tm = *localtime(&tt);
+    int secs = local_tm.tm_sec;
+    return secs;
+}
+
+std::string format_ss(TimePoint tp) {
+    int secs = get_seconds(tp);
+
+    std::stringstream ss{};
+    ss << std::setfill('0') << std::setw(2) << secs;
+    return ss.str();
+}
+
+std::string format_hh_mm(TimePoint tp) {
+    int hours = get_hours(tp);
+    int mins = get_minutes(tp);
+
+    std::stringstream ss{};
+    ss << std::setfill('0') << std::setw(2) << hours << ':' << mins;
+    return ss.str();
+}
+
+std::string Formatter::format_xaxis(std::vector<TimePoint> points) {
+    std::stringstream ss{};
+
+    // If we need to write more than one char for a given point then successive
+    // iterations through the loop will need to skip outputing anything at all
+    // to make up for the space used.
+    int chars_to_skip{0};
+
+    int num_chars_after_this_one{-1};
+
+    for (std::size_t i=0; i < points.size(); i++) {
+        num_chars_after_this_one = points.size() - 1 - i;
+
+        auto tp = points[i];
+        int secs = get_seconds(tp);
+
+        if (chars_to_skip > 0) {
+            chars_to_skip--;
+            continue;
+        }
+
+        if ((secs == 0) && (num_chars_after_this_one >= 4)) {
+            // We need to output HH:MM
+            auto tick = format_hh_mm(tp);
+            ss << tick;
+            chars_to_skip = 4;
+        } else if ((secs % 4 == 0) && (num_chars_after_this_one >= 1)) {
+            // We need to output SS
+            auto tick = format_ss(tp);
+            ss << tick;
+            chars_to_skip = 1;
+        } else {
+            ss << ' ';
+        }
+    }
+
+    return ss.str();
+}
+
 } // namespace termui
 } // namespace bmon
