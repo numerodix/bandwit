@@ -8,6 +8,11 @@ and include it in the exception context.
 
 * Use smart pointers to track object lifetime.
 
+## STL
+
+* Use emplace over push where possible.
+
 ## UX
 
-* To improve responsiveness: After a resize, notify the bar chart to repaint right away, without waiting for a second to elapse.
+* To improve responsiveness: After a resize, notify the bar chart to repaint
+  right away, without waiting for a second to elapse.
