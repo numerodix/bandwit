@@ -5,8 +5,8 @@
 #include <vector>
 
 #include "formatter.hpp"
-#include "time_series_slice.hpp"
 #include "termui/dimensions.hpp"
+#include "time_series_slice.hpp"
 
 namespace bmon {
 namespace termui {
