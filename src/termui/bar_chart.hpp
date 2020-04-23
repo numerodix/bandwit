@@ -20,7 +20,6 @@ class BarChart {
     void draw_yaxis(const Dimensions &dim, uint64_t max_value);
     void draw_xaxis(const Dimensions &dim, TimeSeriesSlice slice);
     void draw_title(const std::string& title);
-    void draw_legend(uint64_t avg, uint64_t max, uint64_t last);
 
     uint16_t get_width() const;
 

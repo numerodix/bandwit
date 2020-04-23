@@ -96,31 +96,6 @@ void BarChart::draw_title(const std::string &title) {
     }
 }
 
-void BarChart::draw_legend(uint64_t avg, uint64_t max, uint64_t last) {
-    std::vector<std::pair<std::string, uint64_t>> pairs{
-        {"max ", max},
-        {"avg ", avg},
-        {"last", last},
-    };
-
-    uint16_t row = 1;
-
-    for (auto pair : pairs) {
-        std::stringstream ss{};
-        std::string rate = formatter_.format_num_byte_rate(pair.second, "s");
-        ss << "[" << pair.first << ": " << rate << "]";
-        std::string legend = ss.str();
-
-        for (size_t i = 0; i < legend.size(); ++i) {
-            uint16_t x = U16(i) + U16(1);
-            Point pt{x, row};
-            surface_->put_char(pt, legend[i]);
-        }
-
-        row++;
-    }
-}
-
 uint16_t BarChart::get_width() const {
     auto dim = surface_->get_size();
     return dim.width - scale_width_;
