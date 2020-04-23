@@ -76,7 +76,7 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
     DisplayMode mode = DisplayMode::DISPLAY_RX;
 
     std::chrono::seconds one_sec{1};
-    using clock = std::chrono::steady_clock;
+    using clock = std::chrono::system_clock;
 
     sampling::TimeSeries ts_rx{one_sec, clock::now()};
     sampling::TimeSeries ts_tx{one_sec, clock::now()};

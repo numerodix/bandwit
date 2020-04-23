@@ -9,7 +9,7 @@ namespace sampling {
 
 class TimeSeries {
     using Ms = std::chrono::milliseconds;
-    using TimePoint = std::chrono::steady_clock::time_point;
+    using TimePoint = std::chrono::system_clock::time_point;
 
   public:
     TimeSeries(Ms interval, TimePoint start)
