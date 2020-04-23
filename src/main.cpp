@@ -46,6 +46,8 @@ read_input(TerminalSurface &surface, std::chrono::milliseconds sleep_duration) {
             return std::optional<DisplayMode>(DisplayMode::DISPLAY_RX);
         } else if (ch == 't') {
             return std::optional<DisplayMode>(DisplayMode::DISPLAY_TX);
+        } else if (ch == 'q') {
+            throw InterruptException();
         }
 
         ch = fgetc(stdin);
