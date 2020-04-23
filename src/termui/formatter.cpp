@@ -76,7 +76,7 @@ std::string Formatter::format_xaxis(std::vector<TimePoint> points) {
 
     int num_chars_after_this_one{-1};
 
-    for (std::size_t i=0; i < points.size(); i++) {
+    for (std::size_t i = 0; i < points.size(); i++) {
         num_chars_after_this_one = points.size() - 1 - i;
 
         auto tp = points[i];
