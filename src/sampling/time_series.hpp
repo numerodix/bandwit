@@ -4,13 +4,12 @@
 #include <chrono>
 #include <vector>
 
+#include "aliases.hpp"
+
 namespace bmon {
 namespace sampling {
 
 class TimeSeries {
-    using Ms = std::chrono::milliseconds;
-    using TimePoint = std::chrono::system_clock::time_point;
-
   public:
     TimeSeries(Ms interval, TimePoint start)
         : interval_{interval}, start_{start} {}

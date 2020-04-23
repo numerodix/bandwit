@@ -8,6 +8,7 @@
 #include <thread>
 #include <unistd.h>
 
+#include "aliases.hpp"
 #include "sampling/ip_cmd_sampler.hpp"
 #include "sampling/netstat_cmd_sampler.hpp"
 #include "sampling/procfs_sampler.hpp"
@@ -76,10 +77,9 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
     DisplayMode mode = DisplayMode::DISPLAY_RX;
 
     std::chrono::seconds one_sec{1};
-    using clock = std::chrono::system_clock;
 
-    sampling::TimeSeries ts_rx{one_sec, clock::now()};
-    sampling::TimeSeries ts_tx{one_sec, clock::now()};
+    sampling::TimeSeries ts_rx{one_sec, Clock::now()};
+    sampling::TimeSeries ts_tx{one_sec, Clock::now()};
 
     sampling::Sample prev_sample = sampler->get_sample(iface_name);
 
@@ -96,7 +96,7 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
         auto rx = sample.rx - prev_sample.rx;
         auto tx = sample.tx - prev_sample.tx;
 
-        auto now = clock::now();
+        auto now = Clock::now();
         ts_rx.set(now, rx);
         ts_tx.set(now, tx);
 
