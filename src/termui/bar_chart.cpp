@@ -3,7 +3,6 @@
 #include <sstream>
 
 #include "bar_chart.hpp"
-#include "formatter.hpp"
 #include "macros.hpp"
 #include "terminal_surface.hpp"
 
@@ -48,13 +47,12 @@ void BarChart::draw_bars_from_right(const std::string &title,
 }
 
 void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value) {
-    Formatter fmt{};
     std::vector<std::string> ticks{};
 
     double factor = 1.0 / F64(dim.height);
     for (int x = 1; x <= dim.height - 1; ++x) {
         auto tick = U64(F64(max_value) * (x * factor));
-        std::string tick_fmt = fmt.format_num_byte_rate(tick, "s");
+        std::string tick_fmt = formatter_.format_num_byte_rate(tick, "s");
         ticks.push_back(tick_fmt);
     }
 
@@ -72,8 +70,7 @@ void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value) {
 }
 
 void BarChart::draw_xaxis(const Dimensions &dim, TimeSeriesSlice slice) {
-    Formatter fmt{};
-    std::string axis = fmt.format_xaxis(slice.time_points);
+    std::string axis = formatter_.format_xaxis(slice.time_points);
 
     uint16_t col_cur = dim.width - axis.size() + 1;
     for (std::size_t i = 0; i < axis.size(); ++i) {
@@ -100,8 +97,6 @@ void BarChart::draw_title(const std::string &title) {
 }
 
 void BarChart::draw_legend(uint64_t avg, uint64_t max, uint64_t last) {
-    Formatter fmt{};
-
     std::vector<std::pair<std::string, uint64_t>> pairs{
         {"max ", max},
         {"avg ", avg},
@@ -112,7 +107,7 @@ void BarChart::draw_legend(uint64_t avg, uint64_t max, uint64_t last) {
 
     for (auto pair : pairs) {
         std::stringstream ss{};
-        std::string rate = fmt.format_num_byte_rate(pair.second, "s");
+        std::string rate = formatter_.format_num_byte_rate(pair.second, "s");
         ss << "[" << pair.first << ": " << rate << "]";
         std::string legend = ss.str();
 

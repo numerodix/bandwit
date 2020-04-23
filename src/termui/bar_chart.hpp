@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "formatter.hpp"
 #include "time_series_slice.hpp"
 #include "termui/dimensions.hpp"
 
@@ -25,6 +26,7 @@ class BarChart {
 
   private:
     TerminalSurface *surface_{nullptr};
+    Formatter formatter_{};
 
     // 4 digits, a space, 4 chars, a space to delimit
     uint16_t scale_width_{10};
