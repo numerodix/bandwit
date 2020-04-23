@@ -19,6 +19,8 @@ include_directories(src)
 file(GLOB SOURCES_ROOT "src/*.cpp")
 file(GLOB SOURCES_SAMPLING "src/sampling/*.cpp")
 file(GLOB SOURCES_TERMUI "src/termui/*.cpp")
+file(GLOB SOURCES_TOOLS "src/tools/*.cpp")
 
 # targets
-add_executable(bmon ${SOURCES_SAMPLING} ${SOURCES_TERMUI} ${SOURCES_ROOT})
+add_executable(bmon
+    ${SOURCES_SAMPLING} ${SOURCES_TERMUI} ${SOURCES_TOOLS} ${SOURCES_ROOT})

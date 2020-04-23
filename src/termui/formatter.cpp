@@ -66,44 +66,6 @@ std::string Formatter::format_num_byte_rate(uint64_t num,
     return ss.str();
 }
 
-int get_hours(TimePoint tp) {
-    std::time_t tt = Clock::to_time_t(tp);
-    tm local_tm = *localtime(&tt);
-    int hours = local_tm.tm_hour;
-    return hours;
-}
-
-int get_minutes(TimePoint tp) {
-    std::time_t tt = Clock::to_time_t(tp);
-    tm local_tm = *localtime(&tt);
-    int mins = local_tm.tm_min;
-    return mins;
-}
-
-int get_seconds(TimePoint tp) {
-    std::time_t tt = Clock::to_time_t(tp);
-    tm local_tm = *localtime(&tt);
-    int secs = local_tm.tm_sec;
-    return secs;
-}
-
-std::string format_ss(TimePoint tp) {
-    int secs = get_seconds(tp);
-
-    std::stringstream ss{};
-    ss << std::setfill('0') << std::setw(2) << secs;
-    return ss.str();
-}
-
-std::string format_hh_mm(TimePoint tp) {
-    int hours = get_hours(tp);
-    int mins = get_minutes(tp);
-
-    std::stringstream ss{};
-    ss << std::setfill('0') << std::setw(2) << hours << ':' << mins;
-    return ss.str();
-}
-
 std::string Formatter::format_xaxis(std::vector<TimePoint> points) {
     std::stringstream ss{};
 
@@ -118,7 +80,7 @@ std::string Formatter::format_xaxis(std::vector<TimePoint> points) {
         num_chars_after_this_one = points.size() - 1 - i;
 
         auto tp = points[i];
-        int secs = get_seconds(tp);
+        int secs = time_keeping_.get_seconds(tp);
 
         if (chars_to_skip > 0) {
             chars_to_skip--;
@@ -140,6 +102,25 @@ std::string Formatter::format_xaxis(std::vector<TimePoint> points) {
         }
     }
 
+    return ss.str();
+}
+
+std::string Formatter::format_hh_mm(TimePoint tp) {
+    int hours = time_keeping_.get_hours(tp);
+    int mins = time_keeping_.get_minutes(tp);
+
+    std::stringstream ss{};
+    ss << std::setfill('0') << std::setw(2) << hours;
+    ss << ':';
+    ss << std::setfill('0') << std::setw(2) << mins;
+    return ss.str();
+}
+
+std::string Formatter::format_ss(TimePoint tp) {
+    int secs = time_keeping_.get_seconds(tp);
+
+    std::stringstream ss{};
+    ss << std::setfill('0') << std::setw(2) << secs;
     return ss.str();
 }
 
