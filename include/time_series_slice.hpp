@@ -4,13 +4,17 @@
 #include <unistd.h>
 #include <vector>
 
+#include "aliases.hpp"
+
 namespace bmon {
 
 class TimeSeriesSlice {
   public:
-    TimeSeriesSlice(std::vector<uint64_t> vals) : values{vals} {}
+    explicit TimeSeriesSlice(std::vector<TimePoint> tps, std::vector<uint64_t> vals)
+     : time_points{tps}, values{vals} {}
 
-    std::vector<uint64_t> values;
+    std::vector<TimePoint> time_points{};
+    std::vector<uint64_t> values{};
 };
 
 } // namespace bmon

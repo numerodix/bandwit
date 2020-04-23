@@ -32,15 +32,21 @@ TimeSeriesSlice TimeSeries::get_slice_from_end(std::size_t len) const {
     auto last_key = max_key_;
     auto first_key = len > size() ? 0 : last_key - len + 1;
 
-    std::vector<uint64_t> values(last_key - first_key + 1);
+    std::vector<TimePoint> time_points(last_key - first_key + 1);
+    std::vector<uint64_t> values(time_points.size());
     std::size_t i = 0;
 
     for (auto cursor = first_key; cursor <= last_key; ++cursor) {
+        auto tp = reverse_key(cursor);
         auto value = get_key(cursor);
-        values[i++] = value;
+
+        time_points[i] = tp;
+        values[i] = value;
+
+        ++i;
     }
 
-    TimeSeriesSlice slice{values};
+    TimeSeriesSlice slice{time_points, values};
     return slice;
 }
 
@@ -52,6 +58,11 @@ std::size_t TimeSeries::calculate_key(TimePoint tp) const {
     auto distance = (tp - start_);
     auto num_units = distance / interval_;
     return num_units;
+}
+
+TimePoint TimeSeries::reverse_key(std::size_t index) const {
+    auto tp = start_ + (interval_ * index);
+    return tp;
 }
 
 } // namespace sampling

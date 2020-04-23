@@ -28,6 +28,7 @@ class TimeSeries {
     std::size_t capacity() const;
 
     std::size_t calculate_key(TimePoint tp) const;
+    TimePoint reverse_key(std::size_t index) const;
 
   private:
     Millis interval_{};
