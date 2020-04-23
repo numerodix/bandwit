@@ -7,7 +7,7 @@ namespace bmon {
 
 using Clock = std::chrono::system_clock;
 using TimePoint = Clock::time_point;
-using Ms = std::chrono::milliseconds;
+using Millis = std::chrono::milliseconds;
 
 } // namespace bmon
 

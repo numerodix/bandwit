@@ -11,7 +11,7 @@ namespace sampling {
 
 class TimeSeries {
   public:
-    TimeSeries(Ms interval, TimePoint start)
+    TimeSeries(Millis interval, TimePoint start)
         : interval_{interval}, start_{start} {}
 
     // convenience API using time points
@@ -29,7 +29,7 @@ class TimeSeries {
     std::size_t calculate_key(TimePoint tp) const;
 
   private:
-    Ms interval_{};
+    Millis interval_{};
     TimePoint start_{};
 
     std::vector<uint64_t> storage_{};
