@@ -4,13 +4,13 @@
 #include <chrono>
 #include <vector>
 
+#include "aliases.hpp"
+#include "time_series_slice.hpp"
+
 namespace bmon {
 namespace sampling {
 
 class TimeSeries {
-    using Ms = std::chrono::milliseconds;
-    using TimePoint = std::chrono::steady_clock::time_point;
-
   public:
     TimeSeries(Ms interval, TimePoint start)
         : interval_{interval}, start_{start} {}
@@ -24,10 +24,13 @@ class TimeSeries {
     uint64_t get_key(std::size_t key) const;
 
     std::vector<uint64_t> get_slice_from_end(std::size_t len) const;
+    std::vector<std::pair<TimePoint, uint64_t>> get_slice_from_end_(std::size_t len) const;
+    TimeSeriesSlice get_slice_from_end__(std::size_t len) const;
     std::size_t size() const;
     std::size_t capacity() const;
 
     std::size_t calculate_key(TimePoint tp) const;
+    TimePoint calculate_key(std::size_t index) const;
 
   private:
     Ms interval_{};

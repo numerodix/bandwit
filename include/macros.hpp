@@ -1,3 +1,6 @@
+#ifndef MACROS_H
+#define MACROS_H
+
 #define CLASS_DISABLE_COPY_CONSTRUCTOR(name) name(const name &) = delete;
 #define CLASS_DISABLE_COPY_ASSIGNMENT(name)                                    \
     name &operator=(const name &) = delete;
@@ -20,3 +23,5 @@
 #define U64(num) static_cast<uint64_t>(num)
 
 #define PCHAR(val) static_cast<char*>(val)
+
+#endif // MACROS_H

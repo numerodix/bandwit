@@ -1,6 +1,8 @@
 #include <algorithm>
+#include <chrono>
 #include <numeric>
 #include <sstream>
+#include <vector>
 
 #include "bar_chart.hpp"
 #include "formatter.hpp"
@@ -13,16 +15,20 @@ namespace termui {
 // ref: https://en.wikipedia.org/wiki/Box-drawing_character
 
 void BarChart::draw_bars_from_right(const std::string &title,
-                                    std::vector<uint64_t> values) {
+                                    TimeSeriesSlice slice) {
     auto dim = surface_->get_size();
 
-    auto max = std::max_element(values.begin(), values.end());
-    uint64_t max_value = *max;
+    uint64_t max_value{0};
+    for (auto value: slice.values) {
+        if (value > max_value) {
+            max_value = value;
+        }
+    }
 
     std::vector<uint16_t> scaled{};
-    for (auto it = values.rbegin(); it != values.rend(); ++it) {
+    for (auto it = slice.values.rbegin(); it != slice.values.rend(); ++it) {
         double perc = F64(*it) / F64(max_value);
-        auto magnitude = U64(perc * F64(dim.height));
+        auto magnitude = U64(perc * F64(dim.height - 1));
         scaled.push_back(magnitude);
     }
 
@@ -32,7 +38,7 @@ void BarChart::draw_bars_from_right(const std::string &title,
     for (auto value : scaled) {
 
         for (uint16_t j = 0; j < value; ++j) {
-            uint16_t y = dim.height - j;
+            uint16_t y = dim.height - 1 - j;
             Point pt{col_cur, y};
             surface_->put_uchar(pt, u8"▊");
         }
@@ -41,6 +47,7 @@ void BarChart::draw_bars_from_right(const std::string &title,
     }
 
     draw_yaxis(dim, max_value);
+    draw_xaxis(dim, slice);
     draw_title(title);
 
     surface_->flush();
@@ -51,13 +58,13 @@ void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value) {
     std::vector<std::string> ticks{};
 
     double factor = 1.0 / F64(dim.height);
-    for (int x = 1; x <= dim.height; ++x) {
+    for (int x = 1; x <= dim.height - 1; ++x) {
         auto tick = U64(F64(max_value) * (x * factor));
         std::string tick_fmt = fmt.format_num_byte_rate(tick, "s");
         ticks.push_back(tick_fmt);
     }
 
-    uint16_t row = dim.height;
+    uint16_t row = dim.height - 1;
 
     for (auto tick : ticks) {
         for (size_t i = 0; i < tick.size(); ++i) {
@@ -67,6 +74,25 @@ void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value) {
         }
 
         row--;
+    }
+}
+
+void BarChart::draw_xaxis(const Dimensions &dim, TimeSeriesSlice slice) {
+    Formatter fmt{};
+
+    std::vector<TimePoint> time_points{};
+    for (auto tp: slice.time_points) {
+        time_points.push_back(tp);
+    }
+
+    std::string axis = fmt.format_xaxis(time_points);
+
+    uint16_t col_cur = dim.width - axis.size() + 1;
+    for (size_t i = 0; i < axis.size(); ++i) {
+        Point pt{col_cur, dim.height};
+        surface_->put_char(pt, axis[i]);
+
+        col_cur++;
     }
 }
 

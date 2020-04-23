@@ -8,6 +8,7 @@
 #include <thread>
 #include <unistd.h>
 
+#include "aliases.hpp"
 #include "sampling/ip_cmd_sampler.hpp"
 #include "sampling/netstat_cmd_sampler.hpp"
 #include "sampling/procfs_sampler.hpp"
@@ -16,6 +17,7 @@
 #include "sampling/time_series.hpp"
 #include "termui/bar_chart.hpp"
 #include "termui/file_status.hpp"
+#include "termui/formatter.hpp"
 #include "termui/signals.hpp"
 #include "termui/terminal_driver.hpp"
 #include "termui/terminal_mode.hpp"
@@ -76,10 +78,10 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
     DisplayMode mode = DisplayMode::DISPLAY_RX;
 
     std::chrono::seconds one_sec{1};
-    using clock = std::chrono::steady_clock;
 
-    sampling::TimeSeries ts_rx{one_sec, clock::now()};
-    sampling::TimeSeries ts_tx{one_sec, clock::now()};
+    auto now = Clock::now();
+    sampling::TimeSeries ts_rx{one_sec, now};
+    sampling::TimeSeries ts_tx{one_sec, now};
 
     sampling::Sample prev_sample = sampler->get_sample(iface_name);
 
@@ -96,17 +98,17 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
         auto rx = sample.rx - prev_sample.rx;
         auto tx = sample.tx - prev_sample.tx;
 
-        auto now = clock::now();
+        auto now = Clock::now();
         ts_rx.set(now, rx);
         ts_tx.set(now, tx);
 
         prev_sample = sample;
 
         if (mode == DisplayMode::DISPLAY_RX) {
-            auto rxs = ts_rx.get_slice_from_end(bar_chart.get_width());
+            auto rxs = ts_rx.get_slice_from_end__(bar_chart.get_width());
             bar_chart.draw_bars_from_right("received", rxs);
         } else {
-            auto txs = ts_tx.get_slice_from_end(bar_chart.get_width());
+            auto txs = ts_tx.get_slice_from_end__(bar_chart.get_width());
             bar_chart.draw_bars_from_right("transmitted", txs);
         }
     }
@@ -183,3 +185,18 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
+// int main() {
+//     bmon::termui::Formatter fmt{};
+
+//     std::vector<TimePoint> tps{};
+
+//     auto now = Clock::now();
+//     for (int i=110; i >= 0; --i) {
+//         auto tp = now - std::chrono::seconds{i};
+//         tps.push_back(tp);
+//     }
+
+//     auto axis = fmt.format_xaxis(tps);
+//     std::cout << '|' << axis << '|' << '\n';
+// }

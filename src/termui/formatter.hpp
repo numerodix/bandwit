@@ -1,9 +1,13 @@
 #ifndef FORMATTER_H
 #define FORMATTER_H
 
+#include <chrono>
 #include <cstdint>
 #include <map>
 #include <string>
+#include <vector>
+
+#include "aliases.hpp"
 
 namespace bmon {
 namespace termui {
@@ -12,6 +16,8 @@ class Formatter {
   public:
     std::string format_num_byte_rate(uint64_t num,
                                      const std::string &time_unit);
+    std::string format_second_zfill(TimePoint tp);
+    std::string format_xaxis(std::vector<TimePoint> points);
 
   private:
     // powers of two
