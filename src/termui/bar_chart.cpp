@@ -74,7 +74,7 @@ void BarChart::draw_xaxis(const Dimensions &dim, TimeSeriesSlice slice) {
     std::string axis = formatter_.format_xaxis(slice.time_points);
 
     uint16_t col_cur = dim.width - axis.size() + 1;
-    for (auto ch: axis) {
+    for (auto ch : axis) {
         auto y = U16(dim.height - xaxis_offset_);
         Point pt{col_cur++, y};
         surface_->put_char(pt, ch);
@@ -91,7 +91,7 @@ void BarChart::draw_title(const std::string &title) {
     auto x = U16((INT(dim.width) / 2) - (INT(title_fmt.size()) / 2));
     uint16_t y = 1;
 
-    for (auto ch: title_fmt) {
+    for (auto ch : title_fmt) {
         Point pt{x++, y};
         surface_->put_char(pt, ch);
     }
@@ -107,7 +107,7 @@ void BarChart::draw_menu(const Dimensions &dim) {
     Point pt_start{col_cur, y};
     surface_->put_uchar(pt_start, "\033[7m");
 
-    for (auto ch: menu) {
+    for (auto ch : menu) {
         Point pt{col_cur++, y};
         surface_->put_char(pt, ch);
     }

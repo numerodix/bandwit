@@ -174,12 +174,15 @@ int main(int argc, char *argv[]) {
     try {
         bmon::termui::run(iface_name);
     } catch (bmon::termui::InterruptException &e) {
-        // This is the expected way to stop the program. Nothing to do here.
+        // This is the expected way to stop the program.
+        // Emit a newline so we move beyond the menu that was displayed at the
+        // cursor position.
+        std::cerr << "\n";
     } catch (std::exception &e) {
-        std::cerr << "Trapped uncaught exception:\n  " << e.what() << "\n";
+        std::cerr << "\nTrapped uncaught exception:\n  " << e.what() << "\n";
         exit(EXIT_FAILURE);
     } catch (...) {
-        std::cerr << "This is the last resort exception handler. I have no "
+        std::cerr << "\nThis is the last resort exception handler. I have no "
                      "state about the error.";
         exit(EXIT_FAILURE);
     }
