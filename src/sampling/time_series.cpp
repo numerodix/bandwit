@@ -33,9 +33,11 @@ TimeSeriesSlice TimeSeries::get_slice_from_end(std::size_t len) const {
     auto first_key = len > size() ? 0 : last_key - len + 1;
 
     std::vector<uint64_t> values(last_key - first_key + 1);
+    std::size_t i = 0;
+
     for (auto cursor = first_key; cursor <= last_key; ++cursor) {
         auto value = get_key(cursor);
-        values.emplace_back(value);
+        values[i++] = value;
     }
 
     TimeSeriesSlice slice{values};

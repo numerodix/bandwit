@@ -1,0 +1,5 @@
+#!/bin/sh
+
+set -eux
+
+gdb --args build/bmon wlp4s0
