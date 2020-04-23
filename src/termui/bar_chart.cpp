@@ -13,14 +13,14 @@ namespace termui {
 // ref: https://en.wikipedia.org/wiki/Box-drawing_character
 
 void BarChart::draw_bars_from_right(const std::string &title,
-                                    std::vector<uint64_t> values) {
+                                    TimeSeriesSlice slice) {
     auto dim = surface_->get_size();
 
-    auto max = std::max_element(values.begin(), values.end());
+    auto max = std::max_element(slice.values.begin(), slice.values.end());
     uint64_t max_value = *max;
 
     std::vector<uint16_t> scaled{};
-    for (auto it = values.rbegin(); it != values.rend(); ++it) {
+    for (auto it = slice.values.rbegin(); it != slice.values.rend(); ++it) {
         double perc = F64(*it) / F64(max_value);
         auto magnitude = U64(perc * F64(dim.height));
         scaled.push_back(magnitude);

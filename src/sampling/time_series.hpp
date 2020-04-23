@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "aliases.hpp"
+#include "time_series_slice.hpp"
 
 namespace bmon {
 namespace sampling {
@@ -22,7 +23,7 @@ class TimeSeries {
     void set_key(std::size_t key, uint64_t value);
     uint64_t get_key(std::size_t key) const;
 
-    std::vector<uint64_t> get_slice_from_end(std::size_t len) const;
+    TimeSeriesSlice get_slice_from_end(std::size_t len) const;
     std::size_t size() const;
     std::size_t capacity() const;
 
