@@ -11,7 +11,8 @@ namespace termui {
 
 // ref: https://en.wikipedia.org/wiki/Box-drawing_character
 
-void BarChart::draw_bars_from_right(const std::string &title,
+void BarChart::draw_bars_from_right(const std::string &iface_name,
+                                    const std::string &title,
                                     TimeSeriesSlice slice) {
     auto dim = surface_->get_size();
 
@@ -42,7 +43,7 @@ void BarChart::draw_bars_from_right(const std::string &title,
     draw_yaxis(dim, max_value);
     draw_xaxis(dim, slice);
     draw_title(title);
-    draw_menu(dim);
+    draw_menu(iface_name, dim);
 
     surface_->flush();
 }
@@ -97,9 +98,19 @@ void BarChart::draw_title(const std::string &title) {
     }
 }
 
-void BarChart::draw_menu(const Dimensions &dim) {
+void BarChart::draw_menu(const std::string &iface_name, const Dimensions &dim) {
     std::string menu{" (q)uit (r)x (t)x"};
     menu.resize(dim.width, ' ');
+
+    // format iface
+    std::stringstream ss{};
+    ss << "[" << iface_name << "]";
+    std::string iface_label = ss.str();
+
+    // insert iface at the end
+    auto to_index = menu.size() - 0;
+    auto from_index = to_index - iface_label.size();
+    menu.replace(from_index, to_index, iface_label);
 
     uint16_t col_cur = 1;
     uint16_t y = dim.height;

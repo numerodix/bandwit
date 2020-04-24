@@ -63,10 +63,10 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
 
         if (mode == DisplayMode::DISPLAY_RX) {
             auto rxs = ts_rx.get_slice_from_end(bar_chart.get_width());
-            bar_chart.draw_bars_from_right("received", rxs);
+            bar_chart.draw_bars_from_right(iface_name, "received", rxs);
         } else {
             auto txs = ts_tx.get_slice_from_end(bar_chart.get_width());
-            bar_chart.draw_bars_from_right("transmitted", txs);
+            bar_chart.draw_bars_from_right(iface_name, "transmitted", txs);
         }
 
         // Spend the rest of the second reading keyboard input
