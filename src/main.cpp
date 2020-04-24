@@ -47,16 +47,8 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
     sampling::Sample prev_sample = sampler->get_sample(iface_name);
 
     while (true) {
-        KeyPress key = reader.read_nonblocking(one_sec);
-        if (key == KeyPress::CARRIAGE_RETURN) {
-            surface.on_carriage_return();
-        } else if (key == KeyPress::DISPLAY_RX) {
-            mode = DisplayMode::DISPLAY_RX;
-        } else if (key == KeyPress::DISPLAY_TX) {
-            mode = DisplayMode::DISPLAY_TX;
-        } else if (key == KeyPress::QUIT) {
-            throw InterruptException();
-        }
+        // Time execution of sampling and rendering
+        auto pre = Clock::now();
 
         sampling::Sample sample = sampler->get_sample(iface_name);
 
@@ -75,6 +67,21 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
         } else {
             auto txs = ts_tx.get_slice_from_end(bar_chart.get_width());
             bar_chart.draw_bars_from_right("transmitted", txs);
+        }
+
+        // Spend the rest of the second reading keyboard input
+        auto elapsed = Clock::now() - pre;
+        auto remaining = MILLIS(one_sec - elapsed);
+
+        KeyPress key = reader.read_nonblocking(remaining);
+        if (key == KeyPress::CARRIAGE_RETURN) {
+            surface.on_carriage_return();
+        } else if (key == KeyPress::DISPLAY_RX) {
+            mode = DisplayMode::DISPLAY_RX;
+        } else if (key == KeyPress::DISPLAY_TX) {
+            mode = DisplayMode::DISPLAY_TX;
+        } else if (key == KeyPress::QUIT) {
+            throw InterruptException();
         }
     }
 }

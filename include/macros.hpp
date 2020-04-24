@@ -1,6 +1,8 @@
 #ifndef MACROS_H
 #define MACROS_H
 
+#include <chrono>
+
 #define CLASS_DISABLE_COPY_CONSTRUCTOR(name) name(const name &) = delete;
 #define CLASS_DISABLE_COPY_ASSIGNMENT(name)                                    \
     name &operator=(const name &) = delete;
@@ -23,5 +25,7 @@
 #define U64(num) static_cast<uint64_t>(num)
 
 #define PCHAR(val) static_cast<char*>(val)
+
+#define MILLIS(val) std::chrono::duration_cast<std::chrono::milliseconds>(val)
 
 #endif // MACROS_H
