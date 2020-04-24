@@ -17,6 +17,7 @@
 #include "sampling/time_series.hpp"
 #include "termui/bar_chart.hpp"
 #include "termui/file_status.hpp"
+#include "termui/keyboard_input.hpp"
 #include "termui/signals.hpp"
 #include "termui/terminal_driver.hpp"
 #include "termui/terminal_mode.hpp"
@@ -31,51 +32,10 @@ enum class DisplayMode {
     DISPLAY_TX,
 };
 
-std::optional<DisplayMode>
-read_input(TerminalSurface &surface, std::chrono::milliseconds sleep_duration) {
-    // We're reading from stdin non-blocking, so we need to combine sleeping
-    // with reading input
-    std::this_thread::sleep_for(sleep_duration);
-
-    char ch = fgetc(stdin);
-    while (ch >= 0) {
-        if (ch == '\n') {
-            surface.on_carriage_return();
-
-        } else if (ch == 'r') {
-            return std::optional<DisplayMode>(DisplayMode::DISPLAY_RX);
-        } else if (ch == 't') {
-            return std::optional<DisplayMode>(DisplayMode::DISPLAY_TX);
-        } else if (ch == 'q') {
-            throw InterruptException();
-        }
-
-        ch = fgetc(stdin);
-    }
-
-    return std::nullopt;
-}
-
-std::optional<DisplayMode> input_loop(TerminalSurface &surface,
-                                      std::chrono::milliseconds time_budget) {
-    // We have 1s of time to spend. We'd rather do more loops with shorter
-    // sleeps for greater responsiveness
-    auto num_loops = 100;
-    auto sleep_duration = time_budget / num_loops;
-
-    for (auto i = 0; i < num_loops; ++i) {
-        auto new_mode = read_input(surface, sleep_duration);
-        if (new_mode.has_value()) {
-            return new_mode;
-        }
-    }
-
-    return std::nullopt;
-}
-
 void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
                        const std::string &iface_name, TerminalSurface &surface,
                        BarChart &bar_chart) {
+    KeyboardInputReader reader{stdin};
     DisplayMode mode = DisplayMode::DISPLAY_RX;
 
     std::chrono::seconds one_sec{1};
@@ -87,11 +47,15 @@ void display_bar_chart(const std::unique_ptr<sampling::Sampler> &sampler,
     sampling::Sample prev_sample = sampler->get_sample(iface_name);
 
     while (true) {
-        // this used to be a sleep, but now we intermix sleeping with reading
-        // input non-blocking
-        auto new_mode = input_loop(surface, std::chrono::milliseconds{1000});
-        if (new_mode.has_value()) {
-            mode = new_mode.value();
+        KeyPress key = reader.read_nonblocking(one_sec);
+        if (key == KeyPress::CARRIAGE_RETURN) {
+            surface.on_carriage_return();
+        } else if (key == KeyPress::DISPLAY_RX) {
+            mode = DisplayMode::DISPLAY_RX;
+        } else if (key == KeyPress::DISPLAY_TX) {
+            mode = DisplayMode::DISPLAY_TX;
+        } else if (key == KeyPress::QUIT) {
+            throw InterruptException();
         }
 
         sampling::Sample sample = sampler->get_sample(iface_name);
