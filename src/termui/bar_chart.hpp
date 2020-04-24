@@ -5,8 +5,8 @@
 #include <vector>
 
 #include "formatter.hpp"
+#include "sampling/time_series_slice.hpp"
 #include "termui/dimensions.hpp"
-#include "time_series_slice.hpp"
 
 namespace bmon {
 namespace termui {
@@ -14,6 +14,8 @@ namespace termui {
 class TerminalSurface;
 
 class BarChart {
+  using TimeSeriesSlice = bmon::sampling::TimeSeriesSlice;
+
   public:
     explicit BarChart(TerminalSurface *surface) : surface_{surface} {}
     void draw_bars_from_right(const std::string& title, TimeSeriesSlice slice);

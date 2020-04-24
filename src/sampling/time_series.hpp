@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "aliases.hpp"
-#include "time_series_slice.hpp"
+#include "sampling/time_series_slice.hpp"
 
 namespace bmon {
 namespace sampling {

@@ -7,6 +7,7 @@
 #include "aliases.hpp"
 
 namespace bmon {
+namespace sampling {
 
 class TimeSeriesSlice {
   public:
@@ -17,6 +18,7 @@ class TimeSeriesSlice {
     std::vector<uint64_t> values{};
 };
 
+} // namespace sampling
 } // namespace bmon
 
 #endif // TIME_SERIES_SLICE_H
