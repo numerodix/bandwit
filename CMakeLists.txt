@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # set project name
-project(bmon CXX)
+project(bw CXX)
 
 # compiler options
 add_compile_options(-std=c++17 -g -Wall -Wextra -Wpedantic -Wnon-virtual-dtor -Wold-style-cast)
@@ -22,5 +22,5 @@ file(GLOB SOURCES_TERMUI "src/termui/*.cpp")
 file(GLOB SOURCES_TOOLS "src/tools/*.cpp")
 
 # targets
-add_executable(bmon
+add_executable(bw
     ${SOURCES_SAMPLING} ${SOURCES_TERMUI} ${SOURCES_TOOLS} ${SOURCES_ROOT})
