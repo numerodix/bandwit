@@ -81,10 +81,10 @@ void TermUi::run_forever() {
 void TermUi::sample() {
     sampling::Sample sample = sampler_->get_sample(iface_name_);
 
+    auto now = Clock::from_time_t(sample.ts);
     auto rx = sample.rx - prev_sample_.rx;
     auto tx = sample.tx - prev_sample_.tx;
 
-    auto now = Clock::now();   // FIXME: remove
     ts_rx_->set(now, rx);
     ts_tx_->set(now, tx);
 
