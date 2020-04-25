@@ -69,5 +69,9 @@ FileStatusSetter FileStatusSet::build_setter(int fileno) {
     return setter;
 }
 
+std::unique_ptr<FileStatusSetter> FileStatusSet::build_setterp(int fileno) {
+    return std::make_unique<FileStatusSetter>(fileno, status_on_, status_off_);
+}
+
 } // namespace termui
 } // namespace bmon

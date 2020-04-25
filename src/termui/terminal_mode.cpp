@@ -74,5 +74,11 @@ TerminalModeSet::build_setter(SignalSuspender *signal_suspender) {
     return setter;
 }
 
+std::unique_ptr<TerminalModeSetter>
+TerminalModeSet::build_setterp(SignalSuspender *signal_suspender) {
+    return std::make_unique<TerminalModeSetter>(flags_local_off_,
+                                                signal_suspender);
+}
+
 } // namespace termui
 } // namespace bmon

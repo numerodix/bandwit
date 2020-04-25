@@ -1,6 +1,7 @@
 #ifndef TERMINAL_MODE_H
 #define TERMINAL_MODE_H
 
+#include <memory>
 #include <termios.h>
 
 #include "macros.hpp"
@@ -30,6 +31,7 @@ class TerminalModeSet {
   public:
     TerminalModeSet &local_off(tcflag_t flag);
     TerminalModeSetter build_setter(SignalSuspender *signal_suspender);
+    std::unique_ptr<TerminalModeSetter> build_setterp(SignalSuspender *signal_suspender);
 
   private:
     tcflag_t flags_local_off_{};

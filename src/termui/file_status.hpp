@@ -1,6 +1,8 @@
 #ifndef FILE_STATUS_H
 #define FILE_STATUS_H
 
+#include <memory>
+
 #include <macros.hpp>
 
 namespace bmon {
@@ -26,6 +28,7 @@ class FileStatusSet {
     FileStatusSet& status_on(int status_on);
     FileStatusSet& status_off(int status_off);
     FileStatusSetter build_setter(int fileno);
+    std::unique_ptr<FileStatusSetter> build_setterp(int fileno);
 
   private:
     int status_on_{0};
