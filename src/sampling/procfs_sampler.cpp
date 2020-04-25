@@ -14,7 +14,8 @@ namespace sampling {
 std::vector<std::string> ProcFsParser::read_file_as_lines() const {
     std::ifstream fl{filepath_};
     if (!fl) {
-        THROW_MSG(std::runtime_error, "failed to open file for reading");
+        THROW_ARGS(std::runtime_error, "failed to open file for reading: %s",
+                   filepath_.c_str());
     }
 
     std::string line{};

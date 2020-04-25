@@ -18,7 +18,8 @@ uint64_t IpStatsParser::parse_nbytes(const std::string &line) const {
     std::smatch mres{};
     bool matches = std::regex_search(line, mres, pat_bytes_);
     if (!matches) {
-        THROW_MSG(std::runtime_error, "regex pat_bytes_ failed to match line");
+        THROW_ARGS(std::runtime_error,
+                   "regex pat_bytes_ failed to match line: %s", line.c_str());
     }
 
     std::string bytes_s = mres[1];

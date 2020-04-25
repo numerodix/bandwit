@@ -14,7 +14,8 @@ namespace sampling {
 uint64_t SysFsParser::read_file_as_number(const std::string &filepath) const {
     std::ifstream fl{filepath};
     if (!fl) {
-        THROW_MSG(std::runtime_error, "failed to open file for reading");
+        THROW_ARGS(std::runtime_error, "failed to open file for reading: %s",
+                   filepath.c_str());
     }
 
     std::string contents{};

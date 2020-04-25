@@ -15,7 +15,6 @@ void SignalSuspender::suspend() {
         sigaddset(&mask, signo);
     }
 
-    // NOTE: not thread safe
     if (sigprocmask(SIG_BLOCK, &mask, nullptr) < 0) {
         THROW_CERROR(std::runtime_error,
                      "SignalSuspender.suspend failed in sigprocmask()");

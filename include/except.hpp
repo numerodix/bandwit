@@ -13,13 +13,20 @@
     { throw ExcClass(); }
 
 #define THROW_MSG(ExcClass, msg)                                               \
-    { throw ExcClass(msg); }
-
-// FIXME: handle rv from malloc and sprintf (or snprintf?)
-#define THROW_ARGS(ExcClass, msg, ...)                                         \
     {                                                                          \
         auto buf = PCHAR(malloc(MAX_ERROR_MESSAGE_LEN));                       \
-        snprintf(buf, MAX_ERROR_MESSAGE_LEN, msg, __VA_ARGS__);                \
+        snprintf(buf, MAX_ERROR_MESSAGE_LEN, "%s:%d %s", __FILE__, __LINE__,   \
+                 msg);                                                         \
+        throw ExcClass(buf);                                                   \
+    }
+
+#define THROW_ARGS(ExcClass, msg, ...)                                         \
+    {                                                                          \
+        auto buf_msg = PCHAR(malloc(MAX_ERROR_MESSAGE_LEN));                   \
+        snprintf(buf_msg, MAX_ERROR_MESSAGE_LEN, msg, __VA_ARGS__);            \
+        auto buf = PCHAR(malloc(MAX_ERROR_MESSAGE_LEN));                       \
+        snprintf(buf, MAX_ERROR_MESSAGE_LEN, "%s:%d %s", __FILE__, __LINE__,   \
+                 buf_msg);                                                     \
         throw ExcClass(buf);                                                   \
     }
 

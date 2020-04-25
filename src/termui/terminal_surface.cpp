@@ -174,9 +174,10 @@ void TerminalSurface::register_resize_receiver(WindowResizeReceiver *receiver) {
 
 void TerminalSurface::check_surface_fits(const Dimensions &win_dim) {
     if ((win_dim.width < min_cols_) || (win_dim.height < min_lines_)) {
-        THROW_MSG(
-            std::runtime_error,
-            "TerminalSurface.check_surface_fits: terminal window too small :(");
+        THROW_ARGS(std::runtime_error,
+                   "TerminalSurface.check_surface_fits: terminal window too "
+                   "small, minimum is %d x %d, was: %d x %d",
+                   min_cols_, min_lines_, win_dim.width, win_dim.height);
     }
 }
 
