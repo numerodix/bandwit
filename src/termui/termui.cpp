@@ -64,7 +64,10 @@ TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
 }
 
 TermUi::~TermUi() {
+    // return stdio to the mode it was before we started
     non_blocking_status_setter_->reset();
+
+    // return the terminal to the mode it was before we started
     interactive_mode_setter_->reset();
 }
 
