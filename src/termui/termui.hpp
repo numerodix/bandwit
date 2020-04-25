@@ -31,16 +31,16 @@ class TermUi : public WindowResizeReceiver {
     CLASS_DISABLE_COPIES(TermUi)
     CLASS_DISABLE_MOVES(TermUi)
 
+    void on_window_resize(const Dimensions &win_dim_old,
+                          const Dimensions &win_dim_new) override;
+
     void run_forever();
 
+  private:
     void sample();
     void render();
     void read_keyboard_input(Millis interval);
 
-    void on_window_resize(const Dimensions &win_dim_old,
-                          const Dimensions &win_dim_new) override;
-
-  private:
     std::string iface_name_{};
     DisplayMode mode_{DisplayMode::DISPLAY_RX};
     std::chrono::seconds one_sec_{1};

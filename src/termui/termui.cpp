@@ -21,9 +21,10 @@ TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
     TerminalModeSet mode_set{};
     mode_setter_ = mode_set.local_off(ECHO).local_off(ICANON).build_setterp(
         susp_sigint_.get());
+
+    // make sure the terminal has -ECHO -ICANON from now on and for the lifetime
+    // of TermUi
     mode_setter_->set();
-    // make sure the terminal has -ECHO -ICANON for the rest of this function
-    // TerminalModeGuard mode_guard{&mode_setter};
 
     FileStatusSet blocking_status_set{};
     // give the driver a way to make stdin blocking when needed
@@ -43,9 +44,10 @@ TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
     FileStatusSet non_blocking_status_set{};
     non_blocking_status_setter_ = non_blocking_status_set.status_on(O_NONBLOCK)
                                       .build_setterp(STDIN_FILENO);
+
+    // make sure stdin is non-blocking from now on and for the lifetime of
+    // TermUi
     non_blocking_status_setter_->set();
-    // make sure stdin is non-blocking for the rest of this function
-    // FileStatusGuard non_block_status_guard{&non_blocking_status_setter};
 
     kb_reader_ = std::make_unique<KeyboardInputReader>(stdin);
 
@@ -55,12 +57,19 @@ TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
 
     prev_sample_ = sampler_->get_sample(iface_name_);
 
+    // tell the surface to notify us just after it's redrawn itself
+    // following a window resize
     terminal_surface_->register_resize_receiver(this);
 }
 
 TermUi::~TermUi() {
     non_blocking_status_setter_->reset();
     mode_setter_->reset();
+}
+
+void TermUi::on_window_resize([[maybe_unused]] const Dimensions &win_dim_old,
+                              [[maybe_unused]] const Dimensions &win_dim_new) {
+    render();
 }
 
 void TermUi::run_forever() {
@@ -118,11 +127,6 @@ void TermUi::read_keyboard_input(Millis interval) {
     } else if (key == KeyPress::QUIT) {
         throw InterruptException();
     }
-}
-
-void TermUi::on_window_resize([[maybe_unused]] const Dimensions &win_dim_old,
-                              [[maybe_unused]] const Dimensions &win_dim_new) {
-    render();
 }
 
 } // namespace termui
