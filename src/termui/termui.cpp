@@ -23,7 +23,7 @@ TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
 
     TerminalModeSet mode_set{};
     interactive_mode_setter_ =
-        mode_set.local_off(ECHO).local_off(ICANON).build_setterp(
+        mode_set.local_off(ECHO).local_off(ICANON).build_setter(
             susp_sigint_.get());
 
     // make sure the terminal has -ECHO -ICANON from now on and for the lifetime
@@ -33,7 +33,7 @@ TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
     FileStatusSet blocking_status_set{};
     // give the driver a way to make stdin blocking when needed
     blocking_status_setter_ =
-        blocking_status_set.status_off(O_NONBLOCK).build_setterp(STDIN_FILENO);
+        blocking_status_set.status_off(O_NONBLOCK).build_setter(STDIN_FILENO);
 
     terminal_driver_ = std::make_unique<TerminalDriver>(
         stdin, stdout, blocking_status_setter_.get());
@@ -47,7 +47,7 @@ TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
 
     FileStatusSet non_blocking_status_set{};
     non_blocking_status_setter_ = non_blocking_status_set.status_on(O_NONBLOCK)
-                                      .build_setterp(STDIN_FILENO);
+                                      .build_setter(STDIN_FILENO);
 
     // make sure stdin is non-blocking from now on and for the lifetime of
     // TermUi

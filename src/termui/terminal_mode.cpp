@@ -68,14 +68,8 @@ TerminalModeSet &TerminalModeSet::local_off(tcflag_t flag) {
     return *this;
 }
 
-TerminalModeSetter
-TerminalModeSet::build_setter(SignalSuspender *signal_suspender) {
-    TerminalModeSetter setter{flags_local_off_, signal_suspender};
-    return setter;
-}
-
 std::unique_ptr<TerminalModeSetter>
-TerminalModeSet::build_setterp(SignalSuspender *signal_suspender) {
+TerminalModeSet::build_setter(SignalSuspender *signal_suspender) {
     return std::make_unique<TerminalModeSetter>(flags_local_off_,
                                                 signal_suspender);
 }

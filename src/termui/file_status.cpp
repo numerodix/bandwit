@@ -64,12 +64,7 @@ FileStatusSet &FileStatusSet::status_off(int status_off) {
     return *this;
 }
 
-FileStatusSetter FileStatusSet::build_setter(int fileno) {
-    FileStatusSetter setter{fileno, status_on_, status_off_};
-    return setter;
-}
-
-std::unique_ptr<FileStatusSetter> FileStatusSet::build_setterp(int fileno) {
+std::unique_ptr<FileStatusSetter> FileStatusSet::build_setter(int fileno) {
     return std::make_unique<FileStatusSetter>(fileno, status_on_, status_off_);
 }
 

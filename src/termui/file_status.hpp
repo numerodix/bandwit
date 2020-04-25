@@ -27,8 +27,7 @@ class FileStatusSet {
   public:
     FileStatusSet& status_on(int status_on);
     FileStatusSet& status_off(int status_off);
-    FileStatusSetter build_setter(int fileno);
-    std::unique_ptr<FileStatusSetter> build_setterp(int fileno);
+    std::unique_ptr<FileStatusSetter> build_setter(int fileno);
 
   private:
     int status_on_{0};
