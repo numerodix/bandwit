@@ -32,8 +32,7 @@ SamplerDetector::detect_sampler(const std::string &iface_name) const {
 
         try {
             auto sample = sampler->get_sample(iface_name);
-            DetectionResult res{sampler, sample};
-            return res;
+            return DetectionResult{sampler, sample};
 
         } catch (std::runtime_error &exc) {
             std::stringstream ss{};

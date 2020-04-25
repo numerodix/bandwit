@@ -11,6 +11,7 @@ namespace bandwit {
 namespace sampling {
 
 struct DetectionResult {
+    // could this be a unique_ptr?
     Sampler *sampler{nullptr};
     Sample sample{};
 };
