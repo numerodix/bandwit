@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "aliases.hpp"
+#include "except.hpp"
 #include "netstat_cmd_sampler.hpp"
 
 namespace bandwit {
@@ -41,7 +42,8 @@ NetstatStatsParser::parse(const std::vector<std::string> &lines,
         }
     }
 
-    throw std::runtime_error("failed to find the right iface / parse output");
+    THROW_MSG(std::runtime_error,
+              "failed to find the right iface / parse output");
 }
 
 Sample NetstatCommandSampler::get_sample(const std::string &iface_name) const {

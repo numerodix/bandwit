@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "except.hpp"
 #include "sampler_detector.hpp"
 #include "sampling/ip_cmd_sampler.hpp"
 #include "sampling/netstat_cmd_sampler.hpp"
@@ -52,7 +53,7 @@ SamplerDetector::detect_sampler(const std::string &iface_name) const {
         std::cerr << "- " << msg << "\n";
     }
 
-    throw std::runtime_error("Cannot run without a sampler");
+    THROW_MSG(std::runtime_error, "Cannot run without a sampler");
 }
 
 } // namespace sampling

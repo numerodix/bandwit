@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <sys/ioctl.h>
 
+#include "except.hpp"
 #include "file_status.hpp"
 #include "terminal_driver.hpp"
 
@@ -12,8 +13,8 @@ Dimensions TerminalDriver::get_terminal_size() {
     int stdout_fileno = fileno(stdout_file_);
 
     if (ioctl(stdout_fileno, TIOCGWINSZ, &size) < 0) {
-        throw std::runtime_error(
-            "TerminalDriver.get_terminal_size failed in ioctl()");
+        THROW_CERROR(std::runtime_error,
+                     "TerminalDriver.get_terminal_size failed in ioctl()");
     }
 
     Dimensions dim{size.ws_col, size.ws_row};
@@ -34,8 +35,8 @@ Point TerminalDriver::get_cursor_position() {
 
     int cur_x, cur_y;
     if (fscanf(stdin_file_, "\033[%d;%dR", &cur_y, &cur_x) < 2) {
-        throw std::runtime_error(
-            "TerminalDriver.get_cursor_position failed in scanf()");
+        THROW_CERROR(std::runtime_error,
+                     "TerminalDriver.get_cursor_position failed in fscanf()");
     }
 
     Point pt{U16(cur_x), U16(cur_y)};

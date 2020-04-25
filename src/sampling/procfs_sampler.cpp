@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "aliases.hpp"
+#include "except.hpp"
 #include "procfs_sampler.hpp"
 
 namespace bandwit {
@@ -13,7 +14,7 @@ namespace sampling {
 std::vector<std::string> ProcFsParser::read_file_as_lines() const {
     std::ifstream fl{filepath_};
     if (!fl) {
-        throw std::runtime_error("failed to open file for reading");
+        THROW_MSG(std::runtime_error, "failed to open file for reading");
     }
 
     std::string line{};
@@ -47,7 +48,8 @@ ProcFsParser::parse(const std::vector<std::string> &lines,
         }
     }
 
-    throw std::runtime_error("failed to find the right iface / parse output");
+    THROW_MSG(std::runtime_error,
+              "failed to find the right iface / parse output");
 }
 
 Sample ProcFsSampler::get_sample(const std::string &iface_name) const {

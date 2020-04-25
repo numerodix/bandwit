@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "aliases.hpp"
+#include "except.hpp"
 #include "ip_cmd_sampler.hpp"
 
 namespace bandwit {
@@ -17,7 +18,7 @@ uint64_t IpStatsParser::parse_nbytes(const std::string &line) const {
     std::smatch mres{};
     bool matches = std::regex_search(line, mres, pat_bytes_);
     if (!matches) {
-        throw std::runtime_error("regex pat_bytes_ failed to match line");
+        THROW_MSG(std::runtime_error, "regex pat_bytes_ failed to match line");
     }
 
     std::string bytes_s = mres[1];
@@ -78,7 +79,8 @@ IpStatsParser::parse(const std::vector<std::string> &lines,
         }
     }
 
-    throw std::runtime_error("failed to find the right iface / parse output");
+    THROW_MSG(std::runtime_error,
+              "failed to find the right iface / parse output");
 }
 
 Sample IpCommandSampler::get_sample(const std::string &iface_name) const {

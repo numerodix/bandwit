@@ -1,6 +1,7 @@
 #include <csignal>
 #include <memory>
 
+#include "except.hpp"
 #include "signals.hpp"
 #include "terminal_driver.hpp"
 #include "terminal_surface.hpp"
@@ -15,7 +16,7 @@ static std::unique_ptr<TerminalWindow> WINDOW = nullptr;
 
 void TerminalWindow_signal_handler([[maybe_unused]] int sig) {
     if (WINDOW == nullptr) {
-        throw std::runtime_error("No TerminalWindow exists!");
+        THROW_MSG(std::runtime_error, "No TerminalWindow exists!");
     }
 
     WINDOW->on_resize();
@@ -24,7 +25,8 @@ void TerminalWindow_signal_handler([[maybe_unused]] int sig) {
 TerminalWindow *TerminalWindow::create(TerminalDriver *driver,
                                        SignalSuspender *signal_suspender) {
     if (WINDOW != nullptr) {
-        throw std::runtime_error("Cannot construct another TerminalWindow!");
+        THROW_MSG(std::runtime_error,
+                  "Cannot construct another TerminalWindow!");
     }
 
     WINDOW = std::make_unique<TerminalWindow>(driver, signal_suspender);

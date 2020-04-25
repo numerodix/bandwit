@@ -1,7 +1,9 @@
 #include <csignal>
 #include <iostream>
+#include <stdexcept>
 #include <unistd.h>
 
+#include "except.hpp"
 #include "termui/signals.hpp"
 #include "termui/termui.hpp"
 
@@ -22,6 +24,9 @@ int main(int argc, char *argv[]) {
     // uncaught exception will terminate the program bypassing all destructors
     // and leave the terminal in a corrupted state.
     try {
+        // int arg1 = 5;
+        // THROW(std::out_of_range, "something: %d", arg1);
+
         bandwit::termui::TermUi termui{iface_name};
         termui.run_forever();
     } catch (bandwit::termui::InterruptException &e) {

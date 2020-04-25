@@ -21,7 +21,7 @@ namespace termui {
 class TermUi : public WindowResizeReceiver {
   public:
     explicit TermUi(const std::string &iface_name);
-    ~TermUi();
+    ~TermUi() override;
 
     CLASS_DISABLE_COPIES(TermUi)
     CLASS_DISABLE_MOVES(TermUi)

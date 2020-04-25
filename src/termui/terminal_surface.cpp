@@ -1,5 +1,6 @@
 #include <stdexcept>
 
+#include "except.hpp"
 #include "macros.hpp"
 #include "terminal_surface.hpp"
 #include "terminal_window.hpp"
@@ -173,7 +174,8 @@ void TerminalSurface::register_resize_receiver(WindowResizeReceiver *receiver) {
 
 void TerminalSurface::check_surface_fits(const Dimensions &win_dim) {
     if ((win_dim.width < min_cols_) || (win_dim.height < min_lines_)) {
-        throw std::runtime_error(
+        THROW_MSG(
+            std::runtime_error,
             "TerminalSurface.check_surface_fits: terminal window too small :(");
     }
 }

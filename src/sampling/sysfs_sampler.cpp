@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #include "aliases.hpp"
+#include "except.hpp"
 #include "sysfs_sampler.hpp"
 
 namespace bandwit {
@@ -13,7 +14,7 @@ namespace sampling {
 uint64_t SysFsParser::read_file_as_number(const std::string &filepath) const {
     std::ifstream fl{filepath};
     if (!fl) {
-        throw std::runtime_error("failed to open file for reading");
+        THROW_MSG(std::runtime_error, "failed to open file for reading");
     }
 
     std::string contents{};

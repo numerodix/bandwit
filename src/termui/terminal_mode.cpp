@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <unistd.h>
 
+#include "except.hpp"
 #include "signals.hpp"
 #include "terminal_mode.hpp"
 
@@ -13,8 +14,8 @@ void TerminalModeSetter::set() {
     struct termios tm {};
 
     if (tcgetattr(STDIN_FILENO, &tm) < 0) {
-        throw std::runtime_error(
-            "TerminalModeSetter.set failed in tcgetattr()");
+        THROW_CERROR(std::runtime_error,
+                     "TerminalModeSetter.set failed in tcgetattr()");
     }
 
     // save the unmodified state so we can restore it
@@ -23,21 +24,21 @@ void TerminalModeSetter::set() {
     tm.c_lflag &= ~local_off_;
 
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &tm) < 0) {
-        throw std::runtime_error(
-            "TerminalModeSetter.set failed in tcsetattr()");
+        THROW_CERROR(std::runtime_error,
+                     "TerminalModeSetter.set failed in tcsetattr()");
     }
 
     // Now check that the set actually set all of our flags
 
     struct termios tm_after {};
     if (tcgetattr(STDIN_FILENO, &tm_after) < 0) {
-        throw std::runtime_error(
-            "TerminalModeSetter.set failed in #2 tcgetattr()");
+        THROW_CERROR(std::runtime_error,
+                     "TerminalModeSetter.set failed in #2 tcgetattr()");
     }
 
     if ((tm_after.c_lflag & local_off_) > 0) {
-        throw std::runtime_error(
-            "TerminalModeSetter.set failed to actually set the flags!");
+        THROW_MSG(std::runtime_error,
+                  "TerminalModeSetter.set failed to actually set the flags!");
     }
 }
 
@@ -45,20 +46,21 @@ void TerminalModeSetter::reset() {
     SignalGuard guard{signal_suspender_};
 
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios_) < 0) {
-        throw std::runtime_error(
-            "TerminalModeSetter.unset failed in tcsetattr()");
+        THROW_CERROR(std::runtime_error,
+                     "TerminalModeSetter.unset failed in tcsetattr()");
     }
 
     // Now check that the set actually unset all of our flags
 
     struct termios tm_after {};
     if (tcgetattr(STDIN_FILENO, &tm_after) < 0) {
-        throw std::runtime_error(
-            "TerminalModeSetter.unset failed in tcgetattr()");
+        THROW_CERROR(std::runtime_error,
+                     "TerminalModeSetter.unset failed in tcgetattr()");
     }
 
     if ((tm_after.c_lflag & local_off_) != local_off_) {
-        throw std::runtime_error(
+        THROW_MSG(
+            std::runtime_error,
             "TerminalModeSetter.unset failed to actually unset the flags!");
     }
 }

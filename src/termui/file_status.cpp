@@ -1,6 +1,7 @@
 #include <fcntl.h>
 #include <stdexcept>
 
+#include "except.hpp"
 #include "file_status.hpp"
 
 namespace bandwit {
@@ -10,7 +11,8 @@ void FileStatusSetter::set() {
     // get the current status
     int status = fcntl(fileno_, F_GETFL);
     if (status == -1) {
-        throw std::runtime_error(
+        THROW_CERROR(
+            std::runtime_error,
             "FileStatusSetter.set failed in fcntl() when trying to get flags");
     }
 
@@ -28,7 +30,8 @@ void FileStatusSetter::set() {
     // Set the status we want
     int rv = fcntl(fileno_, F_SETFL, status);
     if (rv == -1) {
-        throw std::runtime_error(
+        THROW_CERROR(
+            std::runtime_error,
             "FileStatusSetter.set failed in fcntl() when trying to set flags");
     }
 }
@@ -37,8 +40,9 @@ void FileStatusSetter::reset() {
     // get the current status
     int status = fcntl(fileno_, F_GETFL);
     if (status == -1) {
-        throw std::runtime_error("FileStatusSetter.reset failed in fcntl() "
-                                 "when trying to get flags");
+        THROW_CERROR(std::runtime_error,
+                     "FileStatusSetter.reset failed in fcntl() "
+                     "when trying to get flags");
     }
 
     // It's already in the state we want - nothing to do here
@@ -49,8 +53,9 @@ void FileStatusSetter::reset() {
     // Restore the original status
     int rv = fcntl(fileno_, F_SETFL, orig_status_);
     if (rv == -1) {
-        throw std::runtime_error("FileStatusSetter.reset failed in fcntl() "
-                                 "when trying to set flags");
+        THROW_CERROR(std::runtime_error,
+                     "FileStatusSetter.reset failed in fcntl() "
+                     "when trying to set flags");
     }
 }
 
