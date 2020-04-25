@@ -12,11 +12,11 @@
 namespace bandwit {
 namespace sampling {
 
-#define PAIR(ClsName) std::make_pair("" #ClsName, std::make_unique<ClsName>())
+#define PAIR(ClsName) std::make_pair("" #ClsName, new ClsName())
 
-std::unique_ptr<Sampler>
+DetectionResult
 SamplerDetector::detect_sampler(const std::string &iface_name) const {
-    using Pair = std::pair<std::string, std::unique_ptr<Sampler>>;
+    using Pair = std::pair<std::string, Sampler*>;
 
     std::vector<Pair> samplers{};
     samplers.emplace_back(PAIR(SysFsSampler));
@@ -31,8 +31,9 @@ SamplerDetector::detect_sampler(const std::string &iface_name) const {
         auto &sampler = pair.second;
 
         try {
-            sampler->get_sample(iface_name);
-            return std::move(sampler);
+            auto sample = sampler->get_sample(iface_name);
+            DetectionResult res{sampler, sample};
+            return res;
 
         } catch (std::runtime_error &exc) {
             std::stringstream ss{};

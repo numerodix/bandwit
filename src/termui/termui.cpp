@@ -11,7 +11,10 @@ namespace termui {
 
 TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
     sampling::SamplerDetector detector{};
-    sampler_ = detector.detect_sampler(iface_name);
+    auto det_result = detector.detect_sampler(iface_name);
+
+    sampler_.reset(det_result.sampler);
+    prev_sample_ = det_result.sample;
 
     susp_sigint_ =
         std::make_unique<SignalSuspender>(std::initializer_list<int>{SIGINT});
@@ -55,8 +58,6 @@ TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
     auto now = Clock::now();
     ts_rx_ = std::make_unique<sampling::TimeSeries>(one_sec_, now);
     ts_tx_ = std::make_unique<sampling::TimeSeries>(one_sec_, now);
-
-    prev_sample_ = sampler_->get_sample(iface_name_);
 
     // tell the surface to notify us just after it's redrawn itself
     // following a window resize

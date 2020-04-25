@@ -4,14 +4,20 @@
 #include <memory>
 #include <string>
 
+#include "sampling/sample.hpp"
 #include "sampling/sampler.hpp"
 
 namespace bandwit {
 namespace sampling {
 
+struct DetectionResult {
+    Sampler *sampler{nullptr};
+    Sample sample{};
+};
+
 class SamplerDetector {
   public:
-    std::unique_ptr<Sampler> detect_sampler(const std::string &iface_name) const;
+    DetectionResult detect_sampler(const std::string &iface_name) const;
 };
 
 } // namespace sampling
