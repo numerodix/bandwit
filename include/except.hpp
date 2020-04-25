@@ -1,9 +1,9 @@
 #ifndef EXCEPT_H
 #define EXCEPT_H
 
+#include <cerrno>
 #include <cstdio>
-#include <errno.h>
-#include <string.h>
+#include <cstring>
 
 #include "macros.hpp"
 
