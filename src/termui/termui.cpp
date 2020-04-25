@@ -81,12 +81,12 @@ void TermUi::run_forever() {
 void TermUi::sample() {
     sampling::Sample sample = sampler_->get_sample(iface_name_);
 
-    auto now = Clock::from_time_t(sample.ts);
+    auto tp = Clock::from_time_t(sample.ts);
     auto rx = sample.rx - prev_sample_.rx;
     auto tx = sample.tx - prev_sample_.tx;
 
-    ts_rx_->set(now, rx);
-    ts_tx_->set(now, tx);
+    ts_rx_->set(tp, rx);
+    ts_tx_->set(tp, tx);
 
     prev_sample_ = sample;
 }
@@ -95,6 +95,7 @@ void TermUi::render() {
     if (mode_ == DisplayMode::DISPLAY_RX) {
         auto rxs = ts_rx_->get_slice_from_end(bar_chart_->get_width());
         bar_chart_->draw_bars_from_right(iface_name_, "received", rxs);
+
     } else {
         auto txs = ts_tx_->get_slice_from_end(bar_chart_->get_width());
         bar_chart_->draw_bars_from_right(iface_name_, "transmitted", txs);
