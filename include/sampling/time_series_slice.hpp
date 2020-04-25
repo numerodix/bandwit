@@ -9,6 +9,7 @@
 namespace bandwit {
 namespace sampling {
 
+// FIXME: should this be a struct?
 class TimeSeriesSlice {
   public:
     explicit TimeSeriesSlice(std::vector<TimePoint> tps, std::vector<uint64_t> vals)

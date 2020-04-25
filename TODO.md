@@ -12,8 +12,3 @@ and include it in the exception context.
 
 * Improve the grizzly regular expressions.
 * Use emplace over push where possible.
-
-## UX
-
-* To improve responsiveness: After a resize, notify the bar chart to repaint
-  right away, without waiting for a second to elapse.
