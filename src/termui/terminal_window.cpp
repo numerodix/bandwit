@@ -1,4 +1,5 @@
 #include <csignal>
+#include <memory>
 
 #include "signals.hpp"
 #include "terminal_driver.hpp"
@@ -8,8 +9,9 @@
 namespace bandwit {
 namespace termui {
 
-// eugh
-static TerminalWindow *WINDOW = nullptr;
+// This is what actually owns the TerminalWindow. There can only be one
+// TerminalWindow.
+static std::unique_ptr<TerminalWindow> WINDOW = nullptr;
 
 void TerminalWindow_signal_handler([[maybe_unused]] int sig) {
     if (WINDOW == nullptr) {
@@ -25,8 +27,8 @@ TerminalWindow *TerminalWindow::create(TerminalDriver *driver,
         throw std::runtime_error("Cannot construct another TerminalWindow!");
     }
 
-    WINDOW = new TerminalWindow(driver, signal_suspender);
-    return WINDOW;
+    WINDOW = std::make_unique<TerminalWindow>(driver, signal_suspender);
+    return WINDOW.get();
 }
 
 TerminalWindow::TerminalWindow(TerminalDriver *driver,
@@ -43,7 +45,7 @@ TerminalWindow::TerminalWindow(TerminalDriver *driver,
     install_resize_handler();
 }
 
-TerminalWindow::~TerminalWindow() { WINDOW = nullptr; }
+TerminalWindow::~TerminalWindow() { WINDOW.release(); }
 
 void TerminalWindow::on_resize() {
     // make sure we defer the next SIGWINCH while handling the current one

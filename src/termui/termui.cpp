@@ -5,6 +5,7 @@
 #include "sampling/sampler_detector.hpp"
 #include "termui.hpp"
 #include "termui/signals.hpp"
+#include "termui/terminal_window.hpp"
 
 namespace bandwit {
 namespace termui {
@@ -37,12 +38,10 @@ TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
 
     terminal_driver_ = std::make_unique<TerminalDriver>(
         stdin, stdout, blocking_status_setter_.get());
-    auto terminal_windowp =
+    TerminalWindow *terminal_window =
         TerminalWindow::create(terminal_driver_.get(), susp_sigwinch_.get());
-    terminal_window_.reset(terminal_windowp);
 
-    terminal_surface_ =
-        std::make_unique<TerminalSurface>(terminal_window_.get(), 12);
+    terminal_surface_ = std::make_unique<TerminalSurface>(terminal_window, 12);
     bar_chart_ = std::make_unique<BarChart>(terminal_surface_.get());
 
     FileStatusSet non_blocking_status_set{};

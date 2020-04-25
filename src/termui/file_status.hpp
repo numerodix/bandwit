@@ -10,8 +10,8 @@ namespace termui {
 
 class FileStatusSetter {
   public:
-    explicit FileStatusSetter(int fileno, int status_on, int status_off) :
-        fileno_{fileno}, status_on_{status_on}, status_off_{status_off} {}
+    explicit FileStatusSetter(int fileno, int status_on, int status_off)
+        : fileno_{fileno}, status_on_{status_on}, status_off_{status_off} {}
 
     void set();
     void reset();
@@ -25,8 +25,8 @@ class FileStatusSetter {
 
 class FileStatusSet {
   public:
-    FileStatusSet& status_on(int status_on);
-    FileStatusSet& status_off(int status_off);
+    FileStatusSet &status_on(int status_on);
+    FileStatusSet &status_off(int status_off);
     std::unique_ptr<FileStatusSetter> build_setter(int fileno);
 
   private:
@@ -36,18 +36,16 @@ class FileStatusSet {
 
 class FileStatusGuard {
   public:
-    explicit FileStatusGuard(FileStatusSetter* setter) : setter_{setter} {
+    explicit FileStatusGuard(FileStatusSetter *setter) : setter_{setter} {
         setter_->set();
     }
-    ~FileStatusGuard() {
-        setter_->reset();
-    }
+    ~FileStatusGuard() { setter_->reset(); }
 
     CLASS_DISABLE_COPIES(FileStatusGuard)
     CLASS_DISABLE_MOVES(FileStatusGuard)
 
   private:
-    FileStatusSetter* setter_{nullptr};
+    FileStatusSetter *setter_{nullptr};
 };
 
 } // namespace termui

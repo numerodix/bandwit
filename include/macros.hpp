@@ -24,7 +24,7 @@
 #define U16(num) static_cast<uint16_t>(num)
 #define U64(num) static_cast<uint64_t>(num)
 
-#define PCHAR(val) static_cast<char*>(val)
+#define PCHAR(val) static_cast<char *>(val)
 
 #define MILLIS(val) std::chrono::duration_cast<std::chrono::milliseconds>(val)
 

@@ -13,7 +13,6 @@
 #include "termui/terminal_driver.hpp"
 #include "termui/terminal_mode.hpp"
 #include "termui/terminal_surface.hpp"
-#include "termui/terminal_window.hpp"
 #include "termui/window_resize.hpp"
 
 namespace bandwit {
@@ -21,7 +20,7 @@ namespace termui {
 
 class TermUi : public WindowResizeReceiver {
   public:
-    explicit TermUi(const std::string& iface_name);
+    explicit TermUi(const std::string &iface_name);
     ~TermUi();
 
     CLASS_DISABLE_COPIES(TermUi)
@@ -51,7 +50,6 @@ class TermUi : public WindowResizeReceiver {
     std::unique_ptr<TerminalDriver> terminal_driver_{nullptr};
     std::unique_ptr<TerminalModeSetter> interactive_mode_setter_{nullptr};
     std::unique_ptr<TerminalSurface> terminal_surface_{nullptr};
-    std::unique_ptr<TerminalWindow> terminal_window_{nullptr};
     std::unique_ptr<sampling::Sampler> sampler_{nullptr};
     std::unique_ptr<sampling::TimeSeries> ts_rx_{nullptr};
     std::unique_ptr<sampling::TimeSeries> ts_tx_{nullptr};

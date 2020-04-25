@@ -39,4 +39,3 @@ class KeyboardInputReader {
 } // namespace bandwit
 
 #endif // KEYBOARD_INPUT_H
-

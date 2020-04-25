@@ -30,7 +30,8 @@ class TerminalModeSetter {
 class TerminalModeSet {
   public:
     TerminalModeSet &local_off(tcflag_t flag);
-    std::unique_ptr<TerminalModeSetter> build_setter(SignalSuspender *signal_suspender);
+    std::unique_ptr<TerminalModeSetter>
+    build_setter(SignalSuspender *signal_suspender);
 
   private:
     tcflag_t flags_local_off_{};
