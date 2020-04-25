@@ -109,7 +109,7 @@ void TerminalWindow::register_resize_receiver(WindowResizeReceiver *receiver) {
 void TerminalWindow::check_is_on_window(const Point &point) {
     if ((point.x < 1) || (point.x > dim_.width) || (point.y < 1) ||
         (point.y > dim_.height)) {
-        auto buf = PCHAR(calloc(512, 1));
+        auto buf = PCHAR(malloc(512));
         sprintf(
             buf,
             "TerminalWindow.check_is_on_window: tried to put cursor outside "
