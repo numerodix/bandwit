@@ -1,6 +1,8 @@
 #ifndef SYSFS_SAMPLER_H
 #define SYSFS_SAMPLER_H
 
+#include <string>
+#include <unistd.h>
 #include <unordered_map>
 
 #include "sampling/sampler.hpp"

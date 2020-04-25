@@ -2,6 +2,7 @@
 #define IP_CMD_SAMPLER_H
 
 #include <regex>
+#include <string>
 
 #include "sampling/program_runner.hpp"
 #include "sampling/sampler.hpp"

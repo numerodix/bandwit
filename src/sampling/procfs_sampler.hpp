@@ -3,6 +3,7 @@
 
 #include <regex>
 #include <string>
+#include <vector>
 
 #include "sampling/sampler.hpp"
 
