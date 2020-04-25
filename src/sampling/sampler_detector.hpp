@@ -4,17 +4,12 @@
 #include <memory>
 #include <string>
 
+#include "sampling/detection_result.hpp"
 #include "sampling/sample.hpp"
 #include "sampling/sampler.hpp"
 
 namespace bandwit {
 namespace sampling {
-
-struct DetectionResult {
-    // could this be a unique_ptr?
-    Sampler *sampler{nullptr};
-    Sample sample{};
-};
 
 class SamplerDetector {
   public:
