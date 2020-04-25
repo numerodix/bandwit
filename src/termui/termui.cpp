@@ -116,6 +116,9 @@ void TermUi::read_keyboard_input(Millis interval) {
     KeyPress key = kb_reader_->read_nonblocking(interval);
 
     if (key == KeyPress::CARRIAGE_RETURN) {
+        // ignore SIGWINCH while we're acting on a resize
+        SignalGuard guard{susp_sigwinch_.get()};
+
         terminal_surface_->on_carriage_return();
 
     } else if (key == KeyPress::DISPLAY_RX) {
