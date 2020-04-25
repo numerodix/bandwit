@@ -9,7 +9,8 @@ namespace termui {
 
 TerminalSurface::TerminalSurface(TerminalWindow *win, uint16_t num_lines)
     : win_{win}, num_lines_{num_lines} {
-    win_->register_surface(this);
+    // win_->register_surface(this);
+    win_->register_resize_receiver(this);
     on_startup();
 }
 

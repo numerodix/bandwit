@@ -9,8 +9,7 @@
 namespace bmon {
 namespace termui {
 
-TermUi::TermUi(const std::string &iface_name)
-    : iface_name_{std::move(iface_name)} {
+TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
     sampling::SamplerDetector detector{};
     sampler_ = detector.detect_sampler(iface_name);
 

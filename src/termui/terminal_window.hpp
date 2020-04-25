@@ -4,6 +4,7 @@
 #include "macros.hpp"
 #include "termui/dimensions.hpp"
 #include "termui/point.hpp"
+#include "termui/window_resize.hpp"
 
 namespace bmon {
 namespace termui {
@@ -31,6 +32,7 @@ class TerminalWindow {
     void clear_screen(const char &fill_char);
 
     void register_surface(TerminalSurface *surface);
+    void register_resize_receiver(WindowResizeReceiver *receiver);
 
   private:
     TerminalWindow(TerminalDriver *driver, SignalSuspender *signal_suspender);
@@ -43,6 +45,7 @@ class TerminalWindow {
     Dimensions dim_{};
     Point cursor_{};
     TerminalSurface *surface_{nullptr};
+    WindowResizeReceiver *resize_receiver_{nullptr};
     SignalSuspender *signal_suspender_{nullptr};
 };
 

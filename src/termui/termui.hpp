@@ -27,6 +27,9 @@ class TermUi {
     explicit TermUi(const std::string& iface_name);
     ~TermUi();
 
+    CLASS_DISABLE_COPIES(TermUi)
+    CLASS_DISABLE_MOVES(TermUi)
+
     void run_forever();
 
     void sample();
