@@ -11,7 +11,6 @@ namespace termui {
 
 class SignalSuspender;
 class TerminalDriver;
-class TerminalSurface;
 
 class TerminalWindow {
   public:
@@ -31,7 +30,6 @@ class TerminalWindow {
     void flush();
     void clear_screen(const char &fill_char);
 
-    void register_surface(TerminalSurface *surface);
     void register_resize_receiver(WindowResizeReceiver *receiver);
 
   private:
@@ -44,7 +42,6 @@ class TerminalWindow {
     TerminalDriver *driver_{nullptr};
     Dimensions dim_{};
     Point cursor_{};
-    TerminalSurface *surface_{nullptr};
     WindowResizeReceiver *resize_receiver_{nullptr};
     SignalSuspender *signal_suspender_{nullptr};
 };

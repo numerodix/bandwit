@@ -54,9 +54,6 @@ void TerminalWindow::on_resize() {
     auto dim_old = dim_;
     dim_ = dim_new;
 
-    // if (surface_ != nullptr) {
-    //     surface_->on_window_resize(dim_old, dim_new);
-    // }
     if (resize_receiver_ != nullptr) {
         resize_receiver_->on_window_resize(dim_old, dim_new);
     }
@@ -99,10 +96,6 @@ void TerminalWindow::clear_screen(const char &fill_char) {
 
     set_cursor(top_left);
     flush();
-}
-
-void TerminalWindow::register_surface(TerminalSurface *surface) {
-    surface_ = surface;
 }
 
 void TerminalWindow::register_resize_receiver(WindowResizeReceiver *receiver) {
