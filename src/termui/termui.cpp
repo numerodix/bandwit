@@ -19,8 +19,9 @@ TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
         std::make_unique<SignalSuspender>(std::initializer_list<int>{SIGWINCH});
 
     TerminalModeSet mode_set{};
-    interactive_mode_setter_ = mode_set.local_off(ECHO).local_off(ICANON).build_setterp(
-        susp_sigint_.get());
+    interactive_mode_setter_ =
+        mode_set.local_off(ECHO).local_off(ICANON).build_setterp(
+            susp_sigint_.get());
 
     // make sure the terminal has -ECHO -ICANON from now on and for the lifetime
     // of TermUi
@@ -78,7 +79,13 @@ void TermUi::run_forever() {
         auto pre = Clock::now();
 
         sample();
-        render();
+
+        {
+            // ignore SIGWINCH while we're rendering
+            SignalGuard guard{susp_sigwinch_.get()};
+
+            render();
+        }
 
         // Spend the rest of the second reading keyboard input
         auto elapsed = Clock::now() - pre;
@@ -102,6 +109,9 @@ void TermUi::sample() {
 }
 
 void TermUi::render() {
+    // when we are called from `on_window_resize` the SIGWINCH signal guard is
+    // already in effect, so there is no need to use it here
+
     if (mode_ == DisplayMode::DISPLAY_RX) {
         auto rxs = ts_rx_->get_slice_from_end(bar_chart_->get_width());
         bar_chart_->draw_bars_from_right(iface_name_, "received", rxs);
