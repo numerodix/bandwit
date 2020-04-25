@@ -4,7 +4,7 @@
 #include "signals.hpp"
 #include "terminal_mode.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 void TerminalModeSetter::set() {
@@ -81,4 +81,4 @@ TerminalModeSet::build_setterp(SignalSuspender *signal_suspender) {
 }
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit

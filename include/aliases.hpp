@@ -3,12 +3,12 @@
 
 #include <chrono>
 
-namespace bmon {
+namespace bandwit {
 
 using Clock = std::chrono::system_clock;
 using TimePoint = Clock::time_point;
 using Millis = std::chrono::milliseconds;
 
-} // namespace bmon
+} // namespace bandwit
 
 #endif // ALIASES_H

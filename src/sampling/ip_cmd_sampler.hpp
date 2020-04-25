@@ -3,7 +3,7 @@
 
 #include "sampling/sampler.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace sampling {
 
 class IpCommandSampler : public Sampler {
@@ -19,6 +19,6 @@ class IpCommandSampler : public Sampler {
 };
 
 } // namespace sampling
-} // namespace bmon
+} // namespace bandwit
 
 #endif // IP_CMD_SAMPLER_H

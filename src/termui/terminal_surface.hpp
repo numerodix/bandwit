@@ -5,7 +5,7 @@
 #include "termui/point.hpp"
 #include "termui/window_resize.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 class TerminalWindow;
@@ -52,6 +52,6 @@ class TerminalSurface : public WindowResizeReceiver {
 };
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit
 
 #endif // TERMINAL_SURFACE_H

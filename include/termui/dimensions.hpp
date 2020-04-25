@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 struct Dimensions {
@@ -12,6 +12,6 @@ struct Dimensions {
 };
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit
 
 #endif // DIMENSIONS_H

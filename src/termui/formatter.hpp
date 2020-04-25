@@ -9,7 +9,7 @@
 #include "aliases.hpp"
 #include "tools/time_keeping.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 class Formatter {
@@ -22,7 +22,7 @@ class Formatter {
     std::string format_ss(TimePoint tp);
 
   private:
-    bmon::tools::TimeKeeping time_keeping_{};
+    bandwit::tools::TimeKeeping time_keeping_{};
 
     // powers of two
     std::map<int, std::string> units_ = {
@@ -34,6 +34,6 @@ class Formatter {
 };
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit
 
 #endif // FORMATTER_H

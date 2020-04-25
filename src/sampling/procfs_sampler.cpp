@@ -6,7 +6,7 @@
 
 #include "procfs_sampler.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace sampling {
 
 class ProcFsParser {
@@ -76,4 +76,4 @@ Sample ProcFsSampler::get_sample(const std::string &iface_name) const {
 }
 
 } // namespace sampling
-} // namespace bmon
+} // namespace bandwit

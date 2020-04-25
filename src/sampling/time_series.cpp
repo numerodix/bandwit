@@ -1,6 +1,6 @@
 #include "time_series.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace sampling {
 
 void TimeSeries::set(TimePoint tp, uint64_t value) {
@@ -66,4 +66,4 @@ TimePoint TimeSeries::reverse_key(std::size_t index) const {
 }
 
 } // namespace sampling
-} // namespace bmon
+} // namespace bandwit

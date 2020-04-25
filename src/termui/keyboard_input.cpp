@@ -3,7 +3,7 @@
 
 #include "keyboard_input.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 KeyPress KeyboardInputReader::read_char(Millis interval) {
@@ -55,4 +55,4 @@ KeyPress KeyboardInputReader::read_nonblocking(Millis interval) {
 }
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit

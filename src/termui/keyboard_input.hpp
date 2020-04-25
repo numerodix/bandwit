@@ -8,7 +8,7 @@
 
 #include "aliases.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 enum class KeyPress {
@@ -36,7 +36,7 @@ class KeyboardInputReader {
 };
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit
 
 #endif // KEYBOARD_INPUT_H
 

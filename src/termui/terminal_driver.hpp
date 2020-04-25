@@ -7,7 +7,7 @@
 #include "termui/dimensions.hpp"
 #include "termui/point.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 class FileStatusSetter;
@@ -35,6 +35,6 @@ class TerminalDriver {
 };
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit
 
 #endif // TERMINAL_DRIVER_H

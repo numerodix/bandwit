@@ -3,7 +3,7 @@
 
 #include "aliases.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace tools {
 
 class TimeKeeping {
@@ -14,7 +14,7 @@ class TimeKeeping {
 };
 
 } // namespace tools
-} // namespace bmon
+} // namespace bandwit
 
 #endif // TIME_KEEPING_H
 

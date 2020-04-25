@@ -5,7 +5,7 @@
 #include "terminal_surface.hpp"
 #include "terminal_window.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 // eugh
@@ -126,4 +126,4 @@ void TerminalWindow::install_resize_handler() {
 }
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit

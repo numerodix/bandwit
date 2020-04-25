@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <ctime>
 
-namespace bmon {
+namespace bandwit {
 namespace sampling {
 
 struct Sample {
@@ -15,6 +15,6 @@ struct Sample {
 };
 
 } // namespace sampling
-} // namespace bmon
+} // namespace bandwit
 
 #endif // SAMPLE_H

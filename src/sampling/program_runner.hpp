@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
 
-namespace bmon {
+namespace bandwit {
 namespace sampling {
 
 class ProgramRunner {
@@ -10,4 +10,4 @@ class ProgramRunner {
 };
 
 } // namespace sampling
-} // namespace bmon
+} // namespace bandwit

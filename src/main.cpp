@@ -16,15 +16,15 @@ int main(int argc, char *argv[]) {
     // We expect to get a Ctrl+C. Install a SIGINT handler that throws an
     // exception such that we can unwind orderly and enter the catch block
     // below.
-    signal(SIGINT, bmon::termui::sigint_handler);
+    signal(SIGINT, bandwit::termui::sigint_handler);
 
     // We desperately need to wrap the execution in a try/catch otherwise an
     // uncaught exception will terminate the program bypassing all destructors
     // and leave the terminal in a corrupted state.
     try {
-        bmon::termui::TermUi termui{iface_name};
+        bandwit::termui::TermUi termui{iface_name};
         termui.run_forever();
-    } catch (bmon::termui::InterruptException &e) {
+    } catch (bandwit::termui::InterruptException &e) {
         // This is the expected way to stop the program.
         // Emit a newline so we move beyond the menu that was displayed at the
         // cursor position.

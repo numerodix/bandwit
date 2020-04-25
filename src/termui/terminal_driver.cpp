@@ -4,7 +4,7 @@
 #include "file_status.hpp"
 #include "terminal_driver.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 Dimensions TerminalDriver::get_terminal_size() {
@@ -61,4 +61,4 @@ void TerminalDriver::put_uchar(const std::string &ch) {
 void TerminalDriver::flush_output() { fflush(stdout_file_); }
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit

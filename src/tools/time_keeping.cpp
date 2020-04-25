@@ -1,6 +1,6 @@
 #include "time_keeping.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace tools {
 
 int TimeKeeping::get_hours(TimePoint tp) {
@@ -22,4 +22,4 @@ int TimeKeeping::get_seconds(TimePoint tp) {
 }
 
 } // namespace tools
-} // namespace bmon
+} // namespace bandwit

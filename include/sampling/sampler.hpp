@@ -6,7 +6,7 @@
 #include "macros.hpp"
 #include "sample.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace sampling {
 
 class Sampler {
@@ -27,6 +27,6 @@ class Sampler {
 };
 
 } // namespace sampling
-} // namespace bmon
+} // namespace bandwit
 
 #endif // SAMPLER_H

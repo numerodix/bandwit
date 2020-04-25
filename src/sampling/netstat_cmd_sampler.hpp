@@ -3,7 +3,7 @@
 
 #include "sampling/sampler.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace sampling {
 
 // This is the only method that is known to work on BSD
@@ -20,6 +20,6 @@ class NetstatCommandSampler : public Sampler {
 };
 
 } // namespace sampling
-} // namespace bmon
+} // namespace bandwit
 
 #endif // NETSTAT_CMD_SAMPLER_H

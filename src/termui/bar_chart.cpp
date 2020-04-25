@@ -6,7 +6,7 @@
 #include "macros.hpp"
 #include "terminal_surface.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 // ref: https://en.wikipedia.org/wiki/Box-drawing_character
@@ -133,4 +133,4 @@ uint16_t BarChart::get_width() const {
 }
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit

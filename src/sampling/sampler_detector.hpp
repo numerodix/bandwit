@@ -6,7 +6,7 @@
 
 #include "sampling/sampler.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace sampling {
 
 class SamplerDetector {
@@ -15,6 +15,6 @@ class SamplerDetector {
 };
 
 } // namespace sampling
-} // namespace bmon
+} // namespace bandwit
 
 #endif // SAMPLER_DETECTOR_H

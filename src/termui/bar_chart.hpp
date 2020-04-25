@@ -8,13 +8,13 @@
 #include "sampling/time_series_slice.hpp"
 #include "termui/dimensions.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 class TerminalSurface;
 
 class BarChart {
-  using TimeSeriesSlice = bmon::sampling::TimeSeriesSlice;
+  using TimeSeriesSlice = bandwit::sampling::TimeSeriesSlice;
 
   public:
     explicit BarChart(TerminalSurface *surface) : surface_{surface} {}
@@ -40,6 +40,6 @@ class BarChart {
 };
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit
 
 #endif // BAR_CHART_H

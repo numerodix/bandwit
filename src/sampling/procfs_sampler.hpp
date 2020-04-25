@@ -3,7 +3,7 @@
 
 #include "sampling/sampler.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace sampling {
 
 class ProcFsSampler : public Sampler {
@@ -19,6 +19,6 @@ class ProcFsSampler : public Sampler {
 };
 
 } // namespace sampling
-} // namespace bmon
+} // namespace bandwit
 
 #endif // PROCFS_SAMPLER_H

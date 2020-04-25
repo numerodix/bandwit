@@ -6,7 +6,7 @@
 
 #include "macros.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 class SignalSuspender {
@@ -43,6 +43,6 @@ class InterruptException : public std::exception {
 };
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit
 
 #endif // SIGNALS_H

@@ -6,7 +6,7 @@
 
 #include "aliases.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace sampling {
 
 class TimeSeriesSlice {
@@ -19,6 +19,6 @@ class TimeSeriesSlice {
 };
 
 } // namespace sampling
-} // namespace bmon
+} // namespace bandwit
 
 #endif // TIME_SERIES_SLICE_H

@@ -6,7 +6,7 @@
 #include "termui.hpp"
 #include "termui/signals.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
@@ -143,4 +143,4 @@ void TermUi::read_keyboard_input(Millis interval) {
 }
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit

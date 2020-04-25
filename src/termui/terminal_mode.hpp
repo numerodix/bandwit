@@ -6,7 +6,7 @@
 
 #include "macros.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 class SignalSuspender;
@@ -52,6 +52,6 @@ class TerminalModeGuard {
 };
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit
 
 #endif // TERMINAL_MODE_H

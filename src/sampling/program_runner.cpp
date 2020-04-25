@@ -4,7 +4,7 @@
 
 #include "program_runner.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace sampling {
 
 std::vector<std::string> ProgramRunner::run(const std::string &args) const {
@@ -34,4 +34,4 @@ std::vector<std::string> ProgramRunner::run(const std::string &args) const {
 }
 
 } // namespace sampling
-} // namespace bmon
+} // namespace bandwit

@@ -11,7 +11,7 @@
 #include "netstat_cmd_sampler.hpp"
 #include "program_runner.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace sampling {
 
 class NetstatStatsParser {
@@ -74,4 +74,4 @@ Sample NetstatCommandSampler::get_sample(const std::string &iface_name) const {
 }
 
 } // namespace sampling
-} // namespace bmon
+} // namespace bandwit

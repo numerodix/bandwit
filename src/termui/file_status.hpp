@@ -5,7 +5,7 @@
 
 #include <macros.hpp>
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 class FileStatusSetter {
@@ -52,6 +52,6 @@ class FileStatusGuard {
 };
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit
 
 #endif // FILE_STATUS_H

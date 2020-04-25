@@ -3,7 +3,7 @@
 #include "signals.hpp"
 #include <stdexcept>
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 void SignalSuspender::suspend() {
@@ -42,4 +42,4 @@ void sigint_handler([[maybe_unused]] int sig) {
 }
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit

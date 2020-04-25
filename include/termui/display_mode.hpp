@@ -1,7 +1,7 @@
 #ifndef DISPLAY_MODE_H
 #define DISPLAY_MODE_H
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 enum class DisplayMode {
@@ -10,6 +10,6 @@ enum class DisplayMode {
 };
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit
 
 #endif // DISPLAY_MODE_H

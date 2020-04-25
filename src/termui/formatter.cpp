@@ -5,7 +5,7 @@
 #include "formatter.hpp"
 #include "macros.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 std::string Formatter::format_num_byte_rate(uint64_t num,
@@ -125,4 +125,4 @@ std::string Formatter::format_ss(TimePoint tp) {
 }
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit

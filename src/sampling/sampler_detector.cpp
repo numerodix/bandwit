@@ -9,7 +9,7 @@
 #include "sampling/procfs_sampler.hpp"
 #include "sampling/sysfs_sampler.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace sampling {
 
 #define PAIR(ClsName) std::make_pair("" #ClsName, std::make_unique<ClsName>())
@@ -56,4 +56,4 @@ SamplerDetector::detect_sampler(const std::string &iface_name) const {
 }
 
 } // namespace sampling
-} // namespace bmon
+} // namespace bandwit

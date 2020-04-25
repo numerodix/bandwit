@@ -3,7 +3,7 @@
 
 #include "dimensions.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 class WindowResizeReceiver {
@@ -19,6 +19,6 @@ class WindowResizeReceiver {
 };
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit
 
 #endif // WINDOW_RESIZE_H

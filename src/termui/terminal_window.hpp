@@ -6,7 +6,7 @@
 #include "termui/point.hpp"
 #include "termui/window_resize.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 class SignalSuspender;
@@ -47,6 +47,6 @@ class TerminalWindow {
 };
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit
 
 #endif // TERMINAL_WINDOW_H

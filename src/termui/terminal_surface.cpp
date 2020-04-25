@@ -4,7 +4,7 @@
 #include "terminal_surface.hpp"
 #include "terminal_window.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 TerminalSurface::TerminalSurface(TerminalWindow *win, uint16_t num_lines)
@@ -205,4 +205,4 @@ Point TerminalSurface::translate_point(const Point &point) {
 }
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit

@@ -16,7 +16,7 @@
 #include "termui/terminal_window.hpp"
 #include "termui/window_resize.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 class TermUi : public WindowResizeReceiver {
@@ -58,6 +58,6 @@ class TermUi : public WindowResizeReceiver {
 };
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit
 
 #endif // TERMUI_H

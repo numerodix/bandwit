@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 struct Point {
@@ -12,6 +12,6 @@ struct Point {
 };
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit
 
 #endif // POINT_H

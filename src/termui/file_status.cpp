@@ -3,7 +3,7 @@
 
 #include "file_status.hpp"
 
-namespace bmon {
+namespace bandwit {
 namespace termui {
 
 void FileStatusSetter::set() {
@@ -74,4 +74,4 @@ std::unique_ptr<FileStatusSetter> FileStatusSet::build_setterp(int fileno) {
 }
 
 } // namespace termui
-} // namespace bmon
+} // namespace bandwit
