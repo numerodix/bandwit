@@ -21,3 +21,8 @@ libraries:
 
 * `netstat -ibn` requires finding the right line and parsing the right
   integers.
+
+
+## Portability
+
+* Written using C++17.
