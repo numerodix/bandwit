@@ -49,7 +49,7 @@ class TermUi : public WindowResizeReceiver {
     std::unique_ptr<SignalSuspender> susp_sigint_{nullptr};
     std::unique_ptr<SignalSuspender> susp_sigwinch_{nullptr};
     std::unique_ptr<TerminalDriver> terminal_driver_{nullptr};
-    std::unique_ptr<TerminalModeSetter> mode_setter_{nullptr};
+    std::unique_ptr<TerminalModeSetter> interactive_mode_setter_{nullptr};
     std::unique_ptr<TerminalSurface> terminal_surface_{nullptr};
     std::unique_ptr<TerminalWindow> terminal_window_{nullptr};
     std::unique_ptr<sampling::Sampler> sampler_{nullptr};

@@ -19,12 +19,12 @@ TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
         std::make_unique<SignalSuspender>(std::initializer_list<int>{SIGWINCH});
 
     TerminalModeSet mode_set{};
-    mode_setter_ = mode_set.local_off(ECHO).local_off(ICANON).build_setterp(
+    interactive_mode_setter_ = mode_set.local_off(ECHO).local_off(ICANON).build_setterp(
         susp_sigint_.get());
 
     // make sure the terminal has -ECHO -ICANON from now on and for the lifetime
     // of TermUi
-    mode_setter_->set();
+    interactive_mode_setter_->set();
 
     FileStatusSet blocking_status_set{};
     // give the driver a way to make stdin blocking when needed
@@ -64,7 +64,7 @@ TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
 
 TermUi::~TermUi() {
     non_blocking_status_setter_->reset();
-    mode_setter_->reset();
+    interactive_mode_setter_->reset();
 }
 
 void TermUi::on_window_resize([[maybe_unused]] const Dimensions &win_dim_old,
