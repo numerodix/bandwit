@@ -38,7 +38,7 @@ SamplerDetector::detect_sampler(const std::string &iface_name) const {
         } catch (std::runtime_error &exc) {
             std::stringstream ss{};
             ss << cls_name << ": " << std::string{exc.what()};
-            errors.push_back(ss.str());
+            errors.emplace_back(ss.str());
         }
     }
 

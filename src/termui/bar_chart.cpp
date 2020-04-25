@@ -55,7 +55,7 @@ void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value) {
     for (int x = 1; x <= dim.height - chart_offset_; ++x) {
         auto tick = U64(F64(max_value) * (x * factor));
         std::string tick_fmt = formatter_.format_num_byte_rate(tick, "s");
-        ticks.push_back(tick_fmt);
+        ticks.push_back(std::move(tick_fmt));
     }
 
     uint16_t row = dim.height - chart_offset_;

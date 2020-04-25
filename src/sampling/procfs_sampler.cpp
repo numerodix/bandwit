@@ -19,7 +19,7 @@ std::vector<std::string> ProcFsParser::read_file_as_lines() const {
     std::vector<std::string> lines{};
 
     while (getline(fl, line)) {
-        lines.push_back(line);
+        lines.push_back(std::move(line));
     }
 
     return lines;
