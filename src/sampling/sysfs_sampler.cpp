@@ -30,7 +30,8 @@ std::string SysFsParser::create_filepath(const std::string &iface_name,
     return ss.str();
 }
 
-uint64_t SysFsParser::read(const std::string &iface_name, const Quantity &qtty) const {
+uint64_t SysFsParser::read(const std::string &iface_name,
+                           const Quantity &qtty) const {
     std::string filepath = create_filepath(iface_name, qtty);
     return read_file_as_number(filepath);
 }

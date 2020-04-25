@@ -47,8 +47,7 @@ ProcFsParser::parse(const std::vector<std::string> &lines,
         }
     }
 
-    throw std::runtime_error(
-        "failed to find the right iface / parse output");
+    throw std::runtime_error("failed to find the right iface / parse output");
 }
 
 Sample ProcFsSampler::get_sample(const std::string &iface_name) const {

@@ -16,7 +16,7 @@ namespace sampling {
 
 DetectionResult
 SamplerDetector::detect_sampler(const std::string &iface_name) const {
-    using Pair = std::pair<std::string, Sampler*>;
+    using Pair = std::pair<std::string, Sampler *>;
 
     std::vector<Pair> samplers{};
     samplers.emplace_back(PAIR(SysFsSampler));
