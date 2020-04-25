@@ -10,6 +10,7 @@ and include it in the exception context.
 
 ## STL
 
+* Improve the grizzly regular expressions.
 * Use emplace over push where possible.
 
 ## UX
