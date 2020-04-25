@@ -10,7 +10,6 @@ namespace bandwit {
 namespace sampling {
 
 class Sampler {
-
   public:
     // we don't actually want this: "abstract classes should not have a ctor",
     // but without it deleting the copy/move ctors below breaks the ctors in the
