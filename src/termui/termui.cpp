@@ -3,9 +3,7 @@
 #include <unistd.h>
 
 #include "sampling/sampler_detector.hpp"
-#include "sampling/time_series.hpp"
 #include "termui.hpp"
-#include "termui/keyboard_input.hpp"
 #include "termui/signals.hpp"
 
 namespace bmon {
@@ -49,6 +47,14 @@ TermUi::TermUi(const std::string &iface_name)
     non_blocking_status_setter_->set();
     // make sure stdin is non-blocking for the rest of this function
     // FileStatusGuard non_block_status_guard{&non_blocking_status_setter};
+
+    kb_reader_ = std::make_unique<KeyboardInputReader>(stdin);
+
+    auto now = Clock::now();
+    ts_rx_ = std::make_unique<sampling::TimeSeries>(one_sec_, now);
+    ts_tx_ = std::make_unique<sampling::TimeSeries>(one_sec_, now);
+
+    prev_sample_ = sampler_->get_sample(iface_name_);
 }
 
 TermUi::~TermUi() {
@@ -56,52 +62,41 @@ TermUi::~TermUi() {
     mode_setter_->reset();
 }
 
-void TermUi::display_bar_chart() {
-    KeyboardInputReader reader{stdin};
-    DisplayMode mode = DisplayMode::DISPLAY_RX;
-
-    std::chrono::seconds one_sec{1};
-
-    auto now = Clock::now();
-    sampling::TimeSeries ts_rx{one_sec, now};
-    sampling::TimeSeries ts_tx{one_sec, now};
-
-    sampling::Sample prev_sample = sampler_->get_sample(iface_name_);
-
+void TermUi::run_forever() {
     while (true) {
         // Time execution of sampling and rendering
         auto pre = Clock::now();
 
         sampling::Sample sample = sampler_->get_sample(iface_name_);
 
-        auto rx = sample.rx - prev_sample.rx;
-        auto tx = sample.tx - prev_sample.tx;
+        auto rx = sample.rx - prev_sample_.rx;
+        auto tx = sample.tx - prev_sample_.tx;
 
         auto now = Clock::now();
-        ts_rx.set(now, rx);
-        ts_tx.set(now, tx);
+        ts_rx_->set(now, rx);
+        ts_tx_->set(now, tx);
 
-        prev_sample = sample;
+        prev_sample_ = sample;
 
-        if (mode == DisplayMode::DISPLAY_RX) {
-            auto rxs = ts_rx.get_slice_from_end(bar_chart_->get_width());
+        if (mode_ == DisplayMode::DISPLAY_RX) {
+            auto rxs = ts_rx_->get_slice_from_end(bar_chart_->get_width());
             bar_chart_->draw_bars_from_right(iface_name_, "received", rxs);
         } else {
-            auto txs = ts_tx.get_slice_from_end(bar_chart_->get_width());
+            auto txs = ts_tx_->get_slice_from_end(bar_chart_->get_width());
             bar_chart_->draw_bars_from_right(iface_name_, "transmitted", txs);
         }
 
         // Spend the rest of the second reading keyboard input
         auto elapsed = Clock::now() - pre;
-        auto remaining = MILLIS(one_sec - elapsed);
+        auto remaining = MILLIS(one_sec_ - elapsed);
 
-        KeyPress key = reader.read_nonblocking(remaining);
+        KeyPress key = kb_reader_->read_nonblocking(remaining);
         if (key == KeyPress::CARRIAGE_RETURN) {
             terminal_surface_->on_carriage_return();
         } else if (key == KeyPress::DISPLAY_RX) {
-            mode = DisplayMode::DISPLAY_RX;
+            mode_ = DisplayMode::DISPLAY_RX;
         } else if (key == KeyPress::DISPLAY_TX) {
-            mode = DisplayMode::DISPLAY_TX;
+            mode_ = DisplayMode::DISPLAY_TX;
         } else if (key == KeyPress::QUIT) {
             throw InterruptException();
         }

@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
     // and leave the terminal in a corrupted state.
     try {
         bmon::termui::TermUi termui{iface_name};
-        termui.display_bar_chart();
+        termui.run_forever();
     } catch (bmon::termui::InterruptException &e) {
         // This is the expected way to stop the program.
         // Emit a newline so we move beyond the menu that was displayed at the
