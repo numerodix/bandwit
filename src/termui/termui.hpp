@@ -29,6 +29,10 @@ class TermUi {
 
     void run_forever();
 
+    void sample();
+    void render();
+    void read_keyboard_input(Millis interval);
+
   private:
     std::string iface_name_{};
     DisplayMode mode_{DisplayMode::DISPLAY_RX};

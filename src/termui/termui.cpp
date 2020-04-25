@@ -67,39 +67,54 @@ void TermUi::run_forever() {
         // Time execution of sampling and rendering
         auto pre = Clock::now();
 
-        sampling::Sample sample = sampler_->get_sample(iface_name_);
-
-        auto rx = sample.rx - prev_sample_.rx;
-        auto tx = sample.tx - prev_sample_.tx;
-
-        auto now = Clock::now();
-        ts_rx_->set(now, rx);
-        ts_tx_->set(now, tx);
-
-        prev_sample_ = sample;
-
-        if (mode_ == DisplayMode::DISPLAY_RX) {
-            auto rxs = ts_rx_->get_slice_from_end(bar_chart_->get_width());
-            bar_chart_->draw_bars_from_right(iface_name_, "received", rxs);
-        } else {
-            auto txs = ts_tx_->get_slice_from_end(bar_chart_->get_width());
-            bar_chart_->draw_bars_from_right(iface_name_, "transmitted", txs);
-        }
+        sample();
+        render();
 
         // Spend the rest of the second reading keyboard input
         auto elapsed = Clock::now() - pre;
         auto remaining = MILLIS(one_sec_ - elapsed);
 
-        KeyPress key = kb_reader_->read_nonblocking(remaining);
-        if (key == KeyPress::CARRIAGE_RETURN) {
-            terminal_surface_->on_carriage_return();
-        } else if (key == KeyPress::DISPLAY_RX) {
-            mode_ = DisplayMode::DISPLAY_RX;
-        } else if (key == KeyPress::DISPLAY_TX) {
-            mode_ = DisplayMode::DISPLAY_TX;
-        } else if (key == KeyPress::QUIT) {
-            throw InterruptException();
-        }
+        read_keyboard_input(remaining);
+    }
+}
+
+void TermUi::sample() {
+    sampling::Sample sample = sampler_->get_sample(iface_name_);
+
+    auto rx = sample.rx - prev_sample_.rx;
+    auto tx = sample.tx - prev_sample_.tx;
+
+    auto now = Clock::now();   // FIXME: remove
+    ts_rx_->set(now, rx);
+    ts_tx_->set(now, tx);
+
+    prev_sample_ = sample;
+}
+
+void TermUi::render() {
+    if (mode_ == DisplayMode::DISPLAY_RX) {
+        auto rxs = ts_rx_->get_slice_from_end(bar_chart_->get_width());
+        bar_chart_->draw_bars_from_right(iface_name_, "received", rxs);
+    } else {
+        auto txs = ts_tx_->get_slice_from_end(bar_chart_->get_width());
+        bar_chart_->draw_bars_from_right(iface_name_, "transmitted", txs);
+    }
+}
+
+void TermUi::read_keyboard_input(Millis interval) {
+    KeyPress key = kb_reader_->read_nonblocking(interval);
+
+    if (key == KeyPress::CARRIAGE_RETURN) {
+        terminal_surface_->on_carriage_return();
+
+    } else if (key == KeyPress::DISPLAY_RX) {
+        mode_ = DisplayMode::DISPLAY_RX;
+
+    } else if (key == KeyPress::DISPLAY_TX) {
+        mode_ = DisplayMode::DISPLAY_TX;
+
+    } else if (key == KeyPress::QUIT) {
+        throw InterruptException();
     }
 }
 
