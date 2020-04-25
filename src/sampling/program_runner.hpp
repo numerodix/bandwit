@@ -1,3 +1,6 @@
+#ifndef PROGRAM_RUNNER_H
+#define PROGRAM_RUNNER_H
+
 #include <string>
 #include <vector>
 
@@ -11,3 +14,5 @@ class ProgramRunner {
 
 } // namespace sampling
 } // namespace bandwit
+
+#endif // PROGRAM_RUNNER_H
