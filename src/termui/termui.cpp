@@ -54,6 +54,8 @@ TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
     ts_tx_ = std::make_unique<sampling::TimeSeries>(one_sec_, now);
 
     prev_sample_ = sampler_->get_sample(iface_name_);
+
+    terminal_surface_->register_resize_receiver(this);
 }
 
 TermUi::~TermUi() {
@@ -116,6 +118,11 @@ void TermUi::read_keyboard_input(Millis interval) {
     } else if (key == KeyPress::QUIT) {
         throw InterruptException();
     }
+}
+
+void TermUi::on_window_resize([[maybe_unused]] const Dimensions &win_dim_old,
+                              [[maybe_unused]] const Dimensions &win_dim_new) {
+    render();
 }
 
 } // namespace termui

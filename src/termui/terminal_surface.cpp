@@ -85,6 +85,11 @@ void TerminalSurface::on_window_resize(const Dimensions &win_dim_old,
     dim_ = recompute_dimensions(win_dim_new);
 
     clear_surface();
+
+    // Notify our receiver
+    if (resize_receiver_ != nullptr) {
+        resize_receiver_->on_window_resize(win_dim_old, win_dim_new);
+    }
 }
 
 void TerminalSurface::on_carriage_return() {
@@ -161,6 +166,10 @@ const Dimensions &TerminalSurface::get_size() const { return dim_; }
 const Point &TerminalSurface::get_upper_left() const { return upper_left_; }
 
 const Point &TerminalSurface::get_lower_left() const { return lower_left_; }
+
+void TerminalSurface::register_resize_receiver(WindowResizeReceiver *receiver) {
+    resize_receiver_ = receiver;
+}
 
 void TerminalSurface::check_surface_fits(const Dimensions &win_dim) {
     if ((win_dim.width < min_cols_) || (win_dim.height < min_lines_)) {

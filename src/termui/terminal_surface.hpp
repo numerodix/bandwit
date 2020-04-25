@@ -28,6 +28,8 @@ class TerminalSurface : public WindowResizeReceiver {
     const Point &get_upper_left() const;
     const Point &get_lower_left() const;
 
+    void register_resize_receiver(WindowResizeReceiver *receiver);
+
   private:
     void check_surface_fits(const Dimensions &win_dim);
     Dimensions recompute_dimensions(const Dimensions &win_dim) const;
@@ -35,6 +37,7 @@ class TerminalSurface : public WindowResizeReceiver {
     Point translate_point(const Point& point);
 
     TerminalWindow *win_{nullptr};
+    WindowResizeReceiver *resize_receiver_{nullptr};
 
     // the minimum dimensions to display the surface
     uint16_t min_lines_{6};

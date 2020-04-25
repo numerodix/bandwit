@@ -13,6 +13,7 @@
 #include "termui/terminal_mode.hpp"
 #include "termui/terminal_surface.hpp"
 #include "termui/terminal_window.hpp"
+#include "termui/window_resize.hpp"
 
 namespace bmon {
 namespace termui {
@@ -22,7 +23,7 @@ enum class DisplayMode {
     DISPLAY_TX,
 };
 
-class TermUi {
+class TermUi : public WindowResizeReceiver {
   public:
     explicit TermUi(const std::string& iface_name);
     ~TermUi();
@@ -35,6 +36,9 @@ class TermUi {
     void sample();
     void render();
     void read_keyboard_input(Millis interval);
+
+    void on_window_resize(const Dimensions &win_dim_old,
+                          const Dimensions &win_dim_new) override;
 
   private:
     std::string iface_name_{};
