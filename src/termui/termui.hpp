@@ -7,6 +7,7 @@
 #include "sampling/sampler.hpp"
 #include "sampling/time_series.hpp"
 #include "termui/bar_chart.hpp"
+#include "termui/display_mode.hpp"
 #include "termui/file_status.hpp"
 #include "termui/keyboard_input.hpp"
 #include "termui/terminal_driver.hpp"
@@ -17,11 +18,6 @@
 
 namespace bmon {
 namespace termui {
-
-enum class DisplayMode {
-    DISPLAY_RX,
-    DISPLAY_TX,
-};
 
 class TermUi : public WindowResizeReceiver {
   public:
