@@ -17,7 +17,6 @@ class TimeSeries {
 
     // convenience API using time points
     void inc(TimePoint tp, uint64_t value);
-    void set(TimePoint tp, uint64_t value);
     uint64_t get(TimePoint tp) const;
 
     // underlying API using vector indices
@@ -28,6 +27,7 @@ class TimeSeries {
     AggregationInterval aggregation_interval() const;
     std::size_t size() const;
     std::size_t capacity() const;
+    void truncate();
 
     std::size_t calculate_key(TimePoint tp) const;
     TimePoint reverse_key(std::size_t index) const;
@@ -35,6 +35,7 @@ class TimeSeries {
   private:
     Millis sampling_interval_{};
     TimePoint start_{};
+    std::size_t max_capacity_{512};
 
     std::vector<uint64_t> storage_{};
     std::size_t max_key_{0};

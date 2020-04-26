@@ -5,14 +5,14 @@ namespace bandwit {
 namespace sampling {
 
 void TimeSeries::inc(TimePoint tp, uint64_t value) {
+    // are we well over size?
+    if (F64(size()) > F64(max_capacity_) * 1.5) {
+        truncate();
+    }
+
     std::size_t key = calculate_key(tp);
     auto current_value = ((key <= max_key_) && (size() > 0)) ? get_key(key) : 0;
     set_key(key, current_value + value);
-}
-
-void TimeSeries::set(TimePoint tp, uint64_t value) {
-    std::size_t key = calculate_key(tp);
-    set_key(key, value);
 }
 
 uint64_t TimeSeries::get(TimePoint tp) const {
@@ -24,15 +24,16 @@ void TimeSeries::set_key(std::size_t key, uint64_t value) {
     // We can't use operator[] to set an element that doesn't exist in the
     // vector yet so we need to enlarge it proactively. The new slots will be
     // filled with zeroes, which is our null value anyway.
-    if (key >= storage_.capacity()) {
+    if (key >= storage_.size()) {
         // double the vector size
         storage_.resize((key + 1) * 2);
     }
 
     storage_[key] = value;
 
-    max_key_ = key;
-    size_ = key + 1;
+    // update invariants
+    max_key_ = key > max_key_ ? key : max_key_;
+    size_ = max_key_ + 1;
 }
 
 uint64_t TimeSeries::get_key(std::size_t key) const { return storage_.at(key); }
@@ -74,6 +75,16 @@ AggregationInterval TimeSeries::aggregation_interval() const {
 std::size_t TimeSeries::size() const { return size_; }
 
 std::size_t TimeSeries::capacity() const { return storage_.capacity(); }
+
+void TimeSeries::truncate() {
+    int num_to_remove = size() - max_capacity_;
+    storage_.erase(storage_.begin(), storage_.begin() + num_to_remove);
+
+    // update invariants
+    start_ += sampling_interval_ * num_to_remove;
+    max_key_ -= num_to_remove;
+    size_ -= num_to_remove;
+}
 
 std::size_t TimeSeries::calculate_key(TimePoint tp) const {
     auto distance = (tp - start_);
