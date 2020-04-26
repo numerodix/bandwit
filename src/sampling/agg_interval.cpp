@@ -12,8 +12,6 @@ AggregationInterval next_interval(AggregationInterval agg_interval) {
     case AggregationInterval::ONE_HOUR:
         return AggregationInterval::ONE_DAY;
     case AggregationInterval::ONE_DAY:
-        return AggregationInterval::ONE_WEEK;
-    case AggregationInterval::ONE_WEEK:
         return AggregationInterval::ONE_SECOND;
     }
 }
@@ -28,8 +26,6 @@ std::string get_label(AggregationInterval agg_interval) {
         return "hour";
     case AggregationInterval::ONE_DAY:
         return "day";
-    case AggregationInterval::ONE_WEEK:
-        return "week";
     }
 }
 

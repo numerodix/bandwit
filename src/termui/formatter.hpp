@@ -16,10 +16,18 @@ class Formatter {
   public:
     std::string format_num_byte_rate(uint64_t num,
                                      const std::string &time_unit);
-    std::string format_xaxis(std::vector<TimePoint> points);
 
-    std::string format_hh_mm(TimePoint tp);
-    std::string format_ss(TimePoint tp);
+    std::string format_xaxis_per_sec(std::vector<TimePoint> points);
+    std::string format_xaxis_per_min(std::vector<TimePoint> points);
+    std::string format_xaxis_per_hour(std::vector<TimePoint> points);
+    std::string format_xaxis_per_day(std::vector<TimePoint> points);
+
+    std::string format_Day(TimePoint tp);
+    std::string format_HH_MM(TimePoint tp);
+    std::string format_HH_h(TimePoint tp);
+    std::string format_HH(TimePoint tp);
+    std::string format_MM(TimePoint tp);
+    std::string format_SS(TimePoint tp);
 
   private:
     bandwit::tools::TimeKeeping time_keeping_{};

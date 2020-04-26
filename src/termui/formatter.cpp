@@ -66,7 +66,7 @@ std::string Formatter::format_num_byte_rate(uint64_t num,
     return ss.str();
 }
 
-std::string Formatter::format_xaxis(std::vector<TimePoint> points) {
+std::string Formatter::format_xaxis_per_sec(std::vector<TimePoint> points) {
     std::stringstream ss{};
 
     // If we need to write more than one char for a given point then successive
@@ -89,12 +89,12 @@ std::string Formatter::format_xaxis(std::vector<TimePoint> points) {
 
         if ((secs == 0) && (num_chars_after_this_one >= 4)) {
             // We need to output HH:MM
-            auto tick = format_hh_mm(tp);
+            auto tick = format_HH_MM(tp);
             ss << tick;
             chars_to_skip = 4;
         } else if ((secs % 4 == 0) && (num_chars_after_this_one >= 1)) {
             // We need to output SS
-            auto tick = format_ss(tp);
+            auto tick = format_SS(tp);
             ss << tick;
             chars_to_skip = 1;
         } else {
@@ -105,7 +105,145 @@ std::string Formatter::format_xaxis(std::vector<TimePoint> points) {
     return ss.str();
 }
 
-std::string Formatter::format_hh_mm(TimePoint tp) {
+std::string Formatter::format_xaxis_per_min(std::vector<TimePoint> points) {
+    std::stringstream ss{};
+
+    // If we need to write more than one char for a given point then successive
+    // iterations through the loop will need to skip outputing anything at all
+    // to make up for the space used.
+    int chars_to_skip{0};
+
+    int num_chars_after_this_one{-1};
+
+    for (std::size_t i = 0; i < points.size(); i++) {
+        num_chars_after_this_one = points.size() - 1 - i;
+
+        auto tp = points[i];
+        int mins = time_keeping_.get_minutes(tp);
+
+        if (chars_to_skip > 0) {
+            chars_to_skip--;
+            continue;
+        }
+
+        if ((mins == 0) && (num_chars_after_this_one >= 4)) {
+            // We need to output HHh
+            auto tick = format_HH_h(tp);
+            ss << tick;
+            chars_to_skip = 2;
+        } else if ((mins % 4 == 0) && (num_chars_after_this_one >= 1)) {
+            // We need to output MM
+            auto tick = format_MM(tp);
+            ss << tick;
+            chars_to_skip = 1;
+        } else {
+            ss << ' ';
+        }
+    }
+
+    return ss.str();
+}
+
+std::string Formatter::format_xaxis_per_hour(std::vector<TimePoint> points) {
+    std::stringstream ss{};
+
+    // If we need to write more than one char for a given point then successive
+    // iterations through the loop will need to skip outputing anything at all
+    // to make up for the space used.
+    int chars_to_skip{0};
+
+    int num_chars_after_this_one{-1};
+
+    for (std::size_t i = 0; i < points.size(); i++) {
+        num_chars_after_this_one = points.size() - 1 - i;
+
+        auto tp = points[i];
+        int hours = time_keeping_.get_hours(tp);
+
+        if (chars_to_skip > 0) {
+            chars_to_skip--;
+            continue;
+        }
+
+        if ((hours == 0) && (num_chars_after_this_one >= 4)) {
+            // We need to output Fri
+            auto tick = format_Day(tp);
+            ss << tick;
+            chars_to_skip = 2;
+        } else if ((hours % 4 == 0) && (num_chars_after_this_one >= 1)) {
+            // We need to output HH
+            auto tick = format_HH(tp);
+            ss << tick;
+            chars_to_skip = 1;
+        } else {
+            ss << ' ';
+        }
+    }
+
+    return ss.str();
+}
+
+std::string Formatter::format_xaxis_per_day(std::vector<TimePoint> points) {
+    std::stringstream ss{};
+
+    // If we need to write more than one char for a given point then successive
+    // iterations through the loop will need to skip outputing anything at all
+    // to make up for the space used.
+    int chars_to_skip{0};
+
+    int num_chars_after_this_one{-1};
+
+    for (std::size_t i = 0; i < points.size(); i++) {
+        num_chars_after_this_one = points.size() - 1 - i;
+
+        auto tp = points[i];
+        int day = time_keeping_.get_wday(tp);
+
+        if (chars_to_skip > 0) {
+            chars_to_skip--;
+            continue;
+        }
+
+        if ((day == 0) && (num_chars_after_this_one >= 4)) {
+            // We need to output Sun
+            auto tick = format_Day(tp);
+            ss << tick;
+            chars_to_skip = 2;
+        } else if ((day % 4 == 0) && (num_chars_after_this_one >= 1)) {
+            // We need to output Day
+            auto tick = format_Day(tp);
+            ss << tick;
+            chars_to_skip = 1;
+        } else {
+            ss << ' ';
+        }
+    }
+
+    return ss.str();
+}
+
+std::string Formatter::format_Day(TimePoint tp) {
+    int wday = time_keeping_.get_wday(tp);
+
+    switch (wday) {
+    case 0:
+        return "Sun";
+    case 1:
+        return "Mon";
+    case 2:
+        return "Tue";
+    case 3:
+        return "Wed";
+    case 4:
+        return "Thu";
+    case 5:
+        return "Fri";
+    case 6:
+        return "Sat";
+    }
+}
+
+std::string Formatter::format_HH_MM(TimePoint tp) {
     int hours = time_keeping_.get_hours(tp);
     int mins = time_keeping_.get_minutes(tp);
 
@@ -116,7 +254,31 @@ std::string Formatter::format_hh_mm(TimePoint tp) {
     return ss.str();
 }
 
-std::string Formatter::format_ss(TimePoint tp) {
+std::string Formatter::format_HH_h(TimePoint tp) {
+    int hours = time_keeping_.get_hours(tp);
+
+    std::stringstream ss{};
+    ss << std::setfill('0') << std::setw(2) << hours << 'h';
+    return ss.str();
+}
+
+std::string Formatter::format_HH(TimePoint tp) {
+    int hours = time_keeping_.get_hours(tp);
+
+    std::stringstream ss{};
+    ss << std::setfill('0') << std::setw(2) << hours;
+    return ss.str();
+}
+
+std::string Formatter::format_MM(TimePoint tp) {
+    int mins = time_keeping_.get_minutes(tp);
+
+    std::stringstream ss{};
+    ss << std::setfill('0') << std::setw(2) << mins;
+    return ss.str();
+}
+
+std::string Formatter::format_SS(TimePoint tp) {
     int secs = time_keeping_.get_seconds(tp);
 
     std::stringstream ss{};

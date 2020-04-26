@@ -8,6 +8,7 @@ namespace tools {
 
 class TimeKeeping {
   public:
+    int get_wday(TimePoint tp);
     int get_hours(TimePoint tp);
     int get_minutes(TimePoint tp);
     int get_seconds(TimePoint tp);

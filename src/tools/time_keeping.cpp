@@ -3,6 +3,12 @@
 namespace bandwit {
 namespace tools {
 
+int TimeKeeping::get_wday(TimePoint tp) {
+    std::time_t tt = Clock::to_time_t(tp);
+    tm local_tm = *localtime(&tt);
+    return local_tm.tm_wday;
+}
+
 int TimeKeeping::get_hours(TimePoint tp) {
     std::time_t tt = Clock::to_time_t(tp);
     tm local_tm = *localtime(&tt);

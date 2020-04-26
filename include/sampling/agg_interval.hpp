@@ -11,7 +11,6 @@ enum class AggregationInterval {
     ONE_MINUTE = 60,
     ONE_HOUR = 3600,
     ONE_DAY = 86400,
-    ONE_WEEK = 604800,
 };
 
 AggregationInterval next_interval(AggregationInterval agg_interval);
