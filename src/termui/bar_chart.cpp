@@ -104,7 +104,7 @@ void BarChart::draw_title(const std::string &title,
     auto label = sampling::get_label(slice.agg_interval);
 
     std::stringstream ss{};
-    ss << "[" << title << " per " << label << "]";
+    ss << "[" << "avg " << title << "/" << label << "]";
     std::string title_fmt = ss.str();
 
     auto x = U16((INT(dim.width) / 2) - (INT(title_fmt.size()) / 2));
