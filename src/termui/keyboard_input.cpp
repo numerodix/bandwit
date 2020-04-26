@@ -31,9 +31,11 @@ KeyPress KeyboardInputReader::read_keypress(Millis interval) {
         key = KeyPress::LETTER_T;
     } else if ((strlen(chars) == 1) && (chars[0] == 'q')) {
         key = KeyPress::QUIT;
-    } else if ((strlen(chars) == 3) && (chars[0] == '\033') && chars[2] == 'A') {
+    } else if ((strlen(chars) == 3) && (chars[0] == '\033') &&
+               chars[2] == 'A') {
         key = KeyPress::ARROW_UP;
-    } else if ((strlen(chars) == 3) && (chars[0] == '\033') && chars[2] == 'B') {
+    } else if ((strlen(chars) == 3) && (chars[0] == '\033') &&
+               chars[2] == 'B') {
         key = KeyPress::ARROW_DOWN;
     }
     return key;
