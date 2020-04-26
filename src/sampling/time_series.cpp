@@ -30,6 +30,10 @@ void TimeSeries::set_key(std::size_t key, uint64_t value) {
 uint64_t TimeSeries::get_key(std::size_t key) const { return storage_.at(key); }
 
 TimeSeries TimeSeries::get_aggregated(AggregationInterval agg_interval) const {
+    if (agg_interval == aggregation_interval()) {
+        return *this;
+    }
+
     auto scale_factor = U32(agg_interval);
     auto interval = sampling_interval_ * scale_factor;
     TimeSeries ts{interval, start_};

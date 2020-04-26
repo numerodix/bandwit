@@ -118,7 +118,6 @@ void TermUi::render() {
     // already in effect, so there is no need to use it here
 
     if (mode_ == DisplayMode::DISPLAY_RX) {
-        // FIXME: avoid get_aggregate when interval is ONE_SECOND
         auto ts_agg = ts_rx_->get_aggregated(agg_interval_);
         auto slice = ts_agg.get_slice_from_end(bar_chart_->get_width());
         bar_chart_->draw_bars_from_right(iface_name_, "received", slice);
