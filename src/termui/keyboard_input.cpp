@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cstring>
 #include <thread>
 
 #include "keyboard_input.hpp"
@@ -6,33 +7,35 @@
 namespace bandwit {
 namespace termui {
 
-KeyPress KeyboardInputReader::read_char(Millis interval) {
+KeyPress KeyboardInputReader::read_keypress(Millis interval) {
     KeyPress key{KeyPress::NOTHING};
 
     // Sleep first to give the user time to press a key
     std::this_thread::sleep_for(interval);
 
     // Read the key press non blocking
-    char ch = fgetc(fl_);
+    char chars[4096] = {0};
+    int i = 0;
 
-    switch (ch) {
-    case '\n':
-        key = KeyPress::CARRIAGE_RETURN;
-        break;
-    case 'r':
-        key = KeyPress::DISPLAY_RX;
-        break;
-    case 't':
-        key = KeyPress::DISPLAY_TX;
-        break;
-    case 'c':
-        key = KeyPress::CYCLE_AGG_INTERVAL;
-        break;
-    case 'q':
-        key = KeyPress::QUIT;
-        break;
+    char ch = fgetc(fl_);
+    while (ch >= 0) {
+        chars[i++] = ch;
+        ch = fgetc(fl_);
     }
 
+    if ((strlen(chars) == 1) && (chars[0] == '\n')) {
+        key = KeyPress::CARRIAGE_RETURN;
+    } else if ((strlen(chars) == 1) && (chars[0] == 'r')) {
+        key = KeyPress::LETTER_R;
+    } else if ((strlen(chars) == 1) && (chars[0] == 't')) {
+        key = KeyPress::LETTER_T;
+    } else if ((strlen(chars) == 1) && (chars[0] == 'q')) {
+        key = KeyPress::QUIT;
+    } else if ((strlen(chars) == 3) && (chars[0] == '\033') && chars[2] == 'A') {
+        key = KeyPress::ARROW_UP;
+    } else if ((strlen(chars) == 3) && (chars[0] == '\033') && chars[2] == 'B') {
+        key = KeyPress::ARROW_DOWN;
+    }
     return key;
 }
 
@@ -48,7 +51,7 @@ KeyPress KeyboardInputReader::read_nonblocking(Millis interval) {
     for (auto i = 0; i < num_loops + 1; i++) {
         auto sleep = i == 0 ? frac_read_interval : read_char_interval_;
 
-        auto key = read_char(sleep);
+        auto key = read_keypress(sleep);
         if (key != KeyPress::NOTHING) {
             return key;
         }

@@ -14,6 +14,7 @@ enum class AggregationInterval {
 };
 
 AggregationInterval next_interval(AggregationInterval agg_interval);
+AggregationInterval prev_interval(AggregationInterval agg_interval);
 std::string get_label(AggregationInterval agg_interval);
 
 } // namespace sampling

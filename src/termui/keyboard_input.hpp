@@ -14,9 +14,10 @@ namespace termui {
 enum class KeyPress {
     NOTHING,
     CARRIAGE_RETURN,
-    DISPLAY_RX,
-    DISPLAY_TX,
-    CYCLE_AGG_INTERVAL,
+    LETTER_R,
+    LETTER_T,
+    ARROW_UP,
+    ARROW_DOWN,
     QUIT,
 };
 
@@ -27,7 +28,7 @@ class KeyboardInputReader {
     KeyPress read_nonblocking(Millis interval);
 
   private:
-    KeyPress read_char(Millis interval);
+    KeyPress read_keypress(Millis interval);
 
     // Where to read the char from
     FILE *fl_;

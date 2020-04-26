@@ -12,6 +12,19 @@ AggregationInterval next_interval(AggregationInterval agg_interval) {
     case AggregationInterval::ONE_HOUR:
         return AggregationInterval::ONE_DAY;
     case AggregationInterval::ONE_DAY:
+        return AggregationInterval::ONE_DAY;
+    }
+}
+
+AggregationInterval prev_interval(AggregationInterval agg_interval) {
+    switch (agg_interval) {
+    case AggregationInterval::ONE_DAY:
+        return AggregationInterval::ONE_HOUR;
+    case AggregationInterval::ONE_HOUR:
+        return AggregationInterval::ONE_MINUTE;
+    case AggregationInterval::ONE_MINUTE:
+        return AggregationInterval::ONE_SECOND;
+    case AggregationInterval::ONE_SECOND:
         return AggregationInterval::ONE_SECOND;
     }
 }

@@ -181,14 +181,17 @@ void TermUi::read_keyboard_input(Millis interval) {
 
         terminal_surface_->on_carriage_return();
 
-    } else if (key == KeyPress::DISPLAY_RX) {
+    } else if (key == KeyPress::LETTER_R) {
         mode_ = DisplayMode::DISPLAY_RX;
 
-    } else if (key == KeyPress::DISPLAY_TX) {
+    } else if (key == KeyPress::LETTER_T) {
         mode_ = DisplayMode::DISPLAY_TX;
 
-    } else if (key == KeyPress::CYCLE_AGG_INTERVAL) {
+    } else if (key == KeyPress::ARROW_UP) {
         agg_interval_ = sampling::next_interval(agg_interval_);
+
+    } else if (key == KeyPress::ARROW_DOWN) {
+        agg_interval_ = sampling::prev_interval(agg_interval_);
 
     } else if (key == KeyPress::QUIT) {
         throw InterruptException();
