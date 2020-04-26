@@ -76,18 +76,18 @@ void BarChart::draw_xaxis(const Dimensions &dim, const TimeSeriesSlice &slice) {
     std::string axis{};
 
     switch (slice.agg_interval) {
-        case sampling::AggregationInterval::ONE_SECOND:
-            axis = formatter_.format_xaxis_per_sec(slice.time_points);
-            break;
-        case sampling::AggregationInterval::ONE_MINUTE:
-            axis = formatter_.format_xaxis_per_min(slice.time_points);
-            break;
-        case sampling::AggregationInterval::ONE_HOUR:
-            axis = formatter_.format_xaxis_per_hour(slice.time_points);
-            break;
-        case sampling::AggregationInterval::ONE_DAY:
-            axis = formatter_.format_xaxis_per_day(slice.time_points);
-            break;
+    case sampling::AggregationInterval::ONE_SECOND:
+        axis = formatter_.format_xaxis_per_sec(slice.time_points);
+        break;
+    case sampling::AggregationInterval::ONE_MINUTE:
+        axis = formatter_.format_xaxis_per_min(slice.time_points);
+        break;
+    case sampling::AggregationInterval::ONE_HOUR:
+        axis = formatter_.format_xaxis_per_hour(slice.time_points);
+        break;
+    case sampling::AggregationInterval::ONE_DAY:
+        axis = formatter_.format_xaxis_per_day(slice.time_points);
+        break;
     }
 
     uint16_t col_cur = dim.width - axis.size() + 1;

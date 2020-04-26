@@ -126,7 +126,7 @@ std::string Formatter::format_xaxis_per_min(std::vector<TimePoint> points) {
             continue;
         }
 
-        if ((mins == 0) && (num_chars_after_this_one >= 4)) {
+        if ((mins == 0) && (num_chars_after_this_one >= 2)) {
             // We need to output HHh
             auto tick = format_HH_h(tp);
             ss << tick;
@@ -165,7 +165,7 @@ std::string Formatter::format_xaxis_per_hour(std::vector<TimePoint> points) {
             continue;
         }
 
-        if ((hours == 0) && (num_chars_after_this_one >= 4)) {
+        if ((hours == 0) && (num_chars_after_this_one >= 2)) {
             // We need to output Fri
             auto tick = format_Day(tp);
             ss << tick;
@@ -204,16 +204,11 @@ std::string Formatter::format_xaxis_per_day(std::vector<TimePoint> points) {
             continue;
         }
 
-        if ((day == 0) && (num_chars_after_this_one >= 4)) {
-            // We need to output Sun
+        if ((day == 1) && (num_chars_after_this_one >= 2)) {
+            // We need to output Mon
             auto tick = format_Day(tp);
             ss << tick;
             chars_to_skip = 2;
-        } else if ((day % 4 == 0) && (num_chars_after_this_one >= 1)) {
-            // We need to output Day
-            auto tick = format_Day(tp);
-            ss << tick;
-            chars_to_skip = 1;
         } else {
             ss << ' ';
         }
