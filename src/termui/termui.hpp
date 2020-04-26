@@ -21,6 +21,7 @@ namespace termui {
 
 class TermUi : public WindowResizeReceiver {
     using AggregationInterval = sampling::AggregationInterval;
+    using TimeSeriesSlice = sampling::TimeSeriesSlice;
 
   public:
     explicit TermUi(const std::string &iface_name);
@@ -43,6 +44,9 @@ class TermUi : public WindowResizeReceiver {
     DisplayMode mode_{DisplayMode::DISPLAY_RX};
     AggregationInterval agg_interval_{AggregationInterval::ONE_SECOND};
     std::chrono::seconds one_sec_{1};
+    std::chrono::seconds one_min_{60};
+    std::chrono::seconds one_hour_{3600};
+    std::chrono::seconds one_day_{86400};
     sampling::Sample prev_sample_{};
 
     std::unique_ptr<BarChart> bar_chart_{nullptr};
@@ -55,8 +59,19 @@ class TermUi : public WindowResizeReceiver {
     std::unique_ptr<TerminalModeSetter> interactive_mode_setter_{nullptr};
     std::unique_ptr<TerminalSurface> terminal_surface_{nullptr};
     std::unique_ptr<sampling::Sampler> sampler_{nullptr};
-    std::unique_ptr<sampling::TimeSeries> ts_rx_{nullptr};
-    std::unique_ptr<sampling::TimeSeries> ts_tx_{nullptr};
+
+    // aggregated per sec
+    std::unique_ptr<sampling::TimeSeries> ts_rx_sec_{nullptr};
+    std::unique_ptr<sampling::TimeSeries> ts_tx_sec_{nullptr};
+    // aggregated per min
+    std::unique_ptr<sampling::TimeSeries> ts_rx_min_{nullptr};
+    std::unique_ptr<sampling::TimeSeries> ts_tx_min_{nullptr};
+    // aggregated per hour
+    std::unique_ptr<sampling::TimeSeries> ts_rx_hour_{nullptr};
+    std::unique_ptr<sampling::TimeSeries> ts_tx_hour_{nullptr};
+    // aggregated per day
+    std::unique_ptr<sampling::TimeSeries> ts_rx_day_{nullptr};
+    std::unique_ptr<sampling::TimeSeries> ts_tx_day_{nullptr};
 };
 
 } // namespace termui

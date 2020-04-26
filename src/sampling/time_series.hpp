@@ -16,6 +16,7 @@ class TimeSeries {
         : sampling_interval_{sampling_interval}, start_{start} {}
 
     // convenience API using time points
+    void inc(TimePoint tp, uint64_t value);
     void set(TimePoint tp, uint64_t value);
     uint64_t get(TimePoint tp) const;
 
@@ -23,7 +24,6 @@ class TimeSeries {
     void set_key(std::size_t key, uint64_t value);
     uint64_t get_key(std::size_t key) const;
 
-    TimeSeries get_aggregated(AggregationInterval agg_interval) const;
     TimeSeriesSlice get_slice_from_end(std::size_t len) const;
     AggregationInterval aggregation_interval() const;
     std::size_t size() const;
@@ -38,6 +38,7 @@ class TimeSeries {
 
     std::vector<uint64_t> storage_{};
     std::size_t max_key_{0};
+    std::size_t size_{0};
 };
 
 } // namespace sampling

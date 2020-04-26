@@ -1,7 +1,7 @@
 ## Sampling
 
-* Optimize aggregated time series - compute iteratively instead of on demand.
-    * Progressively reduce historical data stored for higher granularity time series.
+* Limit how long a TimeSeries can get (remove values from the beginning past some     
+  threshold.)
 * Extend time series to weekly interval.
 
 ## STL

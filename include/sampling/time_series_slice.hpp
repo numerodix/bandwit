@@ -19,6 +19,11 @@ class TimeSeriesSlice {
         : time_points{std::move(tps)}, values{std::move(vals)}, agg_interval{
                                                                     agg_int} {}
 
+    // We need this to be able to declare a variable in an outer scope and
+    // populate it in an inner scope. The value should not be used for anything
+    // cause it's going to be empty.
+    TimeSeriesSlice() {}
+
     std::vector<TimePoint> time_points{};
     std::vector<uint64_t> values{};
     AggregationInterval agg_interval;

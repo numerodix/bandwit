@@ -4,6 +4,12 @@
 namespace bandwit {
 namespace sampling {
 
+void TimeSeries::inc(TimePoint tp, uint64_t value) {
+    std::size_t key = calculate_key(tp);
+    auto current_value = ((key <= max_key_) && (size() > 0)) ? get_key(key) : 0;
+    set_key(key, current_value + value);
+}
+
 void TimeSeries::set(TimePoint tp, uint64_t value) {
     std::size_t key = calculate_key(tp);
     set_key(key, value);
@@ -24,60 +30,30 @@ void TimeSeries::set_key(std::size_t key, uint64_t value) {
     }
 
     storage_[key] = value;
+
     max_key_ = key;
+    size_ = key + 1;
 }
 
 uint64_t TimeSeries::get_key(std::size_t key) const { return storage_.at(key); }
 
-TimeSeries TimeSeries::get_aggregated(AggregationInterval agg_interval) const {
-    if (agg_interval == aggregation_interval()) {
-        return *this;
-    }
-
-    auto scale_factor = U32(agg_interval);
-    auto interval = sampling_interval_ * scale_factor;
-    TimeSeries ts{interval, start_};
-
-    if (max_key_ > 0) {
-
-        uint64_t sum{0};
-        for (std::size_t cursor = 0; cursor <= max_key_; ++cursor) {
-            auto value = get_key(cursor);
-            sum += value;
-
-            // fix this so instead of making the boundary a round number of the
-            // cursor make it fall on the minute/hour/day/etc
-            if ((cursor > 0) && (cursor % scale_factor == 0)) {
-                auto tp = reverse_key(cursor);
-                auto avg = sum / scale_factor;
-                ts.set(tp, avg);
-                sum = 0;
-            }
-        }
-    }
-
-    return ts;
-}
-
 TimeSeriesSlice TimeSeries::get_slice_from_end(std::size_t len) const {
     auto last_key = max_key_;
-    auto first_key = len > size() ? 0 : last_key - len + 1;
+    auto first_key = len > size() ? 0 : last_key + 1 - len;
 
-    std::vector<TimePoint> time_points(last_key - first_key + 1);
+    std::vector<TimePoint> time_points(last_key + 1 - first_key);
     std::vector<uint64_t> values(time_points.size());
     std::size_t i = 0;
 
-    if (max_key_ > 0) {
+    for (auto cursor = first_key; cursor <= last_key; ++cursor) {
+        auto tp = reverse_key(cursor);
+        auto value = get_key(cursor);
 
-        for (auto cursor = first_key; cursor <= last_key; ++cursor) {
-            auto tp = reverse_key(cursor);
-            auto value = get_key(cursor);
+        time_points[i] = tp;
+        // does not take into account the agg_interval
+        values[i] = value;
 
-            time_points[i] = tp;
-            values[i] = value;
-
-            ++i;
-        }
+        ++i;
     }
 
     auto agg_interval = aggregation_interval();
@@ -92,7 +68,7 @@ AggregationInterval TimeSeries::aggregation_interval() const {
     return static_cast<AggregationInterval>(multiplier);
 }
 
-std::size_t TimeSeries::size() const { return max_key_ + 1; }
+std::size_t TimeSeries::size() const { return size_; }
 
 std::size_t TimeSeries::capacity() const { return storage_.capacity(); }
 

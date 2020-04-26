@@ -56,8 +56,14 @@ TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
 
     auto now = Clock::now();
 
-    ts_rx_ = std::make_unique<sampling::TimeSeries>(one_sec_, now);
-    ts_tx_ = std::make_unique<sampling::TimeSeries>(one_sec_, now);
+    ts_rx_sec_ = std::make_unique<sampling::TimeSeries>(one_sec_, now);
+    ts_tx_sec_ = std::make_unique<sampling::TimeSeries>(one_sec_, now);
+    ts_rx_min_ = std::make_unique<sampling::TimeSeries>(one_min_, now);
+    ts_tx_min_ = std::make_unique<sampling::TimeSeries>(one_min_, now);
+    ts_rx_hour_ = std::make_unique<sampling::TimeSeries>(one_hour_, now);
+    ts_tx_hour_ = std::make_unique<sampling::TimeSeries>(one_hour_, now);
+    ts_rx_day_ = std::make_unique<sampling::TimeSeries>(one_day_, now);
+    ts_tx_day_ = std::make_unique<sampling::TimeSeries>(one_day_, now);
 
     // tell the surface to notify us just after it's redrawn itself
     // following a window resize
@@ -106,8 +112,15 @@ void TermUi::sample() {
     auto rx = sample.rx - prev_sample_.rx;
     auto tx = sample.tx - prev_sample_.tx;
 
-    ts_rx_->set(tp, rx);
-    ts_tx_->set(tp, tx);
+    ts_rx_sec_->inc(tp, rx);
+    ts_rx_min_->inc(tp, rx);
+    ts_rx_hour_->inc(tp, rx);
+    ts_rx_day_->inc(tp, rx);
+
+    ts_tx_sec_->inc(tp, tx);
+    ts_tx_min_->inc(tp, tx);
+    ts_tx_hour_->inc(tp, tx);
+    ts_tx_day_->inc(tp, tx);
 
     prev_sample_ = sample;
 }
@@ -116,14 +129,42 @@ void TermUi::render() {
     // when we are called from `on_window_resize` the SIGWINCH signal guard is
     // already in effect, so there is no need to use it here
 
+    TimeSeriesSlice slice{};
+
     if (mode_ == DisplayMode::DISPLAY_RX) {
-        auto ts_agg = ts_rx_->get_aggregated(agg_interval_);
-        auto slice = ts_agg.get_slice_from_end(bar_chart_->get_width());
+        switch (agg_interval_) {
+        case AggregationInterval::ONE_SECOND:
+            slice = ts_rx_sec_->get_slice_from_end(bar_chart_->get_width());
+            break;
+        case AggregationInterval::ONE_MINUTE:
+            slice = ts_rx_min_->get_slice_from_end(bar_chart_->get_width());
+            break;
+        case AggregationInterval::ONE_HOUR:
+            slice = ts_rx_hour_->get_slice_from_end(bar_chart_->get_width());
+            break;
+        case AggregationInterval::ONE_DAY:
+            slice = ts_rx_day_->get_slice_from_end(bar_chart_->get_width());
+            break;
+        }
+
         bar_chart_->draw_bars_from_right(iface_name_, "received", slice);
 
     } else {
-        auto ts_agg = ts_tx_->get_aggregated(agg_interval_);
-        auto slice = ts_agg.get_slice_from_end(bar_chart_->get_width());
+        switch (agg_interval_) {
+        case AggregationInterval::ONE_SECOND:
+            slice = ts_tx_sec_->get_slice_from_end(bar_chart_->get_width());
+            break;
+        case AggregationInterval::ONE_MINUTE:
+            slice = ts_tx_min_->get_slice_from_end(bar_chart_->get_width());
+            break;
+        case AggregationInterval::ONE_HOUR:
+            slice = ts_tx_hour_->get_slice_from_end(bar_chart_->get_width());
+            break;
+        case AggregationInterval::ONE_DAY:
+            slice = ts_tx_day_->get_slice_from_end(bar_chart_->get_width());
+            break;
+        }
+
         bar_chart_->draw_bars_from_right(iface_name_, "transmitted", slice);
     }
 }
