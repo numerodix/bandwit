@@ -117,7 +117,7 @@ void BarChart::draw_title(const std::string &title,
 }
 
 void BarChart::draw_menu(const std::string &iface_name, const Dimensions &dim) {
-    std::string menu{u8" (q)uit (r)x (t)x <up/down arrow>"};
+    std::string menu{" (q)uit (r)x (t)x <up/down arrow>"};
     menu.resize(dim.width, ' ');
 
     // format iface
