@@ -45,6 +45,8 @@ TimeSeries TimeSeries::get_aggregated(AggregationInterval agg_interval) const {
             auto value = get_key(cursor);
             sum += value;
 
+            // fix this so instead of making the boundary a round number of the
+            // cursor make it fall on the minute/hour/day/etc
             if ((cursor > 0) && (cursor % scale_factor == 0)) {
                 auto tp = reverse_key(cursor);
                 auto avg = sum / scale_factor;
