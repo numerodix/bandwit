@@ -25,6 +25,9 @@ KeyPress KeyboardInputReader::read_char(Millis interval) {
     case 't':
         key = KeyPress::DISPLAY_TX;
         break;
+    case 'c':
+        key = KeyPress::CYCLE_AGG_INTERVAL;
+        break;
     case 'q':
         key = KeyPress::QUIT;
         break;

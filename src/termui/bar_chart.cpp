@@ -4,6 +4,7 @@
 
 #include "bar_chart.hpp"
 #include "macros.hpp"
+#include "sampling/agg_interval.hpp"
 #include "terminal_surface.hpp"
 
 namespace bandwit {
@@ -13,7 +14,7 @@ namespace termui {
 
 void BarChart::draw_bars_from_right(const std::string &iface_name,
                                     const std::string &title,
-                                    TimeSeriesSlice slice) {
+                                    const TimeSeriesSlice &slice) {
     auto dim = surface_->get_size();
 
     auto max = std::max_element(slice.values.begin(), slice.values.end());
@@ -42,7 +43,7 @@ void BarChart::draw_bars_from_right(const std::string &iface_name,
 
     draw_yaxis(dim, max_value);
     draw_xaxis(dim, slice);
-    draw_title(title);
+    draw_title(title, slice);
     draw_menu(iface_name, dim);
 
     surface_->flush();
@@ -71,7 +72,7 @@ void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value) {
     }
 }
 
-void BarChart::draw_xaxis(const Dimensions &dim, TimeSeriesSlice slice) {
+void BarChart::draw_xaxis(const Dimensions &dim, const TimeSeriesSlice &slice) {
     std::string axis = formatter_.format_xaxis(slice.time_points);
 
     uint16_t col_cur = dim.width - axis.size() + 1;
@@ -82,11 +83,13 @@ void BarChart::draw_xaxis(const Dimensions &dim, TimeSeriesSlice slice) {
     }
 }
 
-void BarChart::draw_title(const std::string &title) {
+void BarChart::draw_title(const std::string &title,
+                          const TimeSeriesSlice &slice) {
     auto dim = surface_->get_size();
+    auto label = sampling::get_label(slice.agg_interval);
 
     std::stringstream ss{};
-    ss << "[" << title << "]";
+    ss << "[" << title << " per " << label << "]";
     std::string title_fmt = ss.str();
 
     auto x = U16((INT(dim.width) / 2) - (INT(title_fmt.size()) / 2));
@@ -99,7 +102,7 @@ void BarChart::draw_title(const std::string &title) {
 }
 
 void BarChart::draw_menu(const std::string &iface_name, const Dimensions &dim) {
-    std::string menu{" (q)uit (r)x (t)x"};
+    std::string menu{" (q)uit (r)x (t)x (c)ycle"};
     menu.resize(dim.width, ' ');
 
     // format iface

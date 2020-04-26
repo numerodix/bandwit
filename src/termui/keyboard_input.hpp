@@ -16,6 +16,7 @@ enum class KeyPress {
     CARRIAGE_RETURN,
     DISPLAY_RX,
     DISPLAY_TX,
+    CYCLE_AGG_INTERVAL,
     QUIT,
 };
 
