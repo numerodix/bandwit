@@ -44,9 +44,6 @@ class TermUi : public WindowResizeReceiver {
     DisplayMode mode_{DisplayMode::DISPLAY_RX};
     AggregationInterval agg_interval_{AggregationInterval::ONE_SECOND};
     std::chrono::seconds one_sec_{1};
-    std::chrono::seconds one_min_{60};
-    std::chrono::seconds one_hour_{3600};
-    std::chrono::seconds one_day_{86400};
     sampling::Sample prev_sample_{};
 
     std::unique_ptr<BarChart> bar_chart_{nullptr};

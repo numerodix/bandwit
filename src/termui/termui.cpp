@@ -54,16 +54,19 @@ TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
 
     kb_reader_ = std::make_unique<KeyboardInputReader>(stdin);
 
+    auto one_min = one_sec_ * INT(AggregationInterval::ONE_MINUTE);
+    auto one_hour = one_sec_ * INT(AggregationInterval::ONE_HOUR);
+    auto one_day = one_sec_ * INT(AggregationInterval::ONE_DAY);
     auto now = Clock::now();
 
     ts_rx_sec_ = std::make_unique<sampling::TimeSeries>(one_sec_, now);
     ts_tx_sec_ = std::make_unique<sampling::TimeSeries>(one_sec_, now);
-    ts_rx_min_ = std::make_unique<sampling::TimeSeries>(one_min_, now);
-    ts_tx_min_ = std::make_unique<sampling::TimeSeries>(one_min_, now);
-    ts_rx_hour_ = std::make_unique<sampling::TimeSeries>(one_hour_, now);
-    ts_tx_hour_ = std::make_unique<sampling::TimeSeries>(one_hour_, now);
-    ts_rx_day_ = std::make_unique<sampling::TimeSeries>(one_day_, now);
-    ts_tx_day_ = std::make_unique<sampling::TimeSeries>(one_day_, now);
+    ts_rx_min_ = std::make_unique<sampling::TimeSeries>(one_min, now);
+    ts_tx_min_ = std::make_unique<sampling::TimeSeries>(one_min, now);
+    ts_rx_hour_ = std::make_unique<sampling::TimeSeries>(one_hour, now);
+    ts_tx_hour_ = std::make_unique<sampling::TimeSeries>(one_hour, now);
+    ts_rx_day_ = std::make_unique<sampling::TimeSeries>(one_day, now);
+    ts_tx_day_ = std::make_unique<sampling::TimeSeries>(one_day, now);
 
     // tell the surface to notify us just after it's redrawn itself
     // following a window resize

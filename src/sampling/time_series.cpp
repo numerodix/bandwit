@@ -41,6 +41,9 @@ TimeSeriesSlice TimeSeries::get_slice_from_end(std::size_t len) const {
     auto last_key = max_key_;
     auto first_key = len > size() ? 0 : last_key + 1 - len;
 
+    auto agg_interval = aggregation_interval();
+    auto divisor = U64(agg_interval);
+
     std::vector<TimePoint> time_points(last_key + 1 - first_key);
     std::vector<uint64_t> values(time_points.size());
     std::size_t i = 0;
@@ -50,13 +53,11 @@ TimeSeriesSlice TimeSeries::get_slice_from_end(std::size_t len) const {
         auto value = get_key(cursor);
 
         time_points[i] = tp;
-        // does not take into account the agg_interval
-        values[i] = value;
+        values[i] = value / divisor;
 
         ++i;
     }
 
-    auto agg_interval = aggregation_interval();
     TimeSeriesSlice slice{time_points, values, agg_interval};
     return slice;
 }
@@ -64,7 +65,9 @@ TimeSeriesSlice TimeSeries::get_slice_from_end(std::size_t len) const {
 AggregationInterval TimeSeries::aggregation_interval() const {
     Millis one_sec{1000};
     uint32_t multiplier = sampling_interval_ / one_sec;
-    // this could easily fail
+
+    // this will fail if sampling_interval_ does not match any
+    // AggregationInterval
     return static_cast<AggregationInterval>(multiplier);
 }
 
