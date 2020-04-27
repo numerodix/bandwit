@@ -122,12 +122,12 @@ void BarChart::draw_menu(const std::string &iface_name, const Dimensions &dim) {
     auto from_index = to_index - iface_label.size();
     menu.replace(from_index, to_index, iface_label);
 
-    uint16_t col_cur = 1;
+    uint16_t col = 1;
     uint16_t y = dim.height;
 
     std::string menu_fmt = formatter_.reverse_video(menu);
 
-    Point pt{col_cur, y};
+    Point pt{col, y};
     surface_->put_string(pt, menu_fmt);
 }
 
