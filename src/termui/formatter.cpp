@@ -281,5 +281,11 @@ std::string Formatter::format_SS(TimePoint tp) {
     return ss.str();
 }
 
+std::string Formatter::reverse_video(const std::string& str) {
+    std::stringstream ss{};
+    ss << ansi_reverse_video_ << str << ansi_reset_;
+    return ss.str();
+}
+
 } // namespace termui
 } // namespace bandwit

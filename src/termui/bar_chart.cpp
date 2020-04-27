@@ -125,16 +125,10 @@ void BarChart::draw_menu(const std::string &iface_name, const Dimensions &dim) {
     uint16_t col_cur = 1;
     uint16_t y = dim.height;
 
-    Point pt_start{col_cur, y};
-    surface_->put_uchar(pt_start, "\033[7m");
+    std::string menu_fmt = formatter_.reverse_video(menu);
 
-    for (auto ch : menu) {
-        Point pt{col_cur++, y};
-        surface_->put_char(pt, ch);
-    }
-
-    Point pt_end{U16(col_cur - 1), y};
-    surface_->put_uchar(pt_end, "\033[0m");
+    Point pt{col_cur, y};
+    surface_->put_string(pt, menu_fmt);
 }
 
 uint16_t BarChart::get_width() const {

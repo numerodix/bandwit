@@ -29,8 +29,13 @@ class Formatter {
     std::string format_MM(TimePoint tp);
     std::string format_SS(TimePoint tp);
 
+    std::string reverse_video(const std::string& str);
+
   private:
     bandwit::tools::TimeKeeping time_keeping_{};
+
+    std::string ansi_reverse_video_{"\033[7m"};
+    std::string ansi_reset_{"\033[0m"};
 
     // powers of two
     std::map<int, std::string> units_ = {
