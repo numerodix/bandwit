@@ -113,7 +113,7 @@ FormattedString Formatter::format_xaxis_per_sec(std::vector<TimePoint> points) {
         if ((secs == 0) && (num_chars_after_this_one >= 4)) {
             // We need to output HH:MM
             auto tick = format_HH_MM(tp);
-            ss << bold(tick);
+            ss << reverse_video(tick);
             chars_to_skip = 4;
         } else if ((secs % 4 == 0) && (num_chars_after_this_one >= 1)) {
             // We need to output SS
@@ -152,7 +152,7 @@ FormattedString Formatter::format_xaxis_per_min(std::vector<TimePoint> points) {
         if ((mins == 0) && (num_chars_after_this_one >= 2)) {
             // We need to output HHh
             auto tick = format_HH_h(tp);
-            ss << bold(tick);
+            ss << reverse_video(tick);
             chars_to_skip = 2;
         } else if ((mins % 4 == 0) && (num_chars_after_this_one >= 1)) {
             // We need to output MM
@@ -192,7 +192,7 @@ Formatter::format_xaxis_per_hour(std::vector<TimePoint> points) {
         if ((hours == 0) && (num_chars_after_this_one >= 2)) {
             // We need to output Fri
             auto tick = format_Day(tp);
-            ss << bold(tick);
+            ss << reverse_video(tick);
             chars_to_skip = 2;
         } else if ((hours % 4 == 0) && (num_chars_after_this_one >= 1)) {
             // We need to output HH
