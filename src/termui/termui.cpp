@@ -191,6 +191,9 @@ void TermUi::read_keyboard_input(Millis interval) {
     } else if (key == KeyPress::LETTER_T) {
         display_mode_ = DisplayMode::DISPLAY_TX;
 
+    } else if (key == KeyPress::LETTER_C) {
+        display_scale_ = next_scale(display_scale_);
+
     } else if (key == KeyPress::LETTER_S) {
         if (stat_mode_ == Statistic::AVERAGE) {
             stat_mode_ = Statistic::SUM;

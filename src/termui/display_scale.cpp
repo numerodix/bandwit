@@ -1,4 +1,4 @@
-#include "display_scale.hpp"
+#include "termui/display_scale.hpp"
 
 namespace bandwit {
 namespace termui {

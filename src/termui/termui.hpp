@@ -10,6 +10,7 @@
 #include "sampling/time_series.hpp"
 #include "termui/bar_chart.hpp"
 #include "termui/display_mode.hpp"
+#include "termui/display_scale.hpp"
 #include "termui/file_status.hpp"
 #include "termui/keyboard_input.hpp"
 #include "termui/terminal_driver.hpp"
@@ -44,6 +45,7 @@ class TermUi : public WindowResizeReceiver {
 
     std::string iface_name_{};
     DisplayMode display_mode_{DisplayMode::DISPLAY_RX};
+    DisplayScale display_scale_{DisplayScale::LINEAR};
     Statistic stat_mode_{Statistic::AVERAGE};
     AggregationWindow agg_window_{AggregationWindow::ONE_SECOND};
     std::chrono::seconds one_sec_{1};
