@@ -8,6 +8,31 @@
 namespace bandwit {
 namespace termui {
 
+const std::string& FormattedString::get() const {
+    return str_;
+}
+
+std::size_t FormattedString::size() const {
+    bool in_escape = false;
+    std::size_t count{0};
+
+    for (auto ch: str_) {
+        if ((!in_escape) && (ch == '\033')) {
+            in_escape = true;
+            continue;
+        } else if (in_escape && (ch == 'm')) {
+            in_escape = false;
+            continue;
+        }
+
+        if (!in_escape) {
+            ++count;
+        }
+    }
+
+    return count;
+}
+
 std::string Formatter::format_num_byte_rate(uint64_t num,
                                             const std::string &time_unit) {
     uint64_t int_part = 0;
@@ -66,7 +91,7 @@ std::string Formatter::format_num_byte_rate(uint64_t num,
     return ss.str();
 }
 
-std::string Formatter::format_xaxis_per_sec(std::vector<TimePoint> points) {
+FormattedString Formatter::format_xaxis_per_sec(std::vector<TimePoint> points) {
     std::stringstream ss{};
 
     // If we need to write more than one char for a given point then successive
@@ -90,7 +115,7 @@ std::string Formatter::format_xaxis_per_sec(std::vector<TimePoint> points) {
         if ((secs == 0) && (num_chars_after_this_one >= 4)) {
             // We need to output HH:MM
             auto tick = format_HH_MM(tp);
-            ss << tick;
+            ss << bold(tick);
             chars_to_skip = 4;
         } else if ((secs % 4 == 0) && (num_chars_after_this_one >= 1)) {
             // We need to output SS
@@ -102,10 +127,10 @@ std::string Formatter::format_xaxis_per_sec(std::vector<TimePoint> points) {
         }
     }
 
-    return ss.str();
+    return FormattedString{ss.str()};
 }
 
-std::string Formatter::format_xaxis_per_min(std::vector<TimePoint> points) {
+FormattedString Formatter::format_xaxis_per_min(std::vector<TimePoint> points) {
     std::stringstream ss{};
 
     // If we need to write more than one char for a given point then successive
@@ -129,7 +154,7 @@ std::string Formatter::format_xaxis_per_min(std::vector<TimePoint> points) {
         if ((mins == 0) && (num_chars_after_this_one >= 2)) {
             // We need to output HHh
             auto tick = format_HH_h(tp);
-            ss << tick;
+            ss << bold(tick);
             chars_to_skip = 2;
         } else if ((mins % 4 == 0) && (num_chars_after_this_one >= 1)) {
             // We need to output MM
@@ -141,10 +166,10 @@ std::string Formatter::format_xaxis_per_min(std::vector<TimePoint> points) {
         }
     }
 
-    return ss.str();
+    return FormattedString{ss.str()};
 }
 
-std::string Formatter::format_xaxis_per_hour(std::vector<TimePoint> points) {
+FormattedString Formatter::format_xaxis_per_hour(std::vector<TimePoint> points) {
     std::stringstream ss{};
 
     // If we need to write more than one char for a given point then successive
@@ -168,7 +193,7 @@ std::string Formatter::format_xaxis_per_hour(std::vector<TimePoint> points) {
         if ((hours == 0) && (num_chars_after_this_one >= 2)) {
             // We need to output Fri
             auto tick = format_Day(tp);
-            ss << tick;
+            ss << bold(tick);
             chars_to_skip = 2;
         } else if ((hours % 4 == 0) && (num_chars_after_this_one >= 1)) {
             // We need to output HH
@@ -180,10 +205,10 @@ std::string Formatter::format_xaxis_per_hour(std::vector<TimePoint> points) {
         }
     }
 
-    return ss.str();
+    return FormattedString{ss.str()};
 }
 
-std::string Formatter::format_xaxis_per_day(std::vector<TimePoint> points) {
+FormattedString Formatter::format_xaxis_per_day(std::vector<TimePoint> points) {
     std::stringstream ss{};
 
     // If we need to write more than one char for a given point then successive
@@ -214,7 +239,7 @@ std::string Formatter::format_xaxis_per_day(std::vector<TimePoint> points) {
         }
     }
 
-    return ss.str();
+    return FormattedString{ss.str()};
 }
 
 std::string Formatter::format_Day(TimePoint tp) {
@@ -278,6 +303,12 @@ std::string Formatter::format_SS(TimePoint tp) {
 
     std::stringstream ss{};
     ss << std::setfill('0') << std::setw(2) << secs;
+    return ss.str();
+}
+
+std::string Formatter::bold(const std::string& str) {
+    std::stringstream ss{};
+    ss << ansi_bold << str << ansi_reset_;
     return ss.str();
 }
 

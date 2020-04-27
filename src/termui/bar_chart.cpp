@@ -67,7 +67,7 @@ void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value) {
 }
 
 void BarChart::draw_xaxis(const Dimensions &dim, const TimeSeriesSlice &slice) {
-    std::string axis{};
+    FormattedString axis{};
 
     switch (slice.agg_window) {
     case AggregationWindow::ONE_SECOND:
@@ -88,7 +88,7 @@ void BarChart::draw_xaxis(const Dimensions &dim, const TimeSeriesSlice &slice) {
     auto y = U16(dim.height - xaxis_offset_);
 
     Point pt{col, y};
-    surface_->put_string(pt, axis);
+    surface_->put_string(pt, axis.get());
 }
 
 void BarChart::draw_title(const std::string &title,

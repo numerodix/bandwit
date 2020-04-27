@@ -12,15 +12,27 @@
 namespace bandwit {
 namespace termui {
 
+class FormattedString {
+  public:
+    explicit FormattedString(std::string str) : str_{std::move(str)} {}
+    FormattedString() {}
+
+    const std::string& get() const;
+    std::size_t size() const;
+
+  private:
+    std::string str_{};
+};
+
 class Formatter {
   public:
     std::string format_num_byte_rate(uint64_t num,
                                      const std::string &time_unit);
 
-    std::string format_xaxis_per_sec(std::vector<TimePoint> points);
-    std::string format_xaxis_per_min(std::vector<TimePoint> points);
-    std::string format_xaxis_per_hour(std::vector<TimePoint> points);
-    std::string format_xaxis_per_day(std::vector<TimePoint> points);
+    FormattedString format_xaxis_per_sec(std::vector<TimePoint> points);
+    FormattedString format_xaxis_per_min(std::vector<TimePoint> points);
+    FormattedString format_xaxis_per_hour(std::vector<TimePoint> points);
+    FormattedString format_xaxis_per_day(std::vector<TimePoint> points);
 
     std::string format_Day(TimePoint tp);
     std::string format_HH_MM(TimePoint tp);
@@ -29,11 +41,13 @@ class Formatter {
     std::string format_MM(TimePoint tp);
     std::string format_SS(TimePoint tp);
 
+    std::string bold(const std::string& str);
     std::string reverse_video(const std::string& str);
 
   private:
     bandwit::tools::TimeKeeping time_keeping_{};
 
+    std::string ansi_bold{"\033[1m"};
     std::string ansi_reverse_video_{"\033[7m"};
     std::string ansi_reset_{"\033[0m"};
 
