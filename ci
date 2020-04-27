@@ -1,0 +1,16 @@
+#!/bin/sh
+
+set -eux
+
+ulimit -c unlimited  # allow a core file to be written
+
+mkdir -p build
+rm -f build/core  # remove previous core file if any
+
+cd build
+# rm CMakeCache.txt  # invalidate options (sigh
+
+CXX=clang++ cmake -D ENABLE_CLANG_TIDY:BOOL=1 ..
+make VERBOSE=1
+
+#./bw lo
