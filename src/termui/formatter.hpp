@@ -17,7 +17,7 @@ class FormattedString {
     explicit FormattedString(std::string str) : str_{std::move(str)} {}
     FormattedString() {}
 
-    const std::string& get() const;
+    const std::string &get() const;
     std::size_t size() const;
 
   private:
@@ -41,8 +41,8 @@ class Formatter {
     std::string format_MM(TimePoint tp);
     std::string format_SS(TimePoint tp);
 
-    std::string bold(const std::string& str);
-    std::string reverse_video(const std::string& str);
+    std::string bold(const std::string &str);
+    std::string reverse_video(const std::string &str);
 
   private:
     bandwit::tools::TimeKeeping time_keeping_{};
@@ -53,15 +53,8 @@ class Formatter {
 
     // powers of two
     std::map<int, std::string> units_ = {
-        {0, "b"},
-        {10, "kb"},
-        {20, "mb"},
-        {30, "gb"},
-        {40, "tb"},
-        {50, "pb"},
-        {60, "eb"},
-        {70, "zb"},
-        {80, "yb"},
+        {0, "b"},   {10, "kb"}, {20, "mb"}, {30, "gb"}, {40, "tb"},
+        {50, "pb"}, {60, "eb"}, {70, "zb"}, {80, "yb"},
     };
 };
 

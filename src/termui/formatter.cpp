@@ -8,15 +8,13 @@
 namespace bandwit {
 namespace termui {
 
-const std::string& FormattedString::get() const {
-    return str_;
-}
+const std::string &FormattedString::get() const { return str_; }
 
 std::size_t FormattedString::size() const {
     bool in_escape = false;
     std::size_t count{0};
 
-    for (auto ch: str_) {
+    for (auto ch : str_) {
         if ((!in_escape) && (ch == '\033')) {
             in_escape = true;
             continue;
@@ -169,7 +167,8 @@ FormattedString Formatter::format_xaxis_per_min(std::vector<TimePoint> points) {
     return FormattedString{ss.str()};
 }
 
-FormattedString Formatter::format_xaxis_per_hour(std::vector<TimePoint> points) {
+FormattedString
+Formatter::format_xaxis_per_hour(std::vector<TimePoint> points) {
     std::stringstream ss{};
 
     // If we need to write more than one char for a given point then successive
@@ -306,13 +305,13 @@ std::string Formatter::format_SS(TimePoint tp) {
     return ss.str();
 }
 
-std::string Formatter::bold(const std::string& str) {
+std::string Formatter::bold(const std::string &str) {
     std::stringstream ss{};
     ss << ansi_bold << str << ansi_reset_;
     return ss.str();
 }
 
-std::string Formatter::reverse_video(const std::string& str) {
+std::string Formatter::reverse_video(const std::string &str) {
     std::stringstream ss{};
     ss << ansi_reverse_video_ << str << ansi_reset_;
     return ss.str();
