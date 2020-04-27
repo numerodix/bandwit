@@ -41,7 +41,7 @@ void BarChart::draw_bars_from_right(const std::string &iface_name,
         --col_cur;
     }
 
-    draw_yaxis(dim, max_value);
+    draw_yaxis(dim, max_value, stat);
     draw_xaxis(dim, slice);
     draw_title(title, slice, stat);
     draw_menu(iface_name, dim);
@@ -49,13 +49,21 @@ void BarChart::draw_bars_from_right(const std::string &iface_name,
     surface_->flush();
 }
 
-void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value) {
+void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value,
+                          Statistic stat) {
     std::vector<std::string> ticks{};
 
     double factor = 1.0 / F64(dim.height);
     for (int x = 1; x <= dim.height - chart_offset_; ++x) {
         auto tick = U64(F64(max_value) * (x * factor));
-        std::string tick_fmt = formatter_.format_num_byte_rate(tick, "s");
+
+        std::string tick_fmt{};
+        if (stat == Statistic::AVERAGE) {
+            tick_fmt = formatter_.format_num_bytes_rate(tick, "s");
+        } else if (stat == Statistic::SUM) {
+            tick_fmt = formatter_.format_num_bytes(tick);
+        }
+
         ticks.push_back(std::move(tick_fmt));
     }
 

@@ -25,7 +25,7 @@ class BarChart {
     void draw_bars_from_right(const std::string &iface_name,
                               const std::string &title,
                               const TimeSeriesSlice &slice, Statistic stat);
-    void draw_yaxis(const Dimensions &dim, uint64_t max_value);
+    void draw_yaxis(const Dimensions &dim, uint64_t max_value, Statistic stat);
     void draw_xaxis(const Dimensions &dim, const TimeSeriesSlice &slice);
     void draw_title(const std::string &title, const TimeSeriesSlice &slice,
                     Statistic stat);
