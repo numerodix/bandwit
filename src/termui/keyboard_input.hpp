@@ -16,6 +16,7 @@ enum class KeyPress {
     CARRIAGE_RETURN,
     LETTER_R,
     LETTER_T,
+    LETTER_S,
     ARROW_UP,
     ARROW_DOWN,
     QUIT,

@@ -38,12 +38,17 @@ void TimeSeries::set_key(std::size_t key, uint64_t value) {
 
 uint64_t TimeSeries::get_key(std::size_t key) const { return storage_.at(key); }
 
-TimeSeriesSlice TimeSeries::get_slice_from_end(std::size_t len) const {
+TimeSeriesSlice TimeSeries::get_slice_from_end(std::size_t len,
+                                               Statistic stat) const {
     auto last_key = max_key_;
     auto first_key = len > size() ? 0 : last_key + 1 - len;
 
-    auto agg_interval = aggregation_interval();
-    auto divisor = U64(agg_interval);
+    auto agg_window = aggregation_window();
+
+    uint64_t divisor = 1;
+    if (stat == Statistic::AVERAGE) {
+        divisor = U64(agg_window);
+    }
 
     std::vector<TimePoint> time_points(last_key + 1 - first_key);
     std::vector<uint64_t> values(time_points.size());
@@ -59,17 +64,17 @@ TimeSeriesSlice TimeSeries::get_slice_from_end(std::size_t len) const {
         ++i;
     }
 
-    TimeSeriesSlice slice{time_points, values, agg_interval};
+    TimeSeriesSlice slice{time_points, values, agg_window};
     return slice;
 }
 
-AggregationInterval TimeSeries::aggregation_interval() const {
+AggregationWindow TimeSeries::aggregation_window() const {
     Millis one_sec{1000};
     uint32_t multiplier = sampling_interval_ / one_sec;
 
     // this will fail if sampling_interval_ does not match any
-    // AggregationInterval
-    return static_cast<AggregationInterval>(multiplier);
+    // AggregationWindow
+    return static_cast<AggregationWindow>(multiplier);
 }
 
 std::size_t TimeSeries::size() const { return size_; }

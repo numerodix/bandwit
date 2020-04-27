@@ -5,6 +5,8 @@
 #include <vector>
 
 #include "formatter.hpp"
+#include "sampling/agg_window.hpp"
+#include "sampling/statistic.hpp"
 #include "sampling/time_series_slice.hpp"
 #include "termui/dimensions.hpp"
 
@@ -14,16 +16,19 @@ namespace termui {
 class TerminalSurface;
 
 class BarChart {
+    using AggregationWindow = sampling::AggregationWindow;
+    using Statistic = sampling::Statistic;
     using TimeSeriesSlice = bandwit::sampling::TimeSeriesSlice;
 
   public:
     explicit BarChart(TerminalSurface *surface) : surface_{surface} {}
     void draw_bars_from_right(const std::string &iface_name,
                               const std::string &title,
-                              const TimeSeriesSlice &slice);
+                              const TimeSeriesSlice &slice, Statistic stat);
     void draw_yaxis(const Dimensions &dim, uint64_t max_value);
     void draw_xaxis(const Dimensions &dim, const TimeSeriesSlice &slice);
-    void draw_title(const std::string &title, const TimeSeriesSlice &slice);
+    void draw_title(const std::string &title, const TimeSeriesSlice &slice,
+                    Statistic stat);
     void draw_menu(const std::string &iface_name, const Dimensions &dim);
 
     uint16_t get_width() const;

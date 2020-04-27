@@ -29,6 +29,8 @@ KeyPress KeyboardInputReader::read_keypress(Millis interval) {
         key = KeyPress::LETTER_R;
     } else if ((strlen(chars) == 1) && (chars[0] == 't')) {
         key = KeyPress::LETTER_T;
+    } else if ((strlen(chars) == 1) && (chars[0] == 's')) {
+        key = KeyPress::LETTER_S;
     } else if ((strlen(chars) == 1) && (chars[0] == 'q')) {
         key = KeyPress::QUIT;
     } else if ((strlen(chars) == 3) && (chars[0] == '\033') &&

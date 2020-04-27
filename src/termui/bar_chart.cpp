@@ -4,7 +4,6 @@
 
 #include "bar_chart.hpp"
 #include "macros.hpp"
-#include "sampling/agg_interval.hpp"
 #include "terminal_surface.hpp"
 
 namespace bandwit {
@@ -14,7 +13,8 @@ namespace termui {
 
 void BarChart::draw_bars_from_right(const std::string &iface_name,
                                     const std::string &title,
-                                    const TimeSeriesSlice &slice) {
+                                    const TimeSeriesSlice &slice,
+                                    Statistic stat) {
     auto dim = surface_->get_size();
 
     auto max = std::max_element(slice.values.begin(), slice.values.end());
@@ -43,7 +43,7 @@ void BarChart::draw_bars_from_right(const std::string &iface_name,
 
     draw_yaxis(dim, max_value);
     draw_xaxis(dim, slice);
-    draw_title(title, slice);
+    draw_title(title, slice, stat);
     draw_menu(iface_name, dim);
 
     surface_->flush();
@@ -75,17 +75,17 @@ void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value) {
 void BarChart::draw_xaxis(const Dimensions &dim, const TimeSeriesSlice &slice) {
     std::string axis{};
 
-    switch (slice.agg_interval) {
-    case sampling::AggregationInterval::ONE_SECOND:
+    switch (slice.agg_window) {
+    case AggregationWindow::ONE_SECOND:
         axis = formatter_.format_xaxis_per_sec(slice.time_points);
         break;
-    case sampling::AggregationInterval::ONE_MINUTE:
+    case AggregationWindow::ONE_MINUTE:
         axis = formatter_.format_xaxis_per_min(slice.time_points);
         break;
-    case sampling::AggregationInterval::ONE_HOUR:
+    case AggregationWindow::ONE_HOUR:
         axis = formatter_.format_xaxis_per_hour(slice.time_points);
         break;
-    case sampling::AggregationInterval::ONE_DAY:
+    case AggregationWindow::ONE_DAY:
         axis = formatter_.format_xaxis_per_day(slice.time_points);
         break;
     }
@@ -99,12 +99,13 @@ void BarChart::draw_xaxis(const Dimensions &dim, const TimeSeriesSlice &slice) {
 }
 
 void BarChart::draw_title(const std::string &title,
-                          const TimeSeriesSlice &slice) {
+                          const TimeSeriesSlice &slice, Statistic stat) {
     auto dim = surface_->get_size();
-    auto label = sampling::get_label(slice.agg_interval);
+    auto interval_label = sampling::get_label(slice.agg_window);
+    auto stat_label = sampling::get_label(stat);
 
     std::stringstream ss{};
-    ss << "[" << "avg " << title << "/" << label << "]";
+    ss << "[" << stat_label << " " << title << "/" << interval_label << "]";
     std::string title_fmt = ss.str();
 
     auto x = U16((INT(dim.width) / 2) - (INT(title_fmt.size()) / 2));
@@ -117,7 +118,7 @@ void BarChart::draw_title(const std::string &title,
 }
 
 void BarChart::draw_menu(const std::string &iface_name, const Dimensions &dim) {
-    std::string menu{" (q)uit (r)x (t)x (up/down arrow)"};
+    std::string menu{" (q)uit (r)x (t)x (s)tat (up/down arrow)"};
     menu.resize(dim.width, ' ');
 
     // format iface

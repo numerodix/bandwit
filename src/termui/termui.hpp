@@ -4,8 +4,9 @@
 #include <chrono>
 #include <string>
 
-#include "sampling/agg_interval.hpp"
+#include "sampling/agg_window.hpp"
 #include "sampling/sampler.hpp"
+#include "sampling/statistic.hpp"
 #include "sampling/time_series.hpp"
 #include "termui/bar_chart.hpp"
 #include "termui/display_mode.hpp"
@@ -20,7 +21,8 @@ namespace bandwit {
 namespace termui {
 
 class TermUi : public WindowResizeReceiver {
-    using AggregationInterval = sampling::AggregationInterval;
+    using AggregationWindow = sampling::AggregationWindow;
+    using Statistic = sampling::Statistic;
     using TimeSeriesSlice = sampling::TimeSeriesSlice;
 
   public:
@@ -41,8 +43,9 @@ class TermUi : public WindowResizeReceiver {
     void read_keyboard_input(Millis interval);
 
     std::string iface_name_{};
-    DisplayMode mode_{DisplayMode::DISPLAY_RX};
-    AggregationInterval agg_interval_{AggregationInterval::ONE_SECOND};
+    DisplayMode display_mode_{DisplayMode::DISPLAY_RX};
+    Statistic stat_mode_{Statistic::AVERAGE};
+    AggregationWindow agg_window_{AggregationWindow::ONE_SECOND};
     std::chrono::seconds one_sec_{1};
     sampling::Sample prev_sample_{};
 

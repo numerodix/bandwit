@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <vector>
 
-#include "agg_interval.hpp"
+#include "agg_window.hpp"
 #include "aliases.hpp"
 
 namespace bandwit {
@@ -15,9 +15,9 @@ class TimeSeriesSlice {
   public:
     explicit TimeSeriesSlice(std::vector<TimePoint> tps,
                              std::vector<uint64_t> vals,
-                             AggregationInterval agg_int)
-        : time_points{std::move(tps)}, values{std::move(vals)}, agg_interval{
-                                                                    agg_int} {}
+                             AggregationWindow agg_win)
+        : time_points{std::move(tps)}, values{std::move(vals)}, agg_window{
+                                                                    agg_win} {}
 
     // We need this to be able to declare a variable in an outer scope and
     // populate it in an inner scope. The value should not be used for anything
@@ -26,7 +26,7 @@ class TimeSeriesSlice {
 
     std::vector<TimePoint> time_points{};
     std::vector<uint64_t> values{};
-    AggregationInterval agg_interval;
+    AggregationWindow agg_window;
 };
 
 } // namespace sampling

@@ -54,9 +54,9 @@ TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
 
     kb_reader_ = std::make_unique<KeyboardInputReader>(stdin);
 
-    auto one_min = one_sec_ * INT(AggregationInterval::ONE_MINUTE);
-    auto one_hour = one_sec_ * INT(AggregationInterval::ONE_HOUR);
-    auto one_day = one_sec_ * INT(AggregationInterval::ONE_DAY);
+    auto one_min = one_sec_ * INT(AggregationWindow::ONE_MINUTE);
+    auto one_hour = one_sec_ * INT(AggregationWindow::ONE_HOUR);
+    auto one_day = one_sec_ * INT(AggregationWindow::ONE_DAY);
     auto now = Clock::now();
 
     ts_rx_sec_ = std::make_unique<sampling::TimeSeries>(one_sec_, now);
@@ -133,43 +133,47 @@ void TermUi::render() {
     // already in effect, so there is no need to use it here
 
     TimeSeriesSlice slice{};
+    auto width = bar_chart_->get_width();
+    std::string action{};
 
-    if (mode_ == DisplayMode::DISPLAY_RX) {
-        switch (agg_interval_) {
-        case AggregationInterval::ONE_SECOND:
-            slice = ts_rx_sec_->get_slice_from_end(bar_chart_->get_width());
+    if (display_mode_ == DisplayMode::DISPLAY_RX) {
+        action = "received";
+
+        switch (agg_window_) {
+        case AggregationWindow::ONE_SECOND:
+            slice = ts_rx_sec_->get_slice_from_end(width, stat_mode_);
             break;
-        case AggregationInterval::ONE_MINUTE:
-            slice = ts_rx_min_->get_slice_from_end(bar_chart_->get_width());
+        case AggregationWindow::ONE_MINUTE:
+            slice = ts_rx_min_->get_slice_from_end(width, stat_mode_);
             break;
-        case AggregationInterval::ONE_HOUR:
-            slice = ts_rx_hour_->get_slice_from_end(bar_chart_->get_width());
+        case AggregationWindow::ONE_HOUR:
+            slice = ts_rx_hour_->get_slice_from_end(width, stat_mode_);
             break;
-        case AggregationInterval::ONE_DAY:
-            slice = ts_rx_day_->get_slice_from_end(bar_chart_->get_width());
+        case AggregationWindow::ONE_DAY:
+            slice = ts_rx_day_->get_slice_from_end(width, stat_mode_);
             break;
         }
-
-        bar_chart_->draw_bars_from_right(iface_name_, "received", slice);
 
     } else {
-        switch (agg_interval_) {
-        case AggregationInterval::ONE_SECOND:
-            slice = ts_tx_sec_->get_slice_from_end(bar_chart_->get_width());
+        action = "transmitted";
+
+        switch (agg_window_) {
+        case AggregationWindow::ONE_SECOND:
+            slice = ts_tx_sec_->get_slice_from_end(width, stat_mode_);
             break;
-        case AggregationInterval::ONE_MINUTE:
-            slice = ts_tx_min_->get_slice_from_end(bar_chart_->get_width());
+        case AggregationWindow::ONE_MINUTE:
+            slice = ts_tx_min_->get_slice_from_end(width, stat_mode_);
             break;
-        case AggregationInterval::ONE_HOUR:
-            slice = ts_tx_hour_->get_slice_from_end(bar_chart_->get_width());
+        case AggregationWindow::ONE_HOUR:
+            slice = ts_tx_hour_->get_slice_from_end(width, stat_mode_);
             break;
-        case AggregationInterval::ONE_DAY:
-            slice = ts_tx_day_->get_slice_from_end(bar_chart_->get_width());
+        case AggregationWindow::ONE_DAY:
+            slice = ts_tx_day_->get_slice_from_end(width, stat_mode_);
             break;
         }
-
-        bar_chart_->draw_bars_from_right(iface_name_, "transmitted", slice);
     }
+
+    bar_chart_->draw_bars_from_right(iface_name_, action, slice, stat_mode_);
 }
 
 void TermUi::read_keyboard_input(Millis interval) {
@@ -182,16 +186,23 @@ void TermUi::read_keyboard_input(Millis interval) {
         terminal_surface_->on_carriage_return();
 
     } else if (key == KeyPress::LETTER_R) {
-        mode_ = DisplayMode::DISPLAY_RX;
+        display_mode_ = DisplayMode::DISPLAY_RX;
 
     } else if (key == KeyPress::LETTER_T) {
-        mode_ = DisplayMode::DISPLAY_TX;
+        display_mode_ = DisplayMode::DISPLAY_TX;
+
+    } else if (key == KeyPress::LETTER_S) {
+        if (stat_mode_ == Statistic::AVERAGE) {
+            stat_mode_ = Statistic::SUM;
+        } else if (stat_mode_ == Statistic::SUM) {
+            stat_mode_ = Statistic::AVERAGE;
+        }
 
     } else if (key == KeyPress::ARROW_UP) {
-        agg_interval_ = sampling::next_interval(agg_interval_);
+        agg_window_ = sampling::next_interval(agg_window_);
 
     } else if (key == KeyPress::ARROW_DOWN) {
-        agg_interval_ = sampling::prev_interval(agg_interval_);
+        agg_window_ = sampling::prev_interval(agg_window_);
 
     } else if (key == KeyPress::QUIT) {
         throw InterruptException();
