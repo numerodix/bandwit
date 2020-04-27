@@ -32,6 +32,7 @@ class TerminalWindow {
     void set_cursor(const Point &point);
     void put_char(const char &ch);
     void put_uchar(const std::string &ch);
+    void put_string(const std::string &str);
     void flush();
     void clear_screen(const char &fill_char);
 

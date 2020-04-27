@@ -84,6 +84,10 @@ void TerminalWindow::put_uchar(const std::string &ch) {
     driver_->put_uchar(ch);
 }
 
+void TerminalWindow::put_string(const std::string &str) {
+    driver_->put_string(str);
+}
+
 void TerminalWindow::flush() { driver_->flush_output(); }
 
 void TerminalWindow::clear_screen(const char &fill_char) {

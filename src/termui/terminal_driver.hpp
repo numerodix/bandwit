@@ -24,6 +24,7 @@ class TerminalDriver {
     void set_cursor_position(const Point &pt);
     void put_char(const char &ch);
     void put_uchar(const std::string &ch);
+    void put_string(const std::string &str);
     void flush_output();
 
   private:

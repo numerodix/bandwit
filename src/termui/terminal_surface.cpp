@@ -155,6 +155,13 @@ void TerminalSurface::put_uchar(const Point &point, const std::string &ch) {
     win_->put_uchar(ch);
 }
 
+void TerminalSurface::put_string(const Point &point, const std::string &str) {
+    auto point_win = translate_point(point);
+
+    win_->set_cursor(point_win);
+    win_->put_string(str);
+}
+
 void TerminalSurface::flush() {
     auto lower_left = get_lower_left();
     win_->set_cursor(lower_left);

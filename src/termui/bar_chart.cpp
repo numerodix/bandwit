@@ -59,16 +59,10 @@ void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value) {
         ticks.push_back(std::move(tick_fmt));
     }
 
-    uint16_t row = dim.height - chart_offset_;
-
+    uint16_t row_cur = dim.height - chart_offset_;
     for (auto tick : ticks) {
-        for (size_t i = 0; i < tick.size(); ++i) {
-            uint16_t x = U16(i) + U16(1);
-            Point pt{x, row};
-            surface_->put_char(pt, tick[i]);
-        }
-
-        row--;
+        Point pt{1, row_cur--};
+        surface_->put_string(pt, tick);
     }
 }
 
@@ -90,12 +84,11 @@ void BarChart::draw_xaxis(const Dimensions &dim, const TimeSeriesSlice &slice) {
         break;
     }
 
-    uint16_t col_cur = dim.width - axis.size() + 1;
-    for (auto ch : axis) {
-        auto y = U16(dim.height - xaxis_offset_);
-        Point pt{col_cur++, y};
-        surface_->put_char(pt, ch);
-    }
+    uint16_t col = dim.width - axis.size() + 1;
+    auto y = U16(dim.height - xaxis_offset_);
+
+    Point pt{col, y};
+    surface_->put_string(pt, axis);
 }
 
 void BarChart::draw_title(const std::string &title,
@@ -108,13 +101,11 @@ void BarChart::draw_title(const std::string &title,
     ss << "[" << stat_label << " " << title << "/" << interval_label << "]";
     std::string title_fmt = ss.str();
 
-    auto x = U16((INT(dim.width) / 2) - (INT(title_fmt.size()) / 2));
+    auto col = U16((INT(dim.width) / 2) - (INT(title_fmt.size()) / 2));
     uint16_t y = 1;
 
-    for (auto ch : title_fmt) {
-        Point pt{x++, y};
-        surface_->put_char(pt, ch);
-    }
+    Point pt{col, y};
+    surface_->put_string(pt, title_fmt);
 }
 
 void BarChart::draw_menu(const std::string &iface_name, const Dimensions &dim) {

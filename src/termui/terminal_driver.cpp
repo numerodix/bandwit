@@ -59,6 +59,10 @@ void TerminalDriver::put_uchar(const std::string &ch) {
     fprintf(stdout_file_, "%s", ch.c_str());
 }
 
+void TerminalDriver::put_string(const std::string &str) {
+    fprintf(stdout_file_, "%s", str.c_str());
+}
+
 void TerminalDriver::flush_output() { fflush(stdout_file_); }
 
 } // namespace termui

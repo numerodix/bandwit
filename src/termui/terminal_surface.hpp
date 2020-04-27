@@ -22,6 +22,7 @@ class TerminalSurface : public WindowResizeReceiver {
     void clear_surface();
     void put_char(const Point &point, const char &ch);
     void put_uchar(const Point &point, const std::string &ch);
+    void put_string(const Point &point, const std::string &str);
     void flush();
 
     const Dimensions &get_size() const;
