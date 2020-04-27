@@ -10,7 +10,7 @@ rm -f build/core  # remove previous core file if any
 cd build
 # rm CMakeCache.txt  # invalidate options (sigh
 
-CXX=clang++ cmake -D ENABLE_CLANG_TIDY:BOOL=1 ..
+CXX=clang++ cmake -D ENABLE_CLANG_TIDY:BOOL=0 ..
 make VERBOSE=1
 
 #./bw lo
