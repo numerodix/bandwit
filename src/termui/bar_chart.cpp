@@ -103,7 +103,7 @@ void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value,
         }
     }
 
-    for (const auto& tick : ticks) {
+    for (const auto &tick : ticks) {
         std::string tick_fmt{};
         if (stat == Statistic::AVERAGE) {
             tick_fmt = formatter_.format_num_bytes_rate(tick, "s");
@@ -114,7 +114,7 @@ void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value,
     }
 
     uint16_t row_cur = dim.height - chart_offset_;
-    for (const auto& tick_fmt : ticks_fmt) {
+    for (const auto &tick_fmt : ticks_fmt) {
         Point pt{1, row_cur--};
         surface_->put_string(pt, tick_fmt);
     }

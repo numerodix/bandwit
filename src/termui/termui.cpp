@@ -54,19 +54,16 @@ TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
 
     kb_reader_ = std::make_unique<KeyboardInputReader>(stdin);
 
-    auto one_min = one_sec_ * INT(AggregationWindow::ONE_MINUTE);
-    auto one_hour = one_sec_ * INT(AggregationWindow::ONE_HOUR);
-    auto one_day = one_sec_ * INT(AggregationWindow::ONE_DAY);
     auto now = Clock::now();
+    const std::vector<AggregationWindow> windows{
+        AggregationWindow::ONE_SECOND,
+        AggregationWindow::ONE_MINUTE,
+        AggregationWindow::ONE_HOUR,
+        AggregationWindow::ONE_DAY,
+    };
 
-    ts_rx_sec_ = std::make_unique<sampling::TimeSeries>(one_sec_, now);
-    ts_tx_sec_ = std::make_unique<sampling::TimeSeries>(one_sec_, now);
-    ts_rx_min_ = std::make_unique<sampling::TimeSeries>(one_min, now);
-    ts_tx_min_ = std::make_unique<sampling::TimeSeries>(one_min, now);
-    ts_rx_hour_ = std::make_unique<sampling::TimeSeries>(one_hour, now);
-    ts_tx_hour_ = std::make_unique<sampling::TimeSeries>(one_hour, now);
-    ts_rx_day_ = std::make_unique<sampling::TimeSeries>(one_day, now);
-    ts_tx_day_ = std::make_unique<sampling::TimeSeries>(one_day, now);
+    ts_coll_rx_ = std::make_unique<TimeSeriesCollection>(now, windows);
+    ts_coll_tx_ = std::make_unique<TimeSeriesCollection>(now, windows);
 
     // tell the surface to notify us just after it's redrawn itself
     // following a window resize
@@ -115,15 +112,8 @@ void TermUi::sample() {
     auto rx = sample.rx - prev_sample_.rx;
     auto tx = sample.tx - prev_sample_.tx;
 
-    ts_rx_sec_->inc(tp, rx);
-    ts_rx_min_->inc(tp, rx);
-    ts_rx_hour_->inc(tp, rx);
-    ts_rx_day_->inc(tp, rx);
-
-    ts_tx_sec_->inc(tp, tx);
-    ts_tx_min_->inc(tp, tx);
-    ts_tx_hour_->inc(tp, tx);
-    ts_tx_day_->inc(tp, tx);
+    ts_coll_rx_->inc(tp, rx);
+    ts_coll_tx_->inc(tp, tx);
 
     prev_sample_ = sample;
 }
@@ -138,39 +128,10 @@ void TermUi::render() {
 
     if (display_mode_ == DisplayMode::DISPLAY_RX) {
         action = "received";
-
-        switch (agg_window_) {
-        case AggregationWindow::ONE_SECOND:
-            slice = ts_rx_sec_->get_slice_from_end(width, stat_mode_);
-            break;
-        case AggregationWindow::ONE_MINUTE:
-            slice = ts_rx_min_->get_slice_from_end(width, stat_mode_);
-            break;
-        case AggregationWindow::ONE_HOUR:
-            slice = ts_rx_hour_->get_slice_from_end(width, stat_mode_);
-            break;
-        case AggregationWindow::ONE_DAY:
-            slice = ts_rx_day_->get_slice_from_end(width, stat_mode_);
-            break;
-        }
-
+        slice = ts_coll_rx_->get_slice_from_end(agg_window_, width, stat_mode_);
     } else {
         action = "transmitted";
-
-        switch (agg_window_) {
-        case AggregationWindow::ONE_SECOND:
-            slice = ts_tx_sec_->get_slice_from_end(width, stat_mode_);
-            break;
-        case AggregationWindow::ONE_MINUTE:
-            slice = ts_tx_min_->get_slice_from_end(width, stat_mode_);
-            break;
-        case AggregationWindow::ONE_HOUR:
-            slice = ts_tx_hour_->get_slice_from_end(width, stat_mode_);
-            break;
-        case AggregationWindow::ONE_DAY:
-            slice = ts_tx_day_->get_slice_from_end(width, stat_mode_);
-            break;
-        }
+        slice = ts_coll_tx_->get_slice_from_end(agg_window_, width, stat_mode_);
     }
 
     bar_chart_->draw_bars_from_right(iface_name_, action, slice, display_scale_,

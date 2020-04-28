@@ -7,7 +7,7 @@
 #include "sampling/agg_window.hpp"
 #include "sampling/sampler.hpp"
 #include "sampling/statistic.hpp"
-#include "sampling/time_series.hpp"
+#include "sampling/time_series_coll.hpp"
 #include "termui/bar_chart.hpp"
 #include "termui/display_mode.hpp"
 #include "termui/display_scale.hpp"
@@ -24,6 +24,7 @@ namespace termui {
 class TermUi : public WindowResizeReceiver {
     using AggregationWindow = sampling::AggregationWindow;
     using Statistic = sampling::Statistic;
+    using TimeSeriesCollection = sampling::TimeSeriesCollection;
     using TimeSeriesSlice = sampling::TimeSeriesSlice;
 
   public:
@@ -62,18 +63,8 @@ class TermUi : public WindowResizeReceiver {
     std::unique_ptr<TerminalSurface> terminal_surface_{nullptr};
     std::unique_ptr<sampling::Sampler> sampler_{nullptr};
 
-    // aggregated per sec
-    std::unique_ptr<sampling::TimeSeries> ts_rx_sec_{nullptr};
-    std::unique_ptr<sampling::TimeSeries> ts_tx_sec_{nullptr};
-    // aggregated per min
-    std::unique_ptr<sampling::TimeSeries> ts_rx_min_{nullptr};
-    std::unique_ptr<sampling::TimeSeries> ts_tx_min_{nullptr};
-    // aggregated per hour
-    std::unique_ptr<sampling::TimeSeries> ts_rx_hour_{nullptr};
-    std::unique_ptr<sampling::TimeSeries> ts_tx_hour_{nullptr};
-    // aggregated per day
-    std::unique_ptr<sampling::TimeSeries> ts_rx_day_{nullptr};
-    std::unique_ptr<sampling::TimeSeries> ts_tx_day_{nullptr};
+    std::unique_ptr<TimeSeriesCollection> ts_coll_rx_{nullptr};
+    std::unique_ptr<TimeSeriesCollection> ts_coll_tx_{nullptr};
 };
 
 } // namespace termui
