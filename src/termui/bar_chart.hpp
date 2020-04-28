@@ -9,6 +9,7 @@
 #include "sampling/statistic.hpp"
 #include "sampling/time_series_slice.hpp"
 #include "termui/dimensions.hpp"
+#include "termui/display_scale.hpp"
 
 namespace bandwit {
 namespace termui {
@@ -24,9 +25,12 @@ class BarChart {
     explicit BarChart(TerminalSurface *surface) : surface_{surface} {}
     void draw_bars_from_right(const std::string &iface_name,
                               const std::string &title,
-                              const TimeSeriesSlice &slice, Statistic stat);
-    void draw_yaxis(const Dimensions &dim, uint64_t max_value, Statistic stat);
+                              const TimeSeriesSlice &slice, DisplayScale scale,
+                              Statistic stat);
+    void draw_yaxis(const Dimensions &dim, uint64_t max_value,
+                    DisplayScale scale, Statistic stat);
     void draw_xaxis(const Dimensions &dim, const TimeSeriesSlice &slice);
+    void draw_yaxis_label(const Dimensions &dim, DisplayScale scale);
     void draw_title(const std::string &title, const TimeSeriesSlice &slice,
                     Statistic stat);
     void draw_menu(const std::string &iface_name, const Dimensions &dim);

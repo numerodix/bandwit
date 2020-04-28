@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <cmath>
+#include <limits>
 #include <numeric>
 #include <sstream>
 
@@ -14,26 +16,45 @@ namespace termui {
 void BarChart::draw_bars_from_right(const std::string &iface_name,
                                     const std::string &title,
                                     const TimeSeriesSlice &slice,
-                                    Statistic stat) {
+                                    DisplayScale scale, Statistic stat) {
     auto dim = surface_->get_size();
+    std::vector<uint16_t> scaled{};
 
     auto max = std::max_element(slice.values.begin(), slice.values.end());
     uint64_t max_value = *max;
 
-    std::vector<uint16_t> scaled{};
-    for (auto it = slice.values.rbegin(); it != slice.values.rend(); ++it) {
-        double perc = F64(*it) / F64(max_value);
-        auto magnitude = U64(perc * F64(dim.height - chart_offset_));
-        scaled.push_back(magnitude);
+    if (scale == DisplayScale::LINEAR) {
+
+        for (auto it = slice.values.rbegin(); it != slice.values.rend(); ++it) {
+            double perc = F64(*it) / F64(max_value);
+            auto magnitude = U64(perc * F64(dim.height - chart_offset_));
+            scaled.push_back(magnitude);
+        }
+
+    } else if (scale == DisplayScale::LOG10) {
+
+        for (auto it = slice.values.rbegin(); it != slice.values.rend(); ++it) {
+            auto magnitude = U64(std::log10(F64(*it)) + 1);
+            scaled.push_back(magnitude);
+        }
+
+    } else if (scale == DisplayScale::LOG2) {
+
+        for (auto it = slice.values.rbegin(); it != slice.values.rend(); ++it) {
+            auto magnitude = U64(std::log2(F64(*it)) + 1);
+            scaled.push_back(magnitude);
+        }
     }
 
     surface_->clear_surface();
 
     uint16_t col_cur = dim.width;
+    uint16_t bottom_edge = dim.height - chart_offset_;
+    uint16_t vertical_space = bottom_edge;
     for (auto value : scaled) {
 
-        for (uint16_t j = 0; j < value; ++j) {
-            uint16_t y = dim.height - chart_offset_ - j;
+        for (uint16_t j = 0; j < value && j < vertical_space; ++j) {
+            uint16_t y = bottom_edge - j;
             Point pt{col_cur, y};
             surface_->put_uchar(pt, u8"▊");
         }
@@ -41,8 +62,9 @@ void BarChart::draw_bars_from_right(const std::string &iface_name,
         --col_cur;
     }
 
-    draw_yaxis(dim, max_value, stat);
+    draw_yaxis(dim, max_value, scale, stat);
     draw_xaxis(dim, slice);
+    draw_yaxis_label(dim, scale);
     draw_title(title, slice, stat);
     draw_menu(iface_name, dim);
 
@@ -50,27 +72,51 @@ void BarChart::draw_bars_from_right(const std::string &iface_name,
 }
 
 void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value,
-                          Statistic stat) {
-    std::vector<std::string> ticks{};
+                          DisplayScale scale, Statistic stat) {
+    std::vector<uint64_t> ticks{};
+    std::string tick_fmt{};
+    std::vector<std::string> ticks_fmt{};
 
-    double factor = 1.0 / F64(dim.height);
-    for (int x = 1; x <= dim.height - chart_offset_; ++x) {
-        auto tick = U64(F64(max_value) * (x * factor));
+    if (scale == DisplayScale::LINEAR) {
 
-        std::string tick_fmt{};
+        double factor = 1.0 / F64(dim.height);
+        for (int x = 1; x <= dim.height - chart_offset_; ++x) {
+            auto tick = U64(F64(max_value) * (x * factor));
+            ticks.push_back(tick);
+        }
+
+    } else if (scale == DisplayScale::LOG10) {
+
+        for (int x = 0; x < dim.height - chart_offset_; ++x) {
+            double tick = std::pow(10.0, F64(x));
+            if (tick < std::numeric_limits<uint64_t>::max()) {
+                ticks.push_back(U64(tick));
+            }
+        }
+
+    } else if (scale == DisplayScale::LOG2) {
+
+        for (int x = 0; x < dim.height - chart_offset_; ++x) {
+            double tick = std::pow(2.0, F64(x));
+            if (tick < std::numeric_limits<uint64_t>::max()) {
+                ticks.push_back(U64(tick));
+            }
+        }
+    }
+
+    for (auto tick : ticks) {
         if (stat == Statistic::AVERAGE) {
             tick_fmt = formatter_.format_num_bytes_rate(tick, "s");
         } else if (stat == Statistic::SUM) {
             tick_fmt = formatter_.format_num_bytes(tick);
         }
-
-        ticks.push_back(std::move(tick_fmt));
+        ticks_fmt.push_back(std::move(tick_fmt));
     }
 
     uint16_t row_cur = dim.height - chart_offset_;
-    for (auto tick : ticks) {
+    for (auto tick_fmt : ticks_fmt) {
         Point pt{1, row_cur--};
-        surface_->put_string(pt, tick);
+        surface_->put_string(pt, tick_fmt);
     }
 }
 
@@ -97,6 +143,20 @@ void BarChart::draw_xaxis(const Dimensions &dim, const TimeSeriesSlice &slice) {
 
     Point pt{col, y};
     surface_->put_string(pt, axis.get());
+}
+
+void BarChart::draw_yaxis_label(const Dimensions &dim, DisplayScale scale) {
+    std::string label = get_label(scale);
+
+    std::stringstream ss{};
+    ss << "<" << label << ">";
+    std::string label_fmt = ss.str();
+
+    auto col = U16((INT(scale_width_) / 2) - (INT(label_fmt.size()) / 2));
+    uint16_t y = dim.height - 1;
+
+    Point pt{col, y};
+    surface_->put_string(pt, label_fmt);
 }
 
 void BarChart::draw_title(const std::string &title,

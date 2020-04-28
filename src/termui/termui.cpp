@@ -173,7 +173,8 @@ void TermUi::render() {
         }
     }
 
-    bar_chart_->draw_bars_from_right(iface_name_, action, slice, stat_mode_);
+    bar_chart_->draw_bars_from_right(iface_name_, action, slice, display_scale_,
+                                     stat_mode_);
 }
 
 void TermUi::read_keyboard_input(Millis interval) {
