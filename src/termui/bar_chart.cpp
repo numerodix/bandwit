@@ -74,7 +74,6 @@ void BarChart::draw_bars_from_right(const std::string &iface_name,
 void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value,
                           DisplayScale scale, Statistic stat) {
     std::vector<uint64_t> ticks{};
-    std::string tick_fmt{};
     std::vector<std::string> ticks_fmt{};
 
     if (scale == DisplayScale::LINEAR) {
@@ -104,7 +103,8 @@ void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value,
         }
     }
 
-    for (auto tick : ticks) {
+    for (const auto& tick : ticks) {
+        std::string tick_fmt{};
         if (stat == Statistic::AVERAGE) {
             tick_fmt = formatter_.format_num_bytes_rate(tick, "s");
         } else if (stat == Statistic::SUM) {
@@ -114,7 +114,7 @@ void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value,
     }
 
     uint16_t row_cur = dim.height - chart_offset_;
-    for (auto tick_fmt : ticks_fmt) {
+    for (const auto& tick_fmt : ticks_fmt) {
         Point pt{1, row_cur--};
         surface_->put_string(pt, tick_fmt);
     }

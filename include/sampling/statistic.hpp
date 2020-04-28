@@ -11,7 +11,7 @@ enum class Statistic {
     SUM,
 };
 
-std::string get_label(Statistic stat_mode);
+std::string get_label(Statistic stat);
 
 } // namespace sampling
 } // namespace bandwit

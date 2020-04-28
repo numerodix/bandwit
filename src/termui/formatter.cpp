@@ -18,7 +18,9 @@ std::size_t FormattedString::size() const {
         if ((!in_escape) && (ch == '\033')) {
             in_escape = true;
             continue;
-        } else if (in_escape && (ch == 'm')) {
+        }
+
+        if (in_escape && (ch == 'm')) {
             in_escape = false;
             continue;
         }
@@ -268,6 +270,8 @@ std::string Formatter::format_Day(TimePoint tp) {
     case 6:
         return "Sat";
     }
+
+    return "N/A";
 }
 
 std::string Formatter::format_HH_MM(TimePoint tp) {
