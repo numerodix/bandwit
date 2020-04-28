@@ -54,8 +54,8 @@ class Formatter {
 
     // powers of two
     std::map<int, std::string> units_ = {
-        {0, "b"},   {10, "kb"}, {20, "mb"}, {30, "gb"}, {40, "tb"},
-        {50, "pb"}, {60, "eb"},
+        {0, "b"},   {10, "kb"}, {20, "mb"}, {30, "gb"},
+        {40, "tb"}, {50, "pb"}, {60, "eb"},
     };
 };
 
