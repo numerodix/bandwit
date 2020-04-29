@@ -1,9 +1,7 @@
-#include <cmath>
 #include <csignal>
 #include <iostream>
 #include <unistd.h>
 
-#include "termui/formatter.hpp"
 #include "termui/signals.hpp"
 #include "termui/termui.hpp"
 
