@@ -45,8 +45,8 @@ class BarChart {
     uint16_t scale_width_{10};
 
     // distances from dim.height
-    uint16_t xaxis_offset_{1};
     uint16_t chart_offset_{2};
+    uint16_t xaxis_offset_{1};
 };
 
 } // namespace termui

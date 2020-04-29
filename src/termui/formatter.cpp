@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -33,29 +34,8 @@ std::size_t FormattedString::size() const {
     return count;
 }
 
-std::string Formatter::format_num_bytes(uint64_t num) {
-    uint64_t int_part = 0;
-    uint64_t dec_part = 0;
-    std::string unit = "b";
-
-    for (auto it = units_.rbegin(); it != units_.rend(); ++it) {
-        auto pair = *it;
-        auto exponent = U64(pair.first);
-
-        uint64_t val = num >> exponent;
-        if (val > 0) {
-            int_part = val;
-            unit = pair.second;
-
-            if (exponent >= 10) {
-                uint64_t next_exponent = exponent - 10UL;
-                dec_part = (num >> next_exponent) - (val << 10UL);
-            }
-
-            break;
-        }
-    }
-
+std::string Formatter::format_decimal(uint64_t int_part, uint64_t dec_part,
+                                      const std::string &unit) {
     std::stringstream sd{};
     std::string truncated{};
 
@@ -90,9 +70,55 @@ std::string Formatter::format_num_bytes(uint64_t num) {
     return ss.str();
 }
 
-std::string Formatter::format_num_bytes_rate(uint64_t num,
+std::string Formatter::format_num_bytes(YAxisScale scale, uint64_t num) {
+    uint64_t int_part = 0;
+    uint64_t dec_part = 0;
+    std::string unit = "b";
+
+    if (scale == YAxisScale::BASE2) {
+
+        for (auto it = units_base2_.rbegin(); it != units_base2_.rend(); ++it) {
+            auto pair = *it;
+            auto exponent = U64(pair.first);
+
+            uint64_t val = num >> exponent;
+            if (val > 0) {
+                int_part = val;
+                unit = pair.second;
+
+                if (exponent >= 10) {
+                    uint64_t next_exponent = exponent - 10UL;
+                    dec_part = (num >> next_exponent) - (val << 10UL);
+                }
+
+                break;
+            }
+        }
+
+    } else if (scale == YAxisScale::BASE10) {
+
+        for (auto it = units_base10_.rbegin(); it != units_base10_.rend();
+             ++it) {
+            auto pair = *it;
+            auto exponent = U64(pair.first);
+
+            uint64_t divisor = U64(std::pow(10.0, F64(exponent)));
+            uint64_t val = divisor > 0 ? num / divisor : 0;
+
+            if (val > 0) {
+                int_part = val;
+                unit = pair.second;
+                break;
+            }
+        }
+    }
+
+    return format_decimal(int_part, dec_part, unit);
+}
+
+std::string Formatter::format_num_bytes_rate(YAxisScale scale, uint64_t num,
                                              const std::string &time_unit) {
-    auto num_fmt = format_num_bytes(num);
+    auto num_fmt = format_num_bytes(scale, num);
 
     std::stringstream ss{};
     ss << num_fmt << "/" << time_unit;

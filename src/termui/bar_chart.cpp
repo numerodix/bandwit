@@ -79,6 +79,7 @@ void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value,
                           DisplayScale scale, Statistic stat) {
     std::vector<uint64_t> ticks{};
     std::vector<std::string> ticks_fmt{};
+    YAxisScale y_scale = YAxisScale::BASE2;
 
     if (scale == DisplayScale::LINEAR) {
 
@@ -89,6 +90,7 @@ void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value,
         }
 
     } else if (scale == DisplayScale::LOG10) {
+        y_scale = YAxisScale::BASE10;
 
         for (int x = 0; x < dim.height - chart_offset_; ++x) {
             double tick = std::pow(10.0, F64(x));
@@ -110,9 +112,9 @@ void BarChart::draw_yaxis(const Dimensions &dim, uint64_t max_value,
     for (const auto &tick : ticks) {
         std::string tick_fmt{};
         if (stat == Statistic::AVERAGE) {
-            tick_fmt = formatter_.format_num_bytes_rate(tick, "s");
+            tick_fmt = formatter_.format_num_bytes_rate(y_scale, tick, "s");
         } else if (stat == Statistic::SUM) {
-            tick_fmt = formatter_.format_num_bytes(tick);
+            tick_fmt = formatter_.format_num_bytes(y_scale, tick);
         }
         ticks_fmt.push_back(std::move(tick_fmt));
     }

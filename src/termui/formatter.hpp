@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "aliases.hpp"
+#include "termui/yaxis_scale.hpp"
 #include "tools/time_keeping.hpp"
 
 namespace bandwit {
@@ -26,8 +27,10 @@ class FormattedString {
 
 class Formatter {
   public:
-    std::string format_num_bytes(uint64_t num);
-    std::string format_num_bytes_rate(uint64_t num,
+    std::string format_decimal(uint64_t int_part, uint64_t dec_part,
+                               const std::string &unit);
+    std::string format_num_bytes(YAxisScale scale, uint64_t num);
+    std::string format_num_bytes_rate(YAxisScale scale, uint64_t num,
                                       const std::string &time_unit);
 
     FormattedString format_xaxis_per_sec(std::vector<TimePoint> points);
@@ -52,10 +55,14 @@ class Formatter {
     std::string ansi_reverse_video_{"\033[7m"};
     std::string ansi_reset_{"\033[0m"};
 
-    // powers of two
-    std::map<int, std::string> units_ = {
+    std::map<int, std::string> units_base2_ = {
         {0, "b"},   {10, "kb"}, {20, "mb"}, {30, "gb"},
         {40, "tb"}, {50, "pb"}, {60, "eb"},
+    };
+
+    std::map<int, std::string> units_base10_{
+        {0, "b"},   {3, "kb"},  {6, "mb"},  {9, "gb"},
+        {12, "tb"}, {15, "pb"}, {18, "eb"},
     };
 };
 
