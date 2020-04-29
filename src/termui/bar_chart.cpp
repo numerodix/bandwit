@@ -52,11 +52,15 @@ void BarChart::draw_bars_from_right(const std::string &iface_name,
     uint16_t bottom_edge = dim.height - chart_offset_;
     uint16_t vertical_space = bottom_edge;
     for (auto value : scaled) {
+        if (value == 0) {
+            Point pt{col_cur, bottom_edge};
+            surface_->put_uchar(pt, u8"▁");
+        }
 
         for (uint16_t j = 0; j < value && j < vertical_space; ++j) {
             uint16_t y = bottom_edge - j;
             Point pt{col_cur, y};
-            surface_->put_uchar(pt, u8"▊");
+            surface_->put_uchar(pt, u8"█");
         }
 
         --col_cur;
