@@ -44,12 +44,22 @@ class TermUi : public WindowResizeReceiver {
     void render();
     void read_keyboard_input(Millis interval);
 
+    void render_no_winch();
+    void scroll_left();
+    void scroll_right();
+
     std::string iface_name_{};
+
+    // Cursor at 0 means we are in dynamic update mode.
+    // Cursor at >0 means that we are scrolling to the left through historical
+    // data.
+    std::size_t scroll_cursor_{0};
+
     DisplayMode display_mode_{DisplayMode::DISPLAY_RX};
     DisplayScale display_scale_{DisplayScale::LINEAR};
     Statistic stat_mode_{Statistic::AVERAGE};
     AggregationWindow agg_window_{AggregationWindow::ONE_SECOND};
-    std::chrono::seconds one_sec_{1};
+
     sampling::Sample prev_sample_{};
 
     std::unique_ptr<BarChart> bar_chart_{nullptr};

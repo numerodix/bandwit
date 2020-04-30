@@ -23,10 +23,17 @@ void TimeSeriesCollection::inc(TimePoint tp, uint64_t value) {
     }
 }
 
-TimeSeriesSlice TimeSeriesCollection::get_slice_from_end(
-    AggregationWindow window, std::size_t len, Statistic stat) const {
+TimeSeriesSlice
+TimeSeriesCollection::get_slice_from_pos(AggregationWindow window,
+                                         std::size_t pos, std::size_t len,
+                                         Statistic stat) const {
     const auto &ts = coll_.at(window);
-    return ts->get_slice_from_end(len, stat);
+    return ts->get_slice_from_pos(pos, len, stat);
+}
+
+std::size_t TimeSeriesCollection::size(AggregationWindow window) const {
+    const auto &ts = coll_.at(window);
+    return ts->size();
 }
 
 } // namespace sampling

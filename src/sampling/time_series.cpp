@@ -38,10 +38,10 @@ void TimeSeries::set_key(std::size_t key, uint64_t value) {
 
 uint64_t TimeSeries::get_key(std::size_t key) const { return storage_.at(key); }
 
-TimeSeriesSlice TimeSeries::get_slice_from_end(std::size_t len,
+TimeSeriesSlice TimeSeries::get_slice_from_pos(std::size_t pos, std::size_t len,
                                                Statistic stat) const {
-    auto last_key = max_key_;
-    auto first_key = len > size() ? 0 : last_key + 1 - len;
+    auto last_key = max_key_ - pos;
+    auto first_key = len > (last_key + 1) ? 0 : last_key + 1 - len;
 
     auto agg_window = aggregation_window();
 

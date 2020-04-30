@@ -41,6 +41,12 @@ KeyPress KeyboardInputReader::read_keypress(Millis interval) {
     } else if ((strlen(chars) == 3) && (chars[0] == '\033') &&
                chars[2] == 'B') {
         key = KeyPress::ARROW_DOWN;
+    } else if ((strlen(chars) == 3) && (chars[0] == '\033') &&
+               chars[2] == 'C') {
+        key = KeyPress::ARROW_RIGHT;
+    } else if ((strlen(chars) == 3) && (chars[0] == '\033') &&
+               chars[2] == 'D') {
+        key = KeyPress::ARROW_LEFT;
     }
     return key;
 }

@@ -20,6 +20,8 @@ enum class KeyPress {
     LETTER_S,
     ARROW_UP,
     ARROW_DOWN,
+    ARROW_LEFT,
+    ARROW_RIGHT,
     QUIT,
 };
 

@@ -84,22 +84,22 @@ void TermUi::on_window_resize([[maybe_unused]] const Dimensions &win_dim_old,
 }
 
 void TermUi::run_forever() {
+    std::chrono::seconds one_sec{1};
+
     while (true) {
         // Time execution of sampling and rendering
         auto pre = Clock::now();
 
         sample();
 
-        {
-            // ignore SIGWINCH while we're rendering
-            SignalGuard guard{susp_sigwinch_.get()};
-
-            render();
+        // if we are not scrolling through history then update dynamically
+        if (scroll_cursor_ == 0) {
+            render_no_winch();
         }
 
         // Spend the rest of the second reading keyboard input
         auto elapsed = Clock::now() - pre;
-        auto remaining = MILLIS(one_sec_ - elapsed);
+        auto remaining = MILLIS(one_sec - elapsed);
 
         read_keyboard_input(remaining);
     }
@@ -119,8 +119,9 @@ void TermUi::sample() {
 }
 
 void TermUi::render() {
-    // when we are called from `on_window_resize` the SIGWINCH signal guard is
-    // already in effect, so there is no need to use it here
+    // When we are called from `on_window_resize` the SIGWINCH signal guard is
+    // already in effect, so there is no need to use it here.
+    // Other callers of this function should suspend SIGWINCH before calling it.
 
     TimeSeriesSlice slice{};
     auto width = bar_chart_->get_width();
@@ -128,10 +129,12 @@ void TermUi::render() {
 
     if (display_mode_ == DisplayMode::DISPLAY_RX) {
         action = "received";
-        slice = ts_coll_rx_->get_slice_from_end(agg_window_, width, stat_mode_);
+        slice = ts_coll_rx_->get_slice_from_pos(agg_window_, scroll_cursor_,
+                                                width, stat_mode_);
     } else {
         action = "transmitted";
-        slice = ts_coll_tx_->get_slice_from_end(agg_window_, width, stat_mode_);
+        slice = ts_coll_tx_->get_slice_from_pos(agg_window_, scroll_cursor_,
+                                                width, stat_mode_);
     }
 
     bar_chart_->draw_bars_from_right(iface_name_, action, slice, display_scale_,
@@ -164,14 +167,50 @@ void TermUi::read_keyboard_input(Millis interval) {
         }
 
     } else if (key == KeyPress::ARROW_UP) {
+        // Make sure we don't go out of bounds in the time series in the larger
+        // window
+        scroll_cursor_ = 0;
+
         agg_window_ = sampling::next_interval(agg_window_);
 
     } else if (key == KeyPress::ARROW_DOWN) {
         agg_window_ = sampling::prev_interval(agg_window_);
 
+    } else if (key == KeyPress::ARROW_LEFT) {
+        scroll_left();
+
+    } else if (key == KeyPress::ARROW_RIGHT) {
+        scroll_right();
+
     } else if (key == KeyPress::QUIT) {
         throw InterruptException();
     }
+}
+
+void TermUi::render_no_winch() {
+    // ignore SIGWINCH while we're rendering
+    SignalGuard guard{susp_sigwinch_.get()};
+
+    render();
+}
+
+void TermUi::scroll_left() {
+    std::size_t past_points = ts_coll_rx_->size(agg_window_) - scroll_cursor_;
+
+    // Do we have enough historical data to scroll through?
+    if (past_points >= bar_chart_->get_width()) {
+        ++scroll_cursor_;
+    }
+
+    render_no_winch();
+}
+
+void TermUi::scroll_right() {
+    if (scroll_cursor_ > 0) {
+        --scroll_cursor_;
+    }
+
+    render_no_winch();
 }
 
 } // namespace termui

@@ -21,8 +21,10 @@ class TimeSeriesCollection {
         TimePoint tp, const std::vector<AggregationWindow> &windows);
 
     void inc(TimePoint tp, uint64_t value);
-    TimeSeriesSlice get_slice_from_end(AggregationWindow window,
-                                       std::size_t len, Statistic stat) const;
+    TimeSeriesSlice get_slice_from_pos(AggregationWindow window,
+                                       std::size_t pos, std::size_t len,
+                                       Statistic stat) const;
+    std::size_t size(AggregationWindow window) const;
 
   private:
     std::unordered_map<AggregationWindow, std::unique_ptr<TimeSeries>> coll_{};
