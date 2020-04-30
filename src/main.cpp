@@ -1,7 +1,9 @@
 #include <csignal>
 #include <iostream>
+#include <optional>
 #include <unistd.h>
 
+#include "aliases.hpp"
 #include "termui/signals.hpp"
 #include "termui/termui.hpp"
 
@@ -13,6 +15,8 @@ int main(int argc, char *argv[]) {
 
     std::string iface_name{argv[1]};
 
+    bandwit::TimePoint deadline = bandwit::Clock::now() + bandwit::Millis{30000};
+
     // We expect to get a Ctrl+C. Install a SIGINT handler that throws an
     // exception such that we can unwind orderly and enter the catch block
     // below.
@@ -23,7 +27,7 @@ int main(int argc, char *argv[]) {
     // and leave the terminal in a corrupted state.
     try {
         bandwit::termui::TermUi termui{iface_name};
-        termui.run_forever();
+        termui.run_until(deadline);
     } catch (bandwit::termui::InterruptException &e) {
         // This is the expected way to stop the program.
         // Emit a newline so we move beyond the menu that was displayed at the

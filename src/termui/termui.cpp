@@ -83,12 +83,16 @@ void TermUi::on_window_resize([[maybe_unused]] const Dimensions &win_dim_old,
     render();
 }
 
-void TermUi::run_forever() {
+void TermUi::run_until(std::optional<TimePoint> deadline) {
     std::chrono::seconds one_sec{1};
 
     while (true) {
         // Time execution of sampling and rendering
         auto pre = Clock::now();
+
+        if (pre > deadline) {
+            throw InterruptException();
+        }
 
         sample();
         render_no_winch();

@@ -2,6 +2,7 @@
 #define TERMUI_H
 
 #include <chrono>
+#include <optional>
 #include <string>
 
 #include "sampling/agg_window.hpp"
@@ -37,7 +38,7 @@ class TermUi : public WindowResizeReceiver {
     void on_window_resize(const Dimensions &win_dim_old,
                           const Dimensions &win_dim_new) override;
 
-    void run_forever();
+    void run_until(std::optional<TimePoint> deadline);
 
   private:
     void sample();

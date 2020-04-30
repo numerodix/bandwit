@@ -13,4 +13,4 @@ cd build
 CXX=clang++ cmake -D ENABLE_CLANG_TIDY:BOOL=0 ..
 make VERBOSE=1
 
-#./bw lo
+./bw lo
