@@ -91,11 +91,7 @@ void TermUi::run_forever() {
         auto pre = Clock::now();
 
         sample();
-
-        // if we are not scrolling through history then update dynamically
-        if (scroll_cursor_ == 0) {
-            render_no_winch();
-        }
+        render_no_winch();
 
         // Spend the rest of the second reading keyboard input
         auto elapsed = Clock::now() - pre;
@@ -167,20 +163,19 @@ void TermUi::read_keyboard_input(Millis interval) {
         }
 
     } else if (key == KeyPress::ARROW_UP) {
-        // Make sure we don't go out of bounds in the time series in the larger
-        // window
-        scroll_cursor_ = 0;
-
         agg_window_ = sampling::next_interval(agg_window_);
+        check_cursor();
 
     } else if (key == KeyPress::ARROW_DOWN) {
         agg_window_ = sampling::prev_interval(agg_window_);
 
     } else if (key == KeyPress::ARROW_LEFT) {
         scroll_left();
+        render_no_winch();
 
     } else if (key == KeyPress::ARROW_RIGHT) {
         scroll_right();
+        render_no_winch();
 
     } else if (key == KeyPress::QUIT) {
         throw InterruptException();
@@ -195,22 +190,41 @@ void TermUi::render_no_winch() {
 }
 
 void TermUi::scroll_left() {
-    std::size_t past_points = ts_coll_rx_->size(agg_window_) - scroll_cursor_;
+    check_cursor();
 
-    // Do we have enough historical data to scroll through?
-    if (past_points >= bar_chart_->get_width()) {
+    int hist_points = historical_points();
+    if (hist_points > scroll_cursor_) {
+        // We have enough historical data to scroll through?
         ++scroll_cursor_;
     }
-
-    render_no_winch();
 }
 
 void TermUi::scroll_right() {
+    check_cursor();
+
     if (scroll_cursor_ > 0) {
         --scroll_cursor_;
     }
+}
 
-    render_no_winch();
+void TermUi::check_cursor() {
+    int hist_points = historical_points();
+
+    if (scroll_cursor_ > hist_points) {
+        // The cursor is somehow past the historical data (truncation in the
+        // time series?) - reset it to as far as it can be within range.
+        scroll_cursor_ = hist_points;
+    }
+}
+
+int TermUi::historical_points() const {
+    int ts_size = INT(ts_coll_rx_->size(agg_window_));
+    int barchart_width = INT(bar_chart_->get_width());
+
+    // Points that are not in the dynamic update window
+    int historical_points = ts_size - barchart_width;
+
+    return std::max(0, historical_points);
 }
 
 } // namespace termui

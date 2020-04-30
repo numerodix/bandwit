@@ -47,13 +47,15 @@ class TermUi : public WindowResizeReceiver {
     void render_no_winch();
     void scroll_left();
     void scroll_right();
+    void check_cursor();
+    int historical_points() const;
 
     std::string iface_name_{};
 
     // Cursor at 0 means we are in dynamic update mode.
     // Cursor at >0 means that we are scrolling to the left through historical
     // data.
-    std::size_t scroll_cursor_{0};
+    int scroll_cursor_{0};
 
     DisplayMode display_mode_{DisplayMode::DISPLAY_RX};
     DisplayScale display_scale_{DisplayScale::LINEAR};

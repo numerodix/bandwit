@@ -21,7 +21,7 @@ without taking over the whole terminal screen like curses programs do.
 
 * `s` - Toggle between aggregating by average or by sum.
 
-* `Arrow Up / Arrow Down` - Increase/decrease the aggregation window where one column
+* `ArrowUp` / `ArrowDown` - Increase/decrease the aggregation window where one column
   represents either:
 
   * One second.
@@ -32,7 +32,7 @@ without taking over the whole terminal screen like curses programs do.
 
   * One day.
 
-* `Arrow Left / Arrow Right` - Scroll through historical data.
+* `ArrowLeft` / `ArrowRight` - Scroll through historical data.
 
 * `q` - Quit the program.
 
