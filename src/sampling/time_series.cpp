@@ -7,7 +7,7 @@ namespace sampling {
 
 void TimeSeries::inc(TimePoint tp, uint64_t value) {
     // are we well over size?
-    if (F64(size()) > F64(max_capacity_) * 1.5) {
+    if (F64(size()) > F64(max_capacity_) * oversize_factor_) {
         truncate();
     }
 

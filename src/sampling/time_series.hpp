@@ -43,8 +43,8 @@ class TimeSeries {
   private:
     Millis sampling_interval_{};
     TimePoint start_{};
-    // std::size_t max_capacity_{512};
-    std::size_t max_capacity_{20};
+    std::size_t max_capacity_{512};
+    double oversize_factor_{1.2};
 
     std::vector<uint64_t> storage_{};
     std::size_t max_key_{0};
