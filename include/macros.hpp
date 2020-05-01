@@ -2,6 +2,7 @@
 #define MACROS_H
 
 #include <chrono>
+#include <unistd.h>
 
 #define CLASS_DISABLE_COPY_CONSTRUCTOR(name) name(const name &) = delete;
 #define CLASS_DISABLE_COPY_ASSIGNMENT(name)                                    \
@@ -24,6 +25,8 @@
 #define U16(num) static_cast<uint16_t>(num)
 #define U32(num) static_cast<uint32_t>(num)
 #define U64(num) static_cast<uint64_t>(num)
+
+#define SIZE_T(num) static_cast<std::size_t>(num)
 
 #define PCHAR(val) static_cast<char *>(val)
 

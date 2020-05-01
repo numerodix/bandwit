@@ -1,4 +1,5 @@
 #include "time_series.hpp"
+#include "logging.hpp"
 #include "macros.hpp"
 
 namespace bandwit {
@@ -20,28 +21,14 @@ uint64_t TimeSeries::get(TimePoint tp) const {
     return get_key(key);
 }
 
-void TimeSeries::set_key(std::size_t key, uint64_t value) {
-    // We can't use operator[] to set an element that doesn't exist in the
-    // vector yet so we need to enlarge it proactively. The new slots will be
-    // filled with zeroes, which is our null value anyway.
-    if (key >= storage_.size()) {
-        // double the vector size
-        storage_.resize((key + 1) * 2);
-    }
-
-    storage_[key] = value;
-
-    // update invariants
-    max_key_ = key > max_key_ ? key : max_key_;
-    size_ = max_key_ + 1;
-}
-
-uint64_t TimeSeries::get_key(std::size_t key) const { return storage_.at(key); }
-
-TimeSeriesSlice TimeSeries::get_slice_from_pos(std::size_t pos, std::size_t len,
-                                               Statistic stat) const {
-    auto last_key = max_key_ - pos;
+TimeSeriesSlice TimeSeries::get_slice_from_point(TimePoint tp, std::size_t len,
+                                                 Statistic stat) const {
+    auto last_key = calculate_key(tp);
     auto first_key = len > (last_key + 1) ? 0 : last_key + 1 - len;
+
+    LOG_A("first_key: %ld\n", first_key);
+    LOG_A("last_key: %ld\n", last_key);
+    LOG_A("max_key: %ld\n", max_key_);
 
     auto agg_window = aggregation_window();
 
@@ -67,6 +54,52 @@ TimeSeriesSlice TimeSeries::get_slice_from_pos(std::size_t pos, std::size_t len,
     TimeSeriesSlice slice{time_points, values, agg_window};
     return slice;
 }
+
+TimePoint TimeSeries::min() const { return start_; }
+
+TimePoint TimeSeries::max() const { return reverse_key(max_key_); }
+
+std::optional<TimePoint> TimeSeries::minus_one(TimePoint tp) const {
+    int key = INT(calculate_key(tp));
+    --key;
+
+    if ((key < 0) || (key > INT(max_key_))) {
+        return std::nullopt;
+    }
+
+    TimePoint res = reverse_key(SIZE_T(key));
+    return std::optional<TimePoint>(res);
+}
+
+std::optional<TimePoint> TimeSeries::plus_one(TimePoint tp) const {
+    int key = INT(calculate_key(tp));
+    ++key;
+
+    if ((key < 0) || (key > INT(max_key_))) {
+        return std::nullopt;
+    }
+
+    TimePoint res = reverse_key(SIZE_T(key));
+    return std::optional<TimePoint>(res);
+}
+
+void TimeSeries::set_key(std::size_t key, uint64_t value) {
+    // We can't use operator[] to set an element that doesn't exist in the
+    // vector yet so we need to enlarge it proactively. The new slots will be
+    // filled with zeroes, which is our null value anyway.
+    if (key >= storage_.size()) {
+        // double the vector size
+        storage_.resize((key + 1) * 2);
+    }
+
+    storage_[key] = value;
+
+    // update invariants
+    max_key_ = key > max_key_ ? key : max_key_;
+    size_ = max_key_ + 1;
+}
+
+uint64_t TimeSeries::get_key(std::size_t key) const { return storage_.at(key); }
 
 AggregationWindow TimeSeries::aggregation_window() const {
     Millis one_sec{1000};

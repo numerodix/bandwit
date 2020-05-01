@@ -21,9 +21,16 @@ class TimeSeriesCollection {
         TimePoint tp, const std::vector<AggregationWindow> &windows);
 
     void inc(TimePoint tp, uint64_t value);
-    TimeSeriesSlice get_slice_from_pos(AggregationWindow window,
-                                       std::size_t pos, std::size_t len,
-                                       Statistic stat) const;
+    TimeSeriesSlice get_slice_from_point(AggregationWindow window, TimePoint tp,
+                                         std::size_t len, Statistic stat) const;
+
+    TimePoint min(AggregationWindow window) const;
+    TimePoint max(AggregationWindow window) const;
+    std::optional<TimePoint> minus_one(AggregationWindow window,
+                                       TimePoint tp) const;
+    std::optional<TimePoint> plus_one(AggregationWindow window,
+                                      TimePoint tp) const;
+
     std::size_t size(AggregationWindow window) const;
 
   private:

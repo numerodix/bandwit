@@ -2,6 +2,7 @@
 #define TERMUI_H
 
 #include <chrono>
+#include <optional>
 #include <string>
 
 #include "sampling/agg_window.hpp"
@@ -45,17 +46,17 @@ class TermUi : public WindowResizeReceiver {
     void read_keyboard_input(Millis interval);
 
     void render_no_winch();
-    void scroll_left();
-    void scroll_right();
-    void check_cursor();
-    int historical_points() const;
+
+    bool scroll_left();
+    bool scroll_right();
+    bool rescue_scroll_cursor();
 
     std::string iface_name_{};
 
-    // Cursor at 0 means we are in dynamic update mode.
-    // Cursor at >0 means that we are scrolling to the left through historical
+    // Cursor is nullopt means we are in dynamic update mode.
+    // Cursor is set means that we are scrolling to the left through historical
     // data.
-    int scroll_cursor_{0};
+    std::optional<TimePoint> scroll_cursor_{std::nullopt};
 
     DisplayMode display_mode_{DisplayMode::DISPLAY_RX};
     DisplayScale display_scale_{DisplayScale::LINEAR};

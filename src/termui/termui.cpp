@@ -2,6 +2,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "logging.hpp"
 #include "sampling/sampler_detector.hpp"
 #include "termui.hpp"
 #include "termui/signals.hpp"
@@ -119,22 +120,40 @@ void TermUi::render() {
     // already in effect, so there is no need to use it here.
     // Other callers of this function should suspend SIGWINCH before calling it.
 
+    auto sz = ts_coll_rx_->size(agg_window_);
+    auto min = ts_coll_rx_->min(agg_window_);
+    auto max = ts_coll_rx_->max(agg_window_);
+    LOG_A("size: %ld\n", sz);
+    LOG_A("min: %ld   max: %ld\n", Clock::to_time_t(min),
+          Clock::to_time_t(max));
+
+    rescue_scroll_cursor();
+    TimePoint cursor{};
+    if (scroll_cursor_.has_value()) {
+        cursor = scroll_cursor_.value();
+    } else {
+        cursor = max;
+    }
+    LOG_A("cur: %ld\n", Clock::to_time_t(cursor));
+
     TimeSeriesSlice slice{};
     auto width = bar_chart_->get_width();
     std::string action{};
 
     if (display_mode_ == DisplayMode::DISPLAY_RX) {
         action = "received";
-        slice = ts_coll_rx_->get_slice_from_pos(agg_window_, scroll_cursor_,
-                                                width, stat_mode_);
+        slice = ts_coll_rx_->get_slice_from_point(agg_window_, cursor, width,
+                                                  stat_mode_);
     } else {
         action = "transmitted";
-        slice = ts_coll_tx_->get_slice_from_pos(agg_window_, scroll_cursor_,
-                                                width, stat_mode_);
+        slice = ts_coll_tx_->get_slice_from_point(agg_window_, cursor, width,
+                                                  stat_mode_);
     }
 
     bar_chart_->draw_bars_from_right(iface_name_, action, slice, display_scale_,
                                      stat_mode_);
+
+    LOG("\n");
 }
 
 void TermUi::read_keyboard_input(Millis interval) {
@@ -164,18 +183,15 @@ void TermUi::read_keyboard_input(Millis interval) {
 
     } else if (key == KeyPress::ARROW_UP) {
         agg_window_ = sampling::next_interval(agg_window_);
-        check_cursor();
 
     } else if (key == KeyPress::ARROW_DOWN) {
         agg_window_ = sampling::prev_interval(agg_window_);
 
     } else if (key == KeyPress::ARROW_LEFT) {
         scroll_left();
-        render_no_winch();
 
     } else if (key == KeyPress::ARROW_RIGHT) {
         scroll_right();
-        render_no_winch();
 
     } else if (key == KeyPress::QUIT) {
         throw InterruptException();
@@ -189,42 +205,69 @@ void TermUi::render_no_winch() {
     render();
 }
 
-void TermUi::scroll_left() {
-    check_cursor();
+bool TermUi::scroll_left() {
+    bool cursor_moved = false;
 
-    int hist_points = historical_points();
-    if (hist_points > scroll_cursor_) {
-        // We have enough historical data to scroll through?
-        ++scroll_cursor_;
+    TimePoint cursor{};
+    if (scroll_cursor_.has_value()) {
+        cursor = scroll_cursor_.value();
+    } else {
+        cursor = ts_coll_rx_->max(agg_window_);
     }
+
+    auto opt_tp = ts_coll_rx_->minus_one(agg_window_, cursor);
+    if (opt_tp.has_value()) {
+        scroll_cursor_.swap(opt_tp);
+        cursor_moved = true;
+    }
+
+    return cursor_moved;
 }
 
-void TermUi::scroll_right() {
-    check_cursor();
+bool TermUi::scroll_right() {
+    bool cursor_moved = false;
 
-    if (scroll_cursor_ > 0) {
-        --scroll_cursor_;
+    TimePoint cursor{};
+    if (scroll_cursor_.has_value()) {
+        cursor = scroll_cursor_.value();
+    } else {
+        cursor = ts_coll_rx_->max(agg_window_);
     }
+
+    auto opt_tp = ts_coll_rx_->plus_one(agg_window_, cursor);
+    if (opt_tp.has_value()) {
+        scroll_cursor_.swap(opt_tp);
+        cursor_moved = true;
+    } else {
+        scroll_cursor_.reset();
+    }
+
+    return cursor_moved;
 }
 
-void TermUi::check_cursor() {
-    int hist_points = historical_points();
+bool TermUi::rescue_scroll_cursor() {
+    // If the scroll cursor gets out of bounds we need to rescue it by bringing
+    // it within bounds again. This will happen when we are in scrolling mode
+    // and the scrolling cursor falls off the left edge of the time series
+    // during a truncate.
+    bool cursor_moved = false;
 
-    if (scroll_cursor_ > hist_points) {
-        // The cursor is somehow past the historical data (truncation in the
-        // time series?) - reset it to as far as it can be within range.
-        scroll_cursor_ = hist_points;
+    if (scroll_cursor_.has_value()) {
+        auto cursor = scroll_cursor_.value();
+
+        auto min = ts_coll_rx_->min(agg_window_);
+        auto max = ts_coll_rx_->max(agg_window_);
+
+        if (cursor < min) {
+            scroll_cursor_.emplace(min);
+            cursor_moved = true;
+        } else if (cursor > max) {
+            scroll_cursor_.emplace(max);
+            cursor_moved = true;
+        }
     }
-}
 
-int TermUi::historical_points() const {
-    int ts_size = INT(ts_coll_rx_->size(agg_window_));
-    int barchart_width = INT(bar_chart_->get_width());
-
-    // Points that are not in the dynamic update window
-    int historical_points = ts_size - barchart_width;
-
-    return std::max(0, historical_points);
+    return cursor_moved;
 }
 
 } // namespace termui
