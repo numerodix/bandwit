@@ -1,5 +1,4 @@
 #include "time_series.hpp"
-#include "logging.hpp"
 #include "macros.hpp"
 
 namespace bandwit {
@@ -25,10 +24,6 @@ TimeSeriesSlice TimeSeries::get_slice_from_point(TimePoint tp, std::size_t len,
                                                  Statistic stat) const {
     auto last_key = calculate_key(tp);
     auto first_key = len > (last_key + 1) ? 0 : last_key + 1 - len;
-
-    LOG_A("first_key: %ld\n", first_key);
-    LOG_A("last_key: %ld\n", last_key);
-    LOG_A("max_key: %ld\n", max_key_);
 
     auto agg_window = aggregation_window();
 

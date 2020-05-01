@@ -2,7 +2,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "logging.hpp"
 #include "sampling/sampler_detector.hpp"
 #include "termui.hpp"
 #include "termui/signals.hpp"
@@ -120,21 +119,14 @@ void TermUi::render() {
     // already in effect, so there is no need to use it here.
     // Other callers of this function should suspend SIGWINCH before calling it.
 
-    auto sz = ts_coll_rx_->size(agg_window_);
-    auto min = ts_coll_rx_->min(agg_window_);
-    auto max = ts_coll_rx_->max(agg_window_);
-    LOG_A("size: %ld\n", sz);
-    LOG_A("min: %ld   max: %ld\n", Clock::to_time_t(min),
-          Clock::to_time_t(max));
-
     rescue_scroll_cursor();
+
     TimePoint cursor{};
     if (scroll_cursor_.has_value()) {
         cursor = scroll_cursor_.value();
     } else {
-        cursor = max;
+        cursor = ts_coll_rx_->max(agg_window_);
     }
-    LOG_A("cur: %ld\n", Clock::to_time_t(cursor));
 
     TimeSeriesSlice slice{};
     auto width = bar_chart_->get_width();
@@ -152,8 +144,6 @@ void TermUi::render() {
 
     bar_chart_->draw_bars_from_right(iface_name_, action, slice, display_scale_,
                                      stat_mode_);
-
-    LOG("\n");
 }
 
 void TermUi::read_keyboard_input(Millis interval) {
