@@ -29,11 +29,11 @@ SamplerDetector::detect_sampler(const std::string &iface_name) const {
 
     for (auto &pair : samplers) {
         auto &cls_name = pair.first;
-        auto &sampler = pair.second;
+        auto sampler = std::move(pair.second);
 
         try {
             auto sample = sampler->get_sample(iface_name);
-            return DetectionResult{sampler.release(), sample};
+            return DetectionResult{std::move(sampler), sample};
 
         } catch (std::runtime_error &exc) {
             std::stringstream ss{};

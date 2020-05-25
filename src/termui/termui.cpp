@@ -14,7 +14,7 @@ TermUi::TermUi(const std::string &iface_name) : iface_name_{iface_name} {
     sampling::SamplerDetector detector{};
     auto det_result = detector.detect_sampler(iface_name);
 
-    sampler_.reset(det_result.sampler);
+    sampler_ = std::move(det_result.sampler);
     prev_sample_ = det_result.sample;
 
     susp_sigint_ =
