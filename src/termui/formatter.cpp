@@ -186,7 +186,7 @@ FormattedString Formatter::format_xaxis_per_min(std::vector<TimePoint> points) {
             continue;
         }
 
-        if ((hours == 0) && (num_chars_after_this_one >= 2)) {
+        if ((hours == 0) && (mins == 0) && (num_chars_after_this_one >= 2)) {
             // We need to output Fri
             auto tick = format_Day(tp);
             ss << reverse_video(tick);
