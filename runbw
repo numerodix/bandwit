@@ -1,0 +1,14 @@
+#!/bin/bash
+
+EXPECTED_NAME="wlp"
+
+ALL_IFACES=$(ip addr \
+    | grep '^[0-9]' \
+    | cut -d ' ' -f 2 \
+    | sed 's/:$//g')
+
+for iface in $ALL_IFACES; do
+    if [[ $iface =~ $EXPECTED_NAME ]]; then
+        bandwit $iface
+    fi
+done

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+./fast
+
+install -m 744 build/bw $HOME/bin/bandwit
+install -m 744 runbw $HOME/bin/bw
+
+rm -rf build
